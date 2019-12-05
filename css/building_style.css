@@ -2,7 +2,6 @@ body {
 	background-color:#92C1DC;
 	color:#000000;
 	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
-	z-index:0;
 	margin:0;
 	}
 
@@ -105,7 +104,7 @@ a:active {color:#4B97C5}
 
 #PageBox {
 	z-index:1;
-	margin:155px auto 5px auto;
+	margin:155px 5px 5px 5px;
 }
 
 /* 鼠标样式
