@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Blue Sky Information Factory</title>
+		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/favicon.ico" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="description" content="Blue Sky Information Factory Official Website" />
+		<meta name="keywords" content="Blue Sky Information Factory,BSIF,蓝天信息工厂" />
+		<link rel="stylesheet" type="text/css" href="/css/main_style.css" />
+		<link rel="stylesheet" type="text/css" href="/css/building_style.css" />
+		<script src="/javascript/JQuery.js"></script>
+		<script src="/javascript/ChangePage.js"></script>
+		<script src="/javascript/PointerControllor.js"></script>
+	</head>
+	
+	<body>
+		<div id="top">
+			<div id="top_frame">
+				<div id="logo"></div>
+				<div id="title">
+					<p>Blue Sky Information Factory</p>
+				</div>
+			</div>
+			<div id="navigation_frame">
+				<ul id="navigation" onmouseover="WakeHoverPointer()" onmouseout="HideHoverPointer()">
+					<li id="nav_pointer"></li>
+					<li id="nav_hover_pointer"></li>
+					<li><a class="navigation" href="javascript:ChangePage('/html/home_page.html')" class="navigation_text" onmouseover="MoveHoverPointer(90)" onclick="MovePointer(90)">主页</a></li>
+					<li><a class="navigation" href="javascript:testclick()" class="navigation_text" onmouseover="MoveHoverPointer(290)" onclick="MovePointer(290)">资源库</a></li>
+					<li><a class="navigation" href="javascript:testclick()" class="navigation_text" onmouseover="MoveHoverPointer(490)" onclick="MovePointer(490)">工程</a></li>
+				</ul>
+			</div>
+		</div>
+		<div id="PageBox">
+		</div>
+	</body>
+	
+</html>
