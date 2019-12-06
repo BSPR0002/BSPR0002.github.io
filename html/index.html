@@ -12,6 +12,7 @@
 		<script src="/javascript/JQuery.js"></script>
 		<script src="/javascript/ChangePage.js"></script>
 		<script src="/javascript/PointerControllor.js"></script>
+		<script src="/javascript/EventListener.js"></script>
 	</head>
 	
 	<body>
@@ -23,12 +24,12 @@
 				</div>
 			</div>
 			<div id="navigation_frame">
-				<ul id="navigation" onmouseover="WakeHoverPointer()" onmouseout="HideHoverPointer()">
+				<ul id="navigation">
 					<li id="nav_pointer"></li>
 					<li id="nav_hover_pointer"></li>
-					<li><a class="navigation" href="javascript:ChangePage('/html/home_page.html')" class="navigation_text" onmouseover="MoveHoverPointer(90)" onclick="MovePointer(90)">主页</a></li>
-					<li><a class="navigation" href="javascript:testclick()" class="navigation_text" onmouseover="MoveHoverPointer(290)" onclick="MovePointer(290)">资源库</a></li>
-					<li><a class="navigation" href="javascript:testclick()" class="navigation_text" onmouseover="MoveHoverPointer(490)" onclick="MovePointer(490)">工程</a></li>
+					<li><a id="nav_item_1" class="navigation" href="javascript:void(0);">主页</a></li>
+					<li><a id="nav_item_2" class="navigation" href="javascript:void(0);">资源库</a></li>
+					<li><a id="nav_item_3" class="navigation" href="javascript:void(0);">工程</a></li>
 				</ul>
 			</div>
 		</div>

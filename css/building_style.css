@@ -104,7 +104,7 @@ a:active {color:#4B97C5}
 
 #PageBox {
 	z-index:1;
-	margin:155px 5px 5px 5px;
+	margin:155px 0 5px 0;
 }
 
 /* 鼠标样式
