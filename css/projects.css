@@ -1,0 +1,33 @@
+#box_frame {
+	width:1024px;
+	margin:0 auto;
+	position:relative;
+	overflow:hidden;
+}
+
+.prj_box {
+	width:100%;
+	margin:0 0 5px 0;
+	background-color:#FFFFFF;
+	border-radius:10px;
+	padding:20px 20px 20px 20px;
+	box-sizing:border-box;
+	position:relative;
+	overflow:hidden;
+}
+
+/* 测试视图 */
+
+/*
+body {
+	background-color:#92C1DC;
+	color:#000000;
+	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
+	}
+
+h1,h2,h3,h4,h5,h6,p {
+	display:inline;
+}
+
+a{text-decoration:none}
+*/
