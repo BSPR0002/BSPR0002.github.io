@@ -13,7 +13,3 @@ function HideHoverPointer() {
 function MovePointer(pst) {
 	document.getElementById("nav_pointer").style.left=pst+"px";
 }
-
-function testclick() {
-	void(0);
-}
