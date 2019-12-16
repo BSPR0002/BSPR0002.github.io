@@ -1,4 +1,4 @@
-function AJAX(targ,rqtype) {
+function testfunc(targ,rqtype) {
 	var xmlhttp=null;
 	//IE兼容
 	if (window.XMLHttpRequest) {
