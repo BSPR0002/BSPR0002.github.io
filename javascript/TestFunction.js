@@ -10,9 +10,9 @@ function testfunc(targ,rqtype) {
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			console.log("=1=");
-			console.log(xmlhttp.responseText);
-			console.log("=2=");
 			console.log(xmlhttp.responseXML);
+			console.log("=2=");
+			console.log(xmlhttp.responseText);
 			//this.innerHTML=xmlhttp.responseXML;
 		}
 	}
