@@ -1,13 +1,13 @@
 {
 	"ID00000001":{
-		"ID":"00000001",
+		"ID":1,
 		"name":"Nekopara",
 		"display":"ネコぱら",
 		"type":"allinone",
-		"picture":"null",
+		"picture":null,
 		"resource":{
-			"BDND":"null",
-			"Torrent":"null"
+			"BDND":null,
+			"Torrent":null
 		}
 	}
 }
