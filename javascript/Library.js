@@ -1,5 +1,5 @@
-function testfunc(library,page) {
+function Overview(library,page) {
 	$.getJSON("/json/"+library+".json",function(data) {
-		console.log(data);
+		
 	})
 }

@@ -22,4 +22,11 @@ document.addEventListener("DOMContentLoaded",function() {
 		MovePointer(490);
 		ChangePage("projects");
 	});
+	document.getElementById("nav_item_4").addEventListener("mouseover",function() {
+		MoveHoverPointer(690);
+	});
+	document.getElementById("nav_item_4").addEventListener("click",function() {
+		MovePointer(690);
+		ChangePage("about_us");
+	});
 });

@@ -1,4 +1,4 @@
-var sheet="home_page"
+var sheet="home_page";
 
 document.addEventListener("DOMContentLoaded",function() {
 	$("#PageBox").load("/html/home_page.html");
