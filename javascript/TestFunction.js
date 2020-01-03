@@ -14,8 +14,9 @@ var LibraryData=[
 ];
 CurrentLibrary="resource";
 
-function testfunc(){
-	OverView("resource");
+function testfunc(BeginID2){
+	console.log("shit!");
+	window.clearInterval(BeginID2);
 }
 
 function PullLibrary(library) {
@@ -23,3 +24,5 @@ function PullLibrary(library) {
 		LibraryData=resp;
 	})
 }
+
+testfunc(window.setInterval("testfunc()",1000));

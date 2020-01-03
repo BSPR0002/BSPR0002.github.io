@@ -22,6 +22,7 @@ function OverView(library) {
 }
 
 function Show() {
+	$("#show_box").empty();
 	$.each(ShowData,function(i,obj) {
 		var Card=document.createElement("div");
 		Card.className="card";
@@ -53,11 +54,11 @@ function Show() {
 	});
 }
 
-function Beginning() {
+function Beginning(BeginID) {
 	if (document.getElementById("show_box")) {
 		window.clearInterval(BeginID);
 		OverView(document.getElementById("show_box").className);
-	}
+	};
 }
 
-var BeginID=window.setInterval("Beginning()",100);
+Beginning(window.setInterval("Beginning()",100));
