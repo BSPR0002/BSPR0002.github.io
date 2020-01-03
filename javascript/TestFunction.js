@@ -14,15 +14,8 @@ var LibraryData=[
 ];
 CurrentLibrary="resource";
 
-function testfunc(BeginID2){
-	console.log("shit!");
-	window.clearInterval(BeginID2);
-}
-
 function PullLibrary(library) {
 	$.getJSON("/json/"+library+".json",function(resp) {
 		LibraryData=resp;
 	})
 }
-
-testfunc(window.setInterval("testfunc()",1000));

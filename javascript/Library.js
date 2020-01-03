@@ -54,11 +54,11 @@ function Show() {
 	});
 }
 
-function Beginning(BeginID) {
+function Beginning() {
 	if (document.getElementById("show_box")) {
 		window.clearInterval(BeginID);
 		OverView(document.getElementById("show_box").className);
 	};
 }
 
-Beginning(window.setInterval("Beginning()",100));
+var BeginID=window.setInterval("Beginning()",100);
