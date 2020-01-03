@@ -1,16 +1,15 @@
-#box_frame {
+body {
+	background-color:#92C1DC;
+	color:#000000;
+	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
 	width:1024px;
-	margin:0 auto;
-	position:relative;
-	overflow:hidden;
 }
 
-.res_box {
-	width:100%;
-	margin:0;
+h1,h2,h3,h4,h5,h6,p {
+	display:inline;
 }
 
-.card {
+.preview {
 	width:507px;
 	height:130px;
 	background-color:#FFFFFF;
@@ -22,11 +21,11 @@
 	float:left;
 }
 
-.card:nth-child(2n) {
+.preview:nth-child(2n) {
 	margin:0 0 10px 0;
 }
 
-.card_icon {
+.preview_image {
 	width:100px;
 	height:100px;
 	background-color:#92C1DC;
@@ -37,7 +36,7 @@
 	margin:0 15px 0 0;
 }
 
-.card_name {
+.preview_name {
 	top:15px;
 	left:130px;
 	font-size:30px;
@@ -49,7 +48,7 @@
 	position:absolute;
 }
 
-.card_type {
+.preview_type {
 	top:60px;
 	left:130px;
 	font-size:15px;
@@ -60,19 +59,3 @@
 	text-overflow:ellipsis;
 	position:absolute;
 }
-
-/* 测试视图 */
-
-/*
-body {
-	background-color:#92C1DC;
-	color:#000000;
-	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
-	}
-
-h1,h2,h3,h4,h5,h6,p {
-	display:inline;
-}
-
-a{text-decoration:none}
-*/

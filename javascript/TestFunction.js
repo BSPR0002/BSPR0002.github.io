@@ -1,5 +1,9 @@
-function testfunc(library,page) {
-	$.getJSON("/json/"+library+".json",function(data) {
-		console.log(data.ID00000001.ID);
+function testfunc2(){
+	$("#targetdiv").load("/html/test_page.html");
+}
+
+function PullLibrary(library) {
+	$.getJSON("/json/"+library+".json",function(resp) {
+		LibraryData=resp;
 	})
 }
