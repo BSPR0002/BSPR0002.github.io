@@ -2,7 +2,6 @@ body {
 	background-color:#92C1DC;
 	color:#000000;
 	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
-	z-index:0;
 	margin:0;
 	}
 
@@ -16,47 +15,105 @@ a:visited {color:#007FFF}
 a:hover {color:#92C1DC}
 a:active {color:#4B97C5}
 
-#head_bar {
+#top {
 	width:100%;
-	height:40px;
+	height:155px;
 	left:0;
 	top:0;
 	position:fixed;
-	z-index:10;
-	background-color:#FFFFFF;
-	border-bottom:1px solid #000000;
-	padding:5px 4px 5px 5px;
-	box-sizing:border-box;
+	z-index:20;
+	background-color:#92C1DC;
 	text-align:center;
 }
 
-#head_bar_content {
-	margin:auto;
+#top_frame {
 	width:1024px;
-	height:30px;
-	overflow:hidden;
-	font-size:12px;
+	height:100px;
+	margin:5px auto;
+	background-color:transparent;
 }
 
-#main_art {
-	width:1024px;
-	margin:45px auto 0 auto;
-	padding:0 5px 0 5px;
+#logo {
+	width:100px;
+	height:100px;
+	margin:0 10px 0 0;
+	float:left;
+	background:url(/Images/logo.png);
+	background-size:100%;
+	background-repeat:no-repeat;
 }
 
-.main_art_content_block {
+#title {
 	width:auto;
 	height:auto;
-	z-index:1;
-	background-color:#FFFFFF;
-	border:0px solid;
-	border-radius:10px;
-	padding:20px 20px 20px 20px;
-	box-sizing:border-box;
-	margin:0 0 5px 0;
+	color:#FFFFFF;
+	text-align:left;
+	font-size:40px;
+	padding:30px 0;
 }
 
-.auto_full_pic {
+#navigation_frame {
+	height:40px;
 	width:100%;
-	height:auto;
+	text-align:center;
+	background-color:#FFFFFF;
 }
+
+#navigation {
+	width:800px;
+	height:100%;
+	list-style-type:none;
+	overflow:hidden;
+	margin:0 auto;
+	padding:0;
+	position:relative;
+}
+
+.navigation {
+	float:left;
+	width:200px;
+	font-size:15px;
+	font-weight:bold;
+	padding:10px 0;
+	z-index:23;
+	position:relative;
+}
+
+.navigation:link,.navigation:visited,.navigation:hover,.navigation:active {
+	color:#000000;
+}
+
+#nav_pointer,#nav_hover_pointer {
+	width:0;
+	height:0;
+	border-left:10px solid transparent;
+	border-right:10px solid transparent;
+	border-bottom:10px solid #92C1DC;
+	z-index:22;
+	position:absolute;
+	left:90px;
+	bottom:0px;
+	transition:all 0.4s ease-in-out;
+}
+
+#nav_hover_pointer {
+	border-bottom:0 solid #92C1DC;
+	z-index:21;
+	transition:all 0.2s ease-in-out;
+}
+
+#PageBox {
+	z-index:1;
+	margin:155px 0 5px 0;
+}
+
+/* 鼠标样式
+body {
+	cursor:url();
+}
+*/
+
+/* 文字换行
+	word-wrap:break-word;
+	word-break:normal;
+*/

@@ -7,67 +7,34 @@
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="description" content="Blue Sky Information Factory Official Website" />
 		<meta name="keywords" content="Blue Sky Information Factory,BSIF,蓝天信息工厂" />
-		<script></script>
 		<link rel="stylesheet" type="text/css" href="/css/main_style.css" />
+		<script src="/javascript/JQuery.js"></script>
+		<script src="/javascript/ChangePage.js"></script>
+		<script src="/javascript/PointerControllor.js"></script>
+		<script src="/javascript/EventListener.js"></script>
 	</head>
 	
 	<body>
-		<div id="head_bar">
-			<div id="head_bar_content">
-				<h1 id="website_title">Blue Sky Information Factory</h1>
+		<div id="top">
+			<div id="top_frame">
+				<div id="logo"></div>
+				<div id="title">
+					<p>Blue Sky Information Factory</p>
+				</div>
 			</div>
-			
-		</div>
-		<div id="main_art">
-			<div class="main_art_content_block">
-				<p>
-					【招收成员】<br>
-					BSIF正式开始招收成员（目前只有我一个人）！<br>
-					如果你懂得汉化工作，浏览器前端开发，日语翻译，软件编程，并且有用爱发电的热情，<br>
-					那么我诚恳地邀请您成为 BSIF 的一员!<br>
-					恭候志同道合的朋友前来！<br>
-					联系方式：
-					<a href="https://shang.qq.com/wpa/qunwpa?idkey=0b2c48c7062789dcf8c247bc847eb684a99eba67f1fd03394c815970cac3ced6" target="_blank"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="Blue Sky Information Factory" title="Blue Sky Information Factory"></a>
-					 或 
-					<a href="http://tieba.baidu.com/home/main?un=BSPR0002&from=tieba" target="_blank">BSPR0002</a>@百度贴吧<br>
-					<br>
-					目前正在进行项目：轻小说《私、能力は平均値でって言ったよね！》汉化精修计划
-				</p>
-			</div>
-			<div class="main_art_content_block">
-				<hr />
-				<p>
-					资源：ネコぱら 全部资源<br />
-					　　　（PC版游戏、手机版游戏、游戏解包、OVA、Steam R18 DLC、周边）<br />
-				</p>
-				<br />
-				<p>
-					链接：<a href="https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA" target="_blank">https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA</a><br />
-					提取码：e1s7<br />
-				</p>
-				<hr />
-			</div>
-			<div class="main_art_content_block">
-				<p>
-					你好，这里是 Blue Sky Information Factory 。<br />
-					如果你有游戏汉化的需求（仅限krkr或以krkr为基础平台的GAL），<br />
-					可以联系我进行商量，如果能谈妥，我可能会开坑/接坑。（无偿）<br />
-					联系方式：<a href="http://tieba.baidu.com/home/main?un=BSPR0002&from=tieba" target="_blank">BSPR0002</a>@百度贴吧
-				</p>
-			</div>
-			<div class="main_art_content_block">
-				<p>
-					网站正在建设中……<br />
-					欢迎有意者加入。
-				</p>
-			</div>
-			<div class="main_art_content_block">
-				<p>
-					<a href="html/index.html">新页面测试入口</a>。这是正在设计中的新主页，只供设计人员用。（没事别乱点）
-				</p><br>
-				<p><a href="html/test_page.html">？</a></p>
+			<div id="navigation_frame">
+				<ul id="navigation">
+					<li id="nav_pointer"></li>
+					<li id="nav_hover_pointer"></li>
+					<li><a id="nav_item_1" class="navigation" href="javascript:void(0)">主页</a></li>
+					<li><a id="nav_item_2" class="navigation" href="javascript:void(0)">资源库</a></li>
+					<li><a id="nav_item_3" class="navigation" href="javascript:void(0)">工程</a></li>
+					<li><a id="nav_item_4" class="navigation" href="javascript:void(0)">关于我们</a></li>
+				</ul>
 			</div>
 		</div>
-
+		<div id="PageBox">
+		</div>
 	</body>
+	
 </html>
