@@ -5,6 +5,7 @@ var CurrentPage=null;
 
 function PullLibrary(callback) {
 	$.getJSON("/json/resource.json",function(resp) {
+		console.log("callback active");
 		LibraryData=resp;
 		callback();
 	})
