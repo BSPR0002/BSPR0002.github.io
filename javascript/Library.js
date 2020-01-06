@@ -62,6 +62,7 @@ function Show() {
 			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("链接："));
 			var CardLinkBDNDBoardContentNodeA=document.createElement("a");
 			CardLinkBDNDBoardContentNodeA.href=obj.resource.BDND.link;
+			CardLinkBDNDBoardContentNodeA.target="_blank";
 			CardLinkBDNDBoardContentNodeA.appendChild(document.createTextNode(obj.resource.BDND.link));
 			CardLinkBDNDBoardContentNode.appendChild(CardLinkBDNDBoardContentNodeA);
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
