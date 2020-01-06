@@ -5,7 +5,6 @@ var CurrentPage=null;
 
 function PullLibrary(callback) {
 	$.getJSON("/json/resource.json",function(resp) {
-		console.log("callback active");
 		LibraryData=resp;
 		callback();
 	})
@@ -66,7 +65,6 @@ function Show() {
 			CardLinkBDNDBoardContentNodeA.appendChild(document.createTextNode(obj.resource.BDND.link));
 			CardLinkBDNDBoardContentNode.appendChild(CardLinkBDNDBoardContentNodeA);
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
-			//CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
 			var CardLinkBDNDBoardContentNode=document.createElement("p");
 			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
@@ -135,7 +133,6 @@ function ShowCardBoard(Node) {
 	var BoardTitleIcon=Board.getElementsByClassName("card_board_title_icon")[0];
 	var BoardTitleText=Board.getElementsByClassName("card_board_title_text")[0];
 	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
-	Board.style.transition="all 0 ease-in-out";
 	BoardTheme="card_board";
 	BoardTitleIcon.className="card_board_title_icon";
 	$(BoardTitleText).empty();
@@ -144,7 +141,6 @@ function ShowCardBoard(Node) {
 	BoardTitleIcon.className=Node.BoardTitleIcon;
 	BoardTitleText.appendChild(document.createTextNode(Node.BoardTitle));
 	BoardContent.parentNode.replaceChild(Node.BoardContent.cloneNode(true),BoardContent);
-	Board.style.transition="all 0.4s ease-in-out";
 	Board.style.width="362px";
 }
 
