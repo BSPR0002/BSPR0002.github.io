@@ -1,3 +1,3 @@
 function ajax() {
-	alert("Î´Íê³É");
+	alert("æœªå®Œæˆ");
 }
