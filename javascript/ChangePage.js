@@ -1,7 +1,7 @@
 var sheet="home_page";
 
 document.addEventListener("DOMContentLoaded",function() {
-	$("#PageBox").load("/html/home_page.html");
+	$("#PageBox").load("/html/resource_library.html");
 });
 
 function ChangePage(page) {
