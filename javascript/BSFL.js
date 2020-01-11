@@ -1,6 +1,6 @@
 function AJAX(parameter) {
-	var model={"method":"get","url":null,"async":true,"username":null,"password":null,"send":null,"cache":true,"success":void,"fail":void};
-	Object.assign(model,parameter);
+	var model={"method":"get","url":null,"async":true,"username":null,"password":null,"send":null,"cache":true,"success":function(){},"fail":function(){}};
+	Object.assign(model.parameter);
 	var XMLHR=new XMLHttpRequest();
 	XMLHR.open(model.method,model.url,model.async,model.username,model.password);
 	if (model.cache==false) XMLHR.setRequestHeader("If-Modified-Since","0");
