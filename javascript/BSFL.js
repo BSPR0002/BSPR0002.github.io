@@ -13,3 +13,11 @@ function AJAX(parameter) {
 	};
 	XMLHR.send(model.send);
 }
+
+function getJSON(url,callback,AllowCache){
+	var AJAXModel={"url":url,"success":function(response) {
+		callback(JSON.parse(response));
+	}};
+	if (AllowCache==false) AJAXModel.cache=false;
+	AJAX(AJAXModel);
+}

@@ -4,7 +4,7 @@ var TotalPage=null;
 var CurrentPage=null;
 
 function PullLibrary(callback) {
-	$.getJSON("/json/resource.json",function(resp) {
+	getJSON("/json/resource.json",function(resp) {
 		LibraryData=resp;
 		callback();
 	})
