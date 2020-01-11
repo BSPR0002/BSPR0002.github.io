@@ -1,5 +1,5 @@
 function AJAX(parameter) {
-	var model={"method":"get","url":null,"async":true,"username":null,"password":null,"send":null,"cache":true,"success":null,"fail":null};
+	var model={"method":"get","url":null,"async":true,"username":null,"password":null,"send":null,"cache":true,"success":void,"fail":void};
 	Object.assign(model,parameter);
 	var XMLHR=new XMLHttpRequest();
 	XMLHR.open(model.method,model.url,model.async,model.username,model.password);
@@ -8,9 +8,7 @@ function AJAX(parameter) {
 		if (XMLHR.readyState==4) {
 			if (XMLHR.status==200||XMLHR.status==304) {
 				model.success(XMLHR.responseText);
-			} else if (typeof model.fail=="function") {
-				model.fail();
-			} else model.fail;
+			} else model.fail(XMLHR.status);
 		};
 	};
 	XMLHR.send(model.send);
