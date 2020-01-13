@@ -21,3 +21,20 @@ function getJSON(url,callback,AllowCache){
 	if (AllowCache==false) AJAXModel.cache=false;
 	AJAX(AJAXModel);
 }
+
+function EmptyElement(TargetElement) {
+	var Operator=TargetElement.cloneNode(true);
+	for (var i=Operator.childNodes.length;i>0;i--) {
+		Operator.removeChild(Operator.firstChild);
+	};
+	TargetElement.parentNode.replaceChild(Operator,TargetElement);
+}
+
+function load(url,TargetElement,AllowCache) {
+	var AJAXModel={"url":url,"success":function(response) {
+		var Operator=new DOMParser().parseFromString(response,"text/xml");
+		tt=Operator;
+	}};
+	if (AllowCache==false) AJAXModel.cache=false;
+	AJAX(AJAXModel);
+}
