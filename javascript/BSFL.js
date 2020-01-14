@@ -7,9 +7,7 @@ function AJAX(parameter) {
 	XMLHR.onreadystatechange=function() {
 		if (XMLHR.readyState==4) {
 			if (XMLHR.status==200||XMLHR.status==304) {
-				if (/application\/xml/i.test(XMLHR.getResponseHeader("content-type"))) {
-					model.success(XMLHR.responseXML,XMLHR.getResponseHeader("content-type"));
-				} else model.success(XMLHR.responseText,XMLHR.getResponseHeader("content-type"));
+				model.success(XMLHR.responseText);
 			} else model.fail(XMLHR.status);
 		};
 	};
@@ -25,16 +23,15 @@ function getJSON(url,callback,AllowCache){
 }
 
 function EmptyElement(TargetElement) {
-	var Operator=document.createRange().selectNodeContents(TargetElement);
+	var Operator=document.createRange();
+	Operator.selectNodeContents(TargetElement);
 	Operator.deleteContents();
 }
 
 function load(url,TargetElement,AllowCache) {
-	var AJAXModel={"url":url,"success":function(response,contentType) {
+	var AJAXModel={"url":url,"success":function(response) {
 		var Operator=document.createRange().createContextualFragment(response);
-		response=Operator;
-		
-		tt=response;
+		TargetElement.appendChild(Operator);
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
 	AJAX(AJAXModel);
