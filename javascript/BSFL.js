@@ -7,7 +7,7 @@ function AJAX(parameter) {
 	XMLHR.onreadystatechange=function() {
 		if (XMLHR.readyState==4) {
 			if (XMLHR.status==200||XMLHR.status==304) {
-				model.success(XMLHR.responseText);
+				model.success(XMLHR.responseText,XMLHR.getResponseHeader("content-type"));
 			} else model.fail(XMLHR.status);
 		};
 	};
@@ -31,8 +31,12 @@ function EmptyElement(TargetElement) {
 }
 
 function load(url,TargetElement,AllowCache) {
-	var AJAXModel={"url":url,"success":function(response) {
-		var Operator=new DOMParser().parseFromString(response,"text/xml");
+	var AJAXModel={"url":url,"success":function(response,contentType) {
+		if (/text\/html/i.test(contentType)) {
+			var Operator=new DOMParser().parseFromString(response,"text/xml");
+			response=Operator;
+		};
+		
 		tt=Operator;
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
