@@ -7,7 +7,9 @@ function AJAX(parameter) {
 	XMLHR.onreadystatechange=function() {
 		if (XMLHR.readyState==4) {
 			if (XMLHR.status==200||XMLHR.status==304) {
-				model.success(XMLHR.responseText,XMLHR.getResponseHeader("content-type"));
+				if (/application\/xml/i.test(XMLHR.getResponseHeader("content-type"))) {
+					model.success(XMLHR.responseXML,XMLHR.getResponseHeader("content-type"));
+				} else model.success(XMLHR.responseText,XMLHR.getResponseHeader("content-type"));
 			} else model.fail(XMLHR.status);
 		};
 	};
@@ -23,21 +25,16 @@ function getJSON(url,callback,AllowCache){
 }
 
 function EmptyElement(TargetElement) {
-	var Operator=TargetElement.cloneNode(true);
-	for (var i=Operator.childNodes.length;i>0;i--) {
-		Operator.removeChild(Operator.firstChild);
-	};
-	TargetElement.parentNode.replaceChild(Operator,TargetElement);
+	var Operator=document.createRange().selectNodeContents(TargetElement);
+	Operator.deleteContents();
 }
 
 function load(url,TargetElement,AllowCache) {
 	var AJAXModel={"url":url,"success":function(response,contentType) {
-		if (/text\/html/i.test(contentType)) {
-			var Operator=new DOMParser().parseFromString(response,"text/xml");
-			response=Operator;
-		};
+		var Operator=document.createRange().createContextualFragment(response);
+		response=Operator;
 		
-		tt=Operator;
+		tt=response;
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
 	AJAX(AJAXModel);

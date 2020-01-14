@@ -20,7 +20,7 @@ function OverView() {
 }
 
 function Show() {
-	EmptyElement(getElementById("show_box")); //自造方法
+	EmptyElement(document.getElementById("show_box")); //自造方法
 	$.each(ShowData,function(i,obj) { //自造方法
 		var Card=document.createElement("div");
 		Card.className="card";
@@ -53,8 +53,8 @@ function Show() {
 			var CardLinkBDND=document.createElement("a");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
-			CardLinkBDND.BoardTheme="card_board card_board_BDND";
-			CardLinkBDND.BoardTitleIcon="card_board_title_icon card_board_title_icon_BDND";
+			CardLinkBDND.BoardTheme=" card_board_BDND";
+			CardLinkBDND.BoardTitleIcon=" card_board_title_icon_BDND";
 			CardLinkBDND.BoardTitle="百度网盘";
 			var CardLinkBDNDBoardContent=document.createElement("div");
 			CardLinkBDNDBoardContent.className="card_board_content";
@@ -138,8 +138,8 @@ function ShowCardBoard(Node) {
 	BoardTitleIcon.className="card_board_title_icon";
 	EmptyElement(BoardTitleText); //自造方法
 	EmptyElement(BoardContent); //自造方法
-	Board.className=Node.BoardTheme;
-	BoardTitleIcon.className=Node.BoardTitleIcon;
+	Board.className+=Node.BoardTheme;
+	BoardTitleIcon.className+=Node.BoardTitleIcon;
 	BoardTitleText.appendChild(document.createTextNode(Node.BoardTitle));
 	BoardContent.parentNode.replaceChild(Node.BoardContent.cloneNode(true),BoardContent);
 	Board.style.width="362px";
