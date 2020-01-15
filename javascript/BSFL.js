@@ -22,17 +22,29 @@ function getJSON(url,callback,AllowCache){
 	AJAX(AJAXModel);
 }
 
+function getXML(url,callback,AllowCache) {
+	var AJAXModel={"url":url,"success":function(response) {
+		callback(new DOMParser().parseFromString(response,"text/xml"));
+	}};
+	if (AllowCache==false) AJAXModel.cache=false;
+	AJAX(AJAXModel);
+}
+
 function EmptyElement(TargetElement) {
 	var Operator=document.createRange();
 	Operator.selectNodeContents(TargetElement);
 	Operator.deleteContents();
 }
 
-function load(url,TargetElement,AllowCache) {
+function Load(url,TargetElement,AllowCache) {
 	var AJAXModel={"url":url,"success":function(response) {
 		var Operator=document.createRange().createContextualFragment(response);
 		TargetElement.appendChild(Operator);
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
 	AJAX(AJAXModel);
+}
+
+function Each(obj,action) {
+	for (var key in obj){action(key,obj[key])};
 }

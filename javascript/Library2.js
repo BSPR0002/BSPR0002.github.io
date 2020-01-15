@@ -21,7 +21,7 @@ function OverView() {
 
 function Show() {
 	EmptyElement(document.getElementById("show_box")); //自造方法
-	$.each(ShowData,function(i,obj) { //自造方法
+	Each(ShowData,function(i,obj) { //自造方法
 		var Card=document.createElement("div");
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
@@ -38,7 +38,7 @@ function Show() {
 		switch (obj.type) {
 			case "allinone":
 			var allinone="合集（";
-			$.each(obj.AllInOne,function(i,val) { //自造方法
+			Each(obj.AllInOne,function(i,val) { //自造方法
 				if (allinone!="合集（") allinone=allinone+"、";
 				allinone=allinone+val;
 			})
