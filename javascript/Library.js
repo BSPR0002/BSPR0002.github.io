@@ -4,7 +4,7 @@ var TotalPage=null;
 var CurrentPage=null;
 
 function PullLibrary(callback) {
-	$.getJSON("/json/resource.json",function(resp) {
+	getJSON("/json/resource.json",function(resp) { //自造方法
 		LibraryData=resp;
 		callback();
 	})
@@ -20,8 +20,8 @@ function OverView() {
 }
 
 function Show() {
-	$("#show_box").empty();
-	$.each(ShowData,function(i,obj) {
+	EmptyElement(document.getElementById("show_box")); //自造方法
+	Each(ShowData,function(i,obj) { //自造方法
 		var Card=document.createElement("div");
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
@@ -38,7 +38,7 @@ function Show() {
 		switch (obj.type) {
 			case "allinone":
 			var allinone="合集（";
-			$.each(obj.AllInOne,function(i,val) {
+			Each(obj.AllInOne,function(i,val) { //自造方法
 				if (allinone!="合集（") allinone=allinone+"、";
 				allinone=allinone+val;
 			})
@@ -53,8 +53,8 @@ function Show() {
 			var CardLinkBDND=document.createElement("a");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
-			CardLinkBDND.BoardTheme="card_board card_board_BDND";
-			CardLinkBDND.BoardTitleIcon="card_board_title_icon card_board_title_icon_BDND";
+			CardLinkBDND.BoardTheme=" card_board_BDND";
+			CardLinkBDND.BoardTitleIcon=" card_board_title_icon_BDND";
 			CardLinkBDND.BoardTitle="百度网盘";
 			var CardLinkBDNDBoardContent=document.createElement("div");
 			CardLinkBDNDBoardContent.className="card_board_content";
@@ -136,10 +136,10 @@ function ShowCardBoard(Node) {
 	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
 	BoardTheme="card_board";
 	BoardTitleIcon.className="card_board_title_icon";
-	$(BoardTitleText).empty();
-	$(BoardContent).empty();
-	Board.className=Node.BoardTheme;
-	BoardTitleIcon.className=Node.BoardTitleIcon;
+	EmptyElement(BoardTitleText); //自造方法
+	EmptyElement(BoardContent); //自造方法
+	Board.className+=Node.BoardTheme;
+	BoardTitleIcon.className+=Node.BoardTitleIcon;
 	BoardTitleText.appendChild(document.createTextNode(Node.BoardTitle));
 	BoardContent.parentNode.replaceChild(Node.BoardContent.cloneNode(true),BoardContent);
 	Board.style.width="362px";

@@ -1,12 +1,12 @@
 var sheet="home_page";
 
 document.addEventListener("DOMContentLoaded",function() {
-	$("#PageBox").load("/html/home_page.html");
+	Load("/html/home_page.html",document.getElementById("PageBox"));
 });
 
 function ChangePage(page) {
 	if (page!=sheet) {
-		$("#PageBox").load("/html/"+page+".html");
+		Load("/html/"+page+".html",document.getElementById("PageBox"));
 		sheet=page;
 	}
 }
