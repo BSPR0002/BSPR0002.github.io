@@ -4,7 +4,7 @@ var TotalPage=null;
 var CurrentPage=null;
 
 function PullLibrary(callback) {
-	getJSON("/json/resource.json",function(resp) { //自造方法
+	getJSON("/json/resource.json",function(resp) {
 		LibraryData=resp;
 		callback();
 	})
@@ -20,8 +20,8 @@ function OverView() {
 }
 
 function Show() {
-	EmptyElement(document.getElementById("show_box")); //自造方法
-	Each(ShowData,function(i,obj) { //自造方法
+	EmptyElement(document.getElementById("show_box"));
+	Each(ShowData,function(i,obj) {
 		var Card=document.createElement("div");
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
@@ -38,7 +38,7 @@ function Show() {
 		switch (obj.type) {
 			case "allinone":
 			var allinone="合集（";
-			Each(obj.AllInOne,function(i,val) { //自造方法
+			Each(obj.AllInOne,function(i,val) {
 				if (allinone!="合集（") allinone=allinone+"、";
 				allinone=allinone+val;
 			})
@@ -136,8 +136,8 @@ function ShowCardBoard(Node) {
 	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
 	BoardTheme="card_board";
 	BoardTitleIcon.className="card_board_title_icon";
-	EmptyElement(BoardTitleText); //自造方法
-	EmptyElement(BoardContent); //自造方法
+	EmptyElement(BoardTitleText);
+	EmptyElement(BoardContent);
 	Board.className+=Node.BoardTheme;
 	BoardTitleIcon.className+=Node.BoardTitleIcon;
 	BoardTitleText.appendChild(document.createTextNode(Node.BoardTitle));

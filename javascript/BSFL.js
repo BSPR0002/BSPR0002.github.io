@@ -50,3 +50,12 @@ function Each(obj,action) {
 	for (var key in obj){action(key,obj[key])};
 }
 
+//未来备用代码
+/*
+"error":function(){},
+try{
+	XHR.send(model.send);
+} catch(e) {
+	model.error();
+};
+*/
