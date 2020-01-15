@@ -201,13 +201,7 @@
 .card_board_content {
 	height:61px;
 	overflow:hidden;
-}
-
-.card_board_content p {
-	display:block;
-	margin:0;
 	white-space:nowrap;
-	overflow:hidden;
 	text-overflow:ellipsis;
 }
 
