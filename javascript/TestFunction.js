@@ -7,31 +7,11 @@ var LibraryData=[
 		"type":"allinone",
 		"AllInOne":["PC版游戏","手机版游戏","Steam R18 DLC","解包","动画","周边"],
 		"resource":{
-			"BDND":{"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA","password":"e1s7"},
-			"Torrent":"EFE"
-		}
-	},
-	{
-		"ID":2,
-		"name":"Nekopara",
-		"display":"ネコぱら",
-		"icon":"/Images/resource_icon/ID00000001.png",
-		"type":"allinone",
-		"AllInOne":["PC版游戏","手机版游戏","Steam R18 DLC","解包","动画","周边"],
-		"resource":{
-			"BDND":{"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA","password":"e1s7"},
-			"Torrent":"EFE"
-		}
-	},
-	{
-		"ID":3,
-		"name":"Nekopara",
-		"display":"ネコぱら",
-		"icon":"/Images/resource_icon/ID00000001.png",
-		"type":"allinone",
-		"AllInOne":["PC版游戏","手机版游戏","Steam R18 DLC","解包","动画","周边"],
-		"resource":{
-			"BDND":{"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA","password":"e1s7"},
+			"BDND":{
+				"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA",
+				"password":"e1s7",
+				"detail":""
+			},
 			"Torrent":"EFE"
 		}
 	}

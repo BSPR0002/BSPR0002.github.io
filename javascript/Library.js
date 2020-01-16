@@ -66,6 +66,10 @@ function Show() {
 			var CardLinkBDNDBoardContentNode=document.createElement("p");
 			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
+			CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
+			var CardLinkBDNDBoardContentNode=document.createElement("p");
+			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode(obj.resource.BDND.detail));
+			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 			CardLinkBDND.Board={
 				"Theme":" card_board_BDND",
 				"TitleIcon":" card_board_title_icon_BDND",
