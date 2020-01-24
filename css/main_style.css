@@ -102,7 +102,7 @@ a:active {color:#4B97C5}
 	transition:all 0.2s ease-in-out;
 }
 
-#PageBox {
+#page_box {
 	z-index:1;
 	margin:155px 0 5px 0;
 }

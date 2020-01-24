@@ -147,6 +147,8 @@
 	transition:all 0.4s ease-in-out;
 }
 
+.card_board a{text-decoration:underline}
+
 .card_board a:link,.card_board a:visited,.card_board a:hover,.card_board a:active {
 	color:#000000;
 }
