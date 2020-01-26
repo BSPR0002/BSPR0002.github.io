@@ -22,7 +22,6 @@ a:active {color:#4B97C5}
 	top:0;
 	position:fixed;
 	z-index:20;
-	background-color:#92C1DC;
 	text-align:center;
 }
 
@@ -30,7 +29,6 @@ a:active {color:#4B97C5}
 	width:1024px;
 	height:100px;
 	margin:5px auto;
-	background-color:transparent;
 }
 
 #logo {
@@ -103,8 +101,13 @@ a:active {color:#4B97C5}
 }
 
 #page_box {
-	z-index:1;
-	margin:155px 0 5px 0;
+	position:fixed;
+	top:155px;
+	bottom:0;
+	left:0;
+	right:0;
+	z-index:0;
+	overflow:auto;
 }
 
 /* 鼠标样式
