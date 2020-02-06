@@ -78,4 +78,38 @@ var Cookies={
 		expiresDate.setFullYear(expiresDate.getFullYear()+1);
 		this.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
 	}
+};
+
+function RequestNotificationPermission(){
+	switch (Notification.permission) {
+		case "default":
+		Notification.requestPermission();
+		break;
+		case "denied":
+		return "User reject notification!";
+		break;
+		case "granted":
+		return "User authorized!";
+	}
+}
+
+function NotificationManager(options) {
+	switch (Notification.permission) {
+		case "default":
+		Notification.requestPermission();
+		return "Permission has not been requested!";
+		break;
+		case "denied":
+		return "User reject notification!";
+		break;
+		case "granted":
+		var model={"title":"","message":"","icon":"","id":"","data":"","delay":"","dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
+		Object.assign(model,options);
+		var NotificationInterface=new Notification(model.title,{"body":model.message,"icon":model.icon,"tag":model.id,"data":model.data,"timestamp":model.delay,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
+		NotificationInterface.onshow=model.show;
+		NotificationInterface.onclick=model.click;
+		NotificationInterface.onclose=model.close;
+		NotificationInterface.onerror=model.error;
+		return NotificationInterface;
+	}
 }
