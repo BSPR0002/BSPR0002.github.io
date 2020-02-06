@@ -25,9 +25,9 @@ function Show() {
 		var Card=document.createElement("div");
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
-		var CardIcon=document.createElement("img");
+		var CardIcon=document.createElement("div");
 		CardIcon.className="card_icon";
-		CardIcon.src=obj.icon;
+		CardIcon.style.backgroundImage="url("+obj.icon+")";
 		Card.appendChild(CardIcon);
 		var CardName=document.createElement("p");
 		CardName.className="card_name";
