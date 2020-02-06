@@ -31,6 +31,7 @@
 	width:100px;
 	height:100px;
 	background-color:#92C1DC;
+	background-repeat:no-repeat;
 	border-radius:5px;
 	box-sizing:border-box;
 	float:left;
@@ -118,6 +119,7 @@
 	box-sizing:border-box;
 	float:left;
 	background-size:24px;
+	background-repeat:no-repeat;
 }
 
 .card_link_button_icon_BDND {
