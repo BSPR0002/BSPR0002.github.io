@@ -113,3 +113,6 @@ function NotificationManager(options) {
 		return NotificationInterface;
 	}
 }
+
+RequestNotificationPermission();
+tt=NotificationManager({"title":"测试姬","message":"你好！","icon":"/favicon.png","keep":true});
