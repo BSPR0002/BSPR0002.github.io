@@ -80,7 +80,7 @@ var Cookies={
 	}
 };
 
-function RequestNotificationPermission(){
+function requestNotificationPermission(){
 	switch (Notification.permission) {
 		case "default":
 		Notification.requestPermission();
@@ -96,8 +96,8 @@ function RequestNotificationPermission(){
 function NotificationManager(options) {
 	switch (Notification.permission) {
 		case "default":
-		Notification.requestPermission();
-		return "Permission has not been requested!";
+		Notification.requestPermission(function(){NotificationManager(options)});
+		return "Permission has not been requested!Please wait, if the user is authorized, the notification will be displayed later.";
 		break;
 		case "denied":
 		return "User reject notification!";
@@ -114,5 +114,4 @@ function NotificationManager(options) {
 	}
 }
 
-RequestNotificationPermission();
 tt=NotificationManager({"title":"测试姬","message":"你好！","icon":"/favicon.png","keep":true});
