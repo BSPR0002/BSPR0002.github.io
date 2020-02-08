@@ -18,10 +18,7 @@ var LibraryData=[
 ];
 
 function testfunc() {
-	var targetE=document.getElementsByClassName("exp");
-	console.log(targetE);
-	targetE.info=22;
-	console.log(targetE.info);
+	NotificationCreater({"title":"测试姬","message":"你好！","image":"/Images/resource_icon/ID00000001.png","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});
 }
 
 function HADecoder(HtmlArray) {
