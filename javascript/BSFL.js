@@ -1,3 +1,61 @@
+var Cookies={
+	"get":function(cookieName) {
+		var name=cookieName+"=";
+		var ca=document.cookie.split(";");
+		for (var i=0;i<ca.length;i++) {
+			var c=ca[i];
+			while (c.charAt(0)=="") {
+				c=c.substring(1);
+			}
+			if (c.indexOf(name)==0) {
+				return c.substring(name.length,c.length);
+			}
+		}
+		return "";
+	},
+	"get2":function(cookieName) {
+		Cookies.toObject()[cookieName]
+	},
+	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
+		if (typeof expiresDate!="undefined") expiresDate="expires="+expiresDate.toUTCString()+";";
+		if (typeof cookiePath=="undefined") cookiePath="/";
+		if (typeof cookieDomain!="undefined") cookieDomain=";domain="+cookieDomain;
+		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
+	},
+	"clear":function(cookieName) {
+		var expires=new Date();
+		expires.setTime(0);
+		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
+	},
+	"toObject":function() {
+		if (document.cookie!="") {
+			var Cookies_Box=document.cookie.split("; ");
+			var Fodder_Box=new Object;
+			for (var cookie in Cookies_Box) {
+				var pulverizer=Cookies_Box[cookie].split("=");
+				for (var timer=0;timer<pulverizer.length;timer++) {
+					switch (timer) {
+						case 0:
+							Fodder_Box[pulverizer[0]]="";
+							break;
+						case 1:
+						Fodder_Box[pulverizer[0]]=pulverizer[1];
+							break;
+							default:
+						Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
+					};
+				};
+			};
+			return Fodder_Box;
+		} else return {};
+	},
+	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
+		var expiresDate=new Date();
+		expiresDate.setFullYear(expiresDate.getFullYear()+1);
+		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
+	}
+};
+
 function AJAX(options) {
 	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null};
 	Object.assign(model,options);
@@ -11,7 +69,7 @@ function AJAX(options) {
 			model.success(XHR.response);
 		} else model.fail(XHR.status);
 	};
-	XHR.send(model.send);
+	XHR.send(model.send)
 }
 
 function getJSON(url,callback,AllowCache){
@@ -50,12 +108,36 @@ function Each(obj,action) {
 	for (var key in obj){action(key,obj[key])};
 }
 
-//未来备用代码
-/*
-"error":function(){},
-try{
-	XHR.send(model.send);
-} catch(e) {
-	model.error();
-};
-*/
+function requestNotificationPermission(){
+	switch (Notification.permission) {
+		case "default":
+			Notification.requestPermission();
+			break;
+		case "denied":
+			return "User reject notification!";
+			break;
+		case "granted":
+			return "User authorized!";
+	}
+}
+
+function NotificationCreater(options) {
+	switch (Notification.permission) {
+		case "default":
+			Notification.requestPermission(function(){NotificationCreater(options)});
+			return "Permission has not been requested!Please wait, if the user is authorized, the notification will be displayed later.";
+			break;
+		case "denied":
+			return "User reject notification!";
+			break;
+		case "granted":
+			var model={"title":"","message":"","icon":"","id":"","data":"","timestamp":undefined,"dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
+			Object.assign(model,options);
+			var NotificationInterface=new Notification(model.title,{"body":model.message,"icon":model.icon,"tag":model.id,"data":model.data,"timestamp":model.timestamp,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
+			NotificationInterface.onshow=model.show;
+			NotificationInterface.onclick=model.click;
+			NotificationInterface.onclose=model.close;
+			NotificationInterface.onerror=model.error;
+			return NotificationInterface;
+	}
+}
