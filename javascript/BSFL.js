@@ -141,3 +141,38 @@ function NotificationCreater(options) {
 			return NotificationInterface;
 	}
 }
+
+function HADecoder(HtmlArray,unit) {
+	var HtmlDoc=document.createDocumentFragment();
+	var Operator=function(data,size,over) {
+		try {
+			if (Array.isArray(data)==false) throw "检测到非数组的节点树！";
+			for (var item of data) {
+				if (typeof item=="string"||Array.isArray(item)) {
+					switch (typeof item) {
+						case "string":
+							over.appendChild(document.createTextNode(item));
+							break;
+						case "object":
+							let element=document.createElement(item[0]);
+							if (typeof item[1]=="string"||Array.isArray(item[1])) {
+								switch (typeof item[1]) {
+									case "string":
+										element.appendChild(document.createTextNode(item[1]));
+										break;
+									case "object":
+										Operator(item[1],item[1].length,element);
+								};
+							}
+							for (let attribute in item[2]) {
+								element.setAttribute(attribute,item[2][attribute])
+							};
+							over.appendChild(element)
+					}
+				}
+			}
+		} catch(err) {console.error("HADecoder 汇报有数据错误："+err+"\n出错单位："+unit)}
+	};
+	Operator(HtmlArray,HtmlArray.length,HtmlDoc);
+	return HtmlDoc
+}

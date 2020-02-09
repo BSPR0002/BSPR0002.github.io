@@ -37,19 +37,19 @@ function Show() {
 		CardType.className="card_type";
 		switch (obj.type) {
 			case "allinone":
-			var allinone="合集（";
-			Each(obj.AllInOne,function(i,val) {
-				if (allinone!="合集（") allinone=allinone+"、";
-				allinone=allinone+val;
-			})
-			var Node=allinone+"）";
-			break;
+				var allinone="合集（";
+				Each(obj.AllInOne,function(i,val) {
+					if (allinone!="合集（") allinone=allinone+"、";
+					allinone=allinone+val;
+				})
+				var Node=allinone+"）";
+				break;
 		}
 		CardType.appendChild(document.createTextNode(Node));
 		Card.appendChild(CardType);
 		var CardLink=document.createElement("div");
 		CardLink.className="card_link";
-		if (obj.resource.BDND!=null) {
+		if (typeof obj.resource.BDND=="object"&&obj.resource.BDND!=null) {
 			var CardLinkBDND=document.createElement("a");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
@@ -63,13 +63,15 @@ function Show() {
 			CardLinkBDNDBoardContentNode.appendChild(CardLinkBDNDBoardContentNodeA);
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 			CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
-			var CardLinkBDNDBoardContentNode=document.createElement("p");
-			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
-			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
-			CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
-			var CardLinkBDNDBoardContentNode=document.createElement("p");
-			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode(obj.resource.BDND.detail));
-			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
+			if (typeof obj.resource.BDND.password=="string") {
+				var CardLinkBDNDBoardContentNode=document.createElement("p");
+				CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
+				CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
+				CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
+			};
+			if (typeof obj.resource.BDND.detail!="undefined"&&obj.resource.BDND.detail!=null) {
+				CardLinkBDNDBoardContent.appendChild(HADecoder(obj.resource.BDND.detail,"ID"+obj.ID));
+			};
 			CardLinkBDND.Board={
 				"Theme":" card_board_BDND",
 				"TitleIcon":" card_board_title_icon_BDND",
@@ -85,8 +87,8 @@ function Show() {
 			CardLinkBDNDText.appendChild(document.createTextNode("百度网盘"));
 			CardLinkBDND.appendChild(CardLinkBDNDText);
 			CardLink.appendChild(CardLinkBDND);
-		}
-		if (obj.resource.Torrent!=null) {
+		};
+		if (typeof obj.resource.Torrent!="undefined"&&obj.resource.Torrent!=null) {
 			var CardLinkTorrent=document.createElement("a");
 			CardLinkTorrent.href=obj.resource.Torrent;
 			CardLinkTorrent.className="card_link_button card_link_button_Torrent";
@@ -98,7 +100,7 @@ function Show() {
 			CardLinkTorrentText.appendChild(document.createTextNode("磁力链接"));
 			CardLinkTorrent.appendChild(CardLinkTorrentText);
 			CardLink.appendChild(CardLinkTorrent);
-		}
+		};
 		Card.appendChild(CardLink);
 		var CardBoard=document.createElement("div");
 		CardBoard.className="card_board";
