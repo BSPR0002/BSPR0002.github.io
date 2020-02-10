@@ -1,7 +1,7 @@
 body {
 	background-color:#92C1DC;
 	color:#000000;
-	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
+	font-family:Arial,"Microsoft YaHei",SimHei,sans-serif,serif,"Segoe UI Emoji";
 	margin:0;
 	}
 
@@ -9,7 +9,20 @@ h1,h2,h3,h4,h5,h6,p {
 	display:inline;
 }
 
-a{text-decoration:none}
+hr {
+	border-style:solid;
+	border-radius:1px;
+}
+
+button {
+	color:inherit;
+	cursor: pointer;
+	font: inherit;
+	border-style:solid;
+	outline:none;
+}
+
+a {text-decoration:none}
 a:link {color:#007FFF}
 a:visited {color:#007FFF}
 a:hover {color:#92C1DC}
@@ -108,6 +121,17 @@ a:active {color:#4B97C5}
 	right:0;
 	z-index:0;
 	overflow:auto;
+}
+
+#window_board_layer {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+	background: #000000;
+	opacity: 0;
+	transition: all 0.5s;
+	display: none;
 }
 
 /* 鼠标样式

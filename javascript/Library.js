@@ -50,7 +50,7 @@ function Show() {
 		var CardLink=document.createElement("div");
 		CardLink.className="card_link";
 		if (typeof obj.resource.BDND=="object"&&obj.resource.BDND!=null) {
-			var CardLinkBDND=document.createElement("a");
+			var CardLinkBDND=document.createElement("button");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
 			var CardLinkBDNDBoardContent=document.createElement("div");
@@ -89,8 +89,8 @@ function Show() {
 			CardLink.appendChild(CardLinkBDND);
 		};
 		if (typeof obj.resource.Torrent!="undefined"&&obj.resource.Torrent!=null) {
-			var CardLinkTorrent=document.createElement("a");
-			CardLinkTorrent.href=obj.resource.Torrent;
+			var CardLinkTorrent=document.createElement("button");
+			CardLinkTorrent.addEventListener("click",function(){window.location.href=obj.resource.Torrent});
 			CardLinkTorrent.className="card_link_button card_link_button_Torrent";
 			var CardLinkTorrentIcon=document.createElement("div");
 			CardLinkTorrentIcon.className="card_link_button_icon card_link_button_icon_Torrent";

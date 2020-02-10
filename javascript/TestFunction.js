@@ -12,7 +12,7 @@ var LibraryData=[
 				"password":"e1s7",
 				"detail":[["p","detail 测试"]]
 			},
-			"Torrent":"EFE"
+			"Torrent":"magnet:?xt=urn:btih:C691696F891BA220579E3B1E08E484A9C05EFF27"
 		}
 	}
 ];
@@ -21,4 +21,4 @@ function testfunc() {
 	NotificationCreater({"title":"测试姬","message":"你好！","image":"/Images/resource_icon/ID00000001.png","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});
 }
 
-tt=NotificationCreater({"title":"测试姬","message":"你好！","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});
+//tt=NotificationCreater({"title":"测试姬","message":"你好！","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});

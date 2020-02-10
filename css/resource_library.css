@@ -68,7 +68,6 @@
 	position:absolute;
 	top:85px;
 	left:130px;
-	width:362px;
 	font-size:15px;
 	height:30px;
 	width:362px;
@@ -81,22 +80,12 @@
 	margin:0 6px 0 0;
 	padding:3px;
 	border-radius:6px;
-	box-sizing:border-box;
-	position:relative;
-	top:0;
-	float:left;
+	border:none;
 	transition:all 0.4s ease-in-out;
-}
-
-.card_link_button:link,.card_link_button:visited,.card_link_button:hover,.card_link_button:active {
-	color:#000000;
 }
 
 .card_link_button_BDND {
 	background-color:#3B8CFF;
-}
-
-.card_link_button_BDND:link,.card_link_button_BDND:visited,.card_link_button_BDND:hover,.card_link_button_BDND:active {
 	color:#FFFFFF;
 }
 
@@ -237,18 +226,3 @@
 	transform:rotate(135deg);
 }
 
-/* 测试视图 */
-
-/*
-body {
-	background-color:#92C1DC;
-	color:#000000;
-	font-family:Arial,'Microsoft YaHei',SimHei,sans-serif,serif;
-	}
-
-h1,h2,h3,h4,h5,h6,p {
-	display:inline;
-}
-
-a{text-decoration:none}
-*/
