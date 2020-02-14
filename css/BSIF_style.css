@@ -1,11 +1,15 @@
 body {
-	background-color:#92C1DC;
-	color:#000000;
 	font-family:Arial,"Microsoft YaHei",SimHei,sans-serif,serif,"Segoe UI Emoji";
-	}
+	margin:0;
+}
 
 h1,h2,h3,h4,h5,h6,p {
 	display:inline;
+}
+
+hr {
+	border-style:solid;
+	border-radius:1px;
 }
 
 button {
@@ -15,10 +19,3 @@ button {
 	border-style:solid;
 	outline:none;
 }
-
-hr {
-	border-style:solid;
-	border-radius:1px;
-}
-
-a {text-decoration:none}

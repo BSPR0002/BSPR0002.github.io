@@ -10,7 +10,7 @@
 	overflow:hidden;
 }
 
-#box_frame::before {
+#box_frame:before {
 	position:absolute;
 	left:0;
 	top:0;
