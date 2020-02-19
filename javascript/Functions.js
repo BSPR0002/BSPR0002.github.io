@@ -1,11 +1,60 @@
-function $(Nid) {
-	return document.getElementById(Nid);
+//箭头控制器
+function WakeHoverPointer() {
+	document.getElementById("nav_hover_pointer").style.borderBottomWidth="10px";
 }
 
-function $C(Nclass) {
-	return document.getElementByClassName(Nclass);
+function MoveHoverPointer(pst) {
+	document.getElementById("nav_hover_pointer").style.left=pst+"px";
 }
 
-function $CE(content) {
-	return console.log(content);
+function HideHoverPointer() {
+	document.getElementById("nav_hover_pointer").style.borderBottomWidth="0";
+}
+
+function MovePointer(pst) {
+	document.getElementById("nav_pointer").style.left=pst+"px";
+}
+//箭头控制器-结束
+
+var window_board={
+	"show":function() {
+		var board=document.getElementById("window_board_layer");
+		board.style.display="flex";
+		board.clientTop;
+		board.style.opacity="1";
+	},
+	"hide":function() {
+		var board=document.getElementById("window_board_layer");
+		board.addEventListener("transitionend",function(){
+			board.style.display="none";
+		},{"once":true});
+		board.style.opacity="0";
+	},
+	"display":function(content,title,boardSize) {
+		var size=Object.assign({},boardSize);
+		var board=document.getElementById("window_board");
+		var board_title=document.getElementById("window_board_title");
+		var board_content=document.getElementById("window_board_content");
+		if (typeof title=="string") {
+			board_title.innerText=title;
+		} else {
+			board_title.innerText="提示";
+		};
+		EmptyElement(board_content);
+		switch (typeof content) {
+			case "string":
+				board_content.innerText=content;
+			break;
+			case "object":
+				board_content.appendChild(content);
+		};
+		board.removeAttribute("style");
+		if (typeof size.width!="undefined") board.style.width=size.width;
+		if (typeof size.height!="undefined") board.style.width=size.height;
+		window_board.show();
+	}
+}
+
+function $(Eid) {
+	return document.getElementById(Eid);
 }

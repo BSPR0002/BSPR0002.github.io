@@ -19,3 +19,14 @@ button {
 	border-style:solid;
 	outline:none;
 }
+
+/* 鼠标样式
+body {
+	cursor:url();
+}
+*/
+
+/* 文字换行
+	word-wrap:break-word;
+	word-break:normal;
+*/

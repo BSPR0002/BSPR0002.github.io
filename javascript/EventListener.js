@@ -29,4 +29,4 @@ document.addEventListener("DOMContentLoaded",function() {
 		MovePointer(690);
 		ChangePage("about_us");
 	});
-});
+},{"once":true});

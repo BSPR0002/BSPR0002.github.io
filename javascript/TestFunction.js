@@ -21,4 +21,25 @@ function testfunc() {
 	NotificationCreater({"title":"测试姬","message":"你好！","image":"/Images/resource_icon/ID00000001.png","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});
 }
 
+var FileAPI={
+	"read":function(target,type) {
+		var Operator=new FileReader;
+		switch (type) {
+			case 1:
+				Operator.readAsArrayBuffer(target);
+			break;
+			case 2:
+				Operator.readAsBinaryString(target);
+			break;
+			case 3:
+				Operator.readAsDataURL(target);
+			break;
+			default:
+				Operator.readAsText(target);
+		}
+		return Oerator.result;
+	},
+	"write":function(){console.warn("still building")}
+}
+
 //tt=NotificationCreater({"title":"测试姬","message":"你好！","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});
