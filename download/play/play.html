@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style type="text/css">
+			body{
+				margin:0;
+				background-color:#0079FF;
+			}
+			button {
+				color:inherit;
+				cursor:pointer;
+				font:inherit;
+				border-style:solid;
+				outline:none;
+				margin:5px auto;
+			}
+			p{display:inline;}
+			.card{
+				width:54px;
+				height:96px;
+				background-color:#FFFFFF;
+				box-sizing:border-box;
+				border:solid 1px #000000;
+			}
+			.card_rune{
+				font-size:36px;
+				color:#FFFFFF;
+				font-weight:bold;
+				-webkit-text-stroke:2px #000000;
+			}
+			#select_level{
+				position:fixed;
+				display:flex;
+				z-index:100;
+				width:100%;
+				height:100%;
+				transition:all 0.5s;
+			}
+			#level_board{
+				width:256px;
+				height:256px;
+				margin:auto;
+				box-sizing:border-box;
+				border:3px solid #000000;
+				border-radius:10px;
+				background-color:#FFFFFF;
+				padding:10px;
+				text-align:center;
+				font-size:24px;
+				font-weight:bold;
+			}
+			#level_board button{
+				border:none;
+				border-radius:5px;
+				font-size:20px;
+				background-color:#0079ff;
+				font-weight:normal;
+			}
+			#level_board button:hover{
+				background-color:#ff0000;
+			}
+			#game_table{
+				perspective:500px;
+				transform-style:preserve-3d;
+			}
+		</style>
+		<script>
+			function start_level(level){
+				var xbricks=5,ybricks=6;
+				xbricks+=level-1,ybricks+=level-1;
+			}
+			function hide_board(){
+				var board=document.getElementById("select_level");
+				board.addEventListener("transitionend",function(){
+					board.style.display="none";
+				},{"once":true});
+				board.style.opacity="0";
+			}
+		</script>
+	</head>
+	<body>
+		<div style="position:fixed">
+			<div class="card"></div>
+			<p>
+				5x6
+				6x7
+				7x8
+				8x9
+			</p>
+		</div>
+		<div id="select_level">
+			<div id="level_board">
+				<p>请选择难度</p><br>
+				<button onclick="javascript:start_level(1);hide_board()">级别1　5×6</button><br>
+				<button onclick="javascript:start_level(2);hide_board()">级别2　6×7</button><br>
+				<button onclick="javascript:start_level(3);hide_board()">级别3　7×8</button><br>
+				<button onclick="javascript:start_level(4);hide_board()">级别4　8×9</button>
+			</div>
+		</div>
+		<div id="game_table">
+			
+		</div>
+	</body>
+</html>

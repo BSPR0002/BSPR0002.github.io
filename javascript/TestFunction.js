@@ -42,4 +42,3 @@ var FileAPI={
 	"write":function(){console.warn("still building")}
 }
 
-//tt=NotificationCreater({"title":"测试姬","message":"你好！","icon":"/favicon.png","id":"Blue Sky Information Factory","renotify":true,"keep":true});

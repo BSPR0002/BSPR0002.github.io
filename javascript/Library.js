@@ -118,7 +118,7 @@ function Show() {
 		var CardBoardContent=document.createElement("div");
 		CardBoardContent.className="card_board_content";
 		CardBoardFrame.appendChild(CardBoardContent);
-		var CardBoardClose=document.createElement("a");
+		var CardBoardClose=document.createElement("button");
 		CardBoardClose.className="card_board_close";
 		CardBoardClose.href="javascript:void(0)";
 		CardBoardClose.addEventListener("click",function() {CloseCardBoard(this)});
@@ -139,15 +139,12 @@ Beginning();
 
 function ShowCardBoard(Node) {
 	var Board=Node.parentNode.parentNode.getElementsByClassName("card_board")[0];
-	var BoardTitleIcon=Board.getElementsByClassName("card_board_title_icon")[0];
 	var BoardTitleText=Board.getElementsByClassName("card_board_title_text")[0];
 	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
 	BoardTheme="card_board";
-	BoardTitleIcon.className="card_board_title_icon";
 	EmptyElement(BoardTitleText);
 	EmptyElement(BoardContent);
 	Board.className+=Node.Board.Theme;
-	BoardTitleIcon.className+=Node.Board.TitleIcon;
 	BoardTitleText.appendChild(document.createTextNode(Node.Board.Title));
 	var Operator=document.createRange();
 	Operator.selectNodeContents(Node.Board.Content);

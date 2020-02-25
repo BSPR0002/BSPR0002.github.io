@@ -179,7 +179,7 @@
 	background-size:24px;
 }
 
-.card_board_title_icon_BDND {
+.card_board_BDND .card_board_title_icon{
 	display:block;
 	background-image:url(/Images/third_party/icon/BaiduNetdisk.png);
 }
@@ -194,6 +194,7 @@
 
 .card_board_content {
 	height:61px;
+	width:352px;
 	overflow:hidden;
 	white-space:nowrap;
 	text-overflow:ellipsis;
@@ -201,24 +202,27 @@
 
 .card_board_close {
 	display:block;
+	background-color:transparent;
 	position:absolute;
+	width:20px;
+	height:20px;
+	border:none;
 	right:0;
 	top:0;
-	height:20px;
-	width:20px;
 }
 
 .card_board_close:before,.card_board_close:after {
 	position:absolute;
 	display:block;
+	top:0;
 	right:9px;
 	width:2px;
 	height:20px;
 	content:"";
 	border-style:solid;
-	border-width:1px 1px;
+	border-width:1px;
 	box-sizing:border-box;
-	border-color:#FFFFFF;
+	border-color:#000000;
 	transform:rotate(45deg);
 }
 
@@ -226,3 +230,6 @@
 	transform:rotate(135deg);
 }
 
+.card_board_BDND .card_board_close:before,.card_board_BDND .card_board_close:after {
+	border-color:#FFFFFF;
+}

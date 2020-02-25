@@ -14,8 +14,8 @@ hr {
 
 button {
 	color:inherit;
-	cursor: pointer;
-	font: inherit;
+	cursor:pointer;
+	font:inherit;
 	border-style:solid;
 	outline:none;
 }
