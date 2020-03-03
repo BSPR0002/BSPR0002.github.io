@@ -1,61 +1,3 @@
-var Cookies={
-	"get":function(cookieName) {
-		var name=cookieName+"=";
-		var ca=document.cookie.split(";");
-		for (var i=0;i<ca.length;i++) {
-			var c=ca[i];
-			while (c.charAt(0)=="") {
-				c=c.substring(1);
-			}
-			if (c.indexOf(name)==0) {
-				return c.substring(name.length,c.length);
-			}
-		}
-		return "";
-	},
-	"get2":function(cookieName) {
-		Cookies.toObject()[cookieName]
-	},
-	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
-		if (typeof expiresDate!="undefined") expiresDate="expires="+expiresDate.toUTCString()+";";
-		if (typeof cookiePath=="undefined") cookiePath="/";
-		if (typeof cookieDomain!="undefined") cookieDomain=";domain="+cookieDomain;
-		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
-	},
-	"clear":function(cookieName) {
-		var expires=new Date();
-		expires.setTime(0);
-		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
-	},
-	"toObject":function() {
-		if (document.cookie!="") {
-			var Cookies_Box=document.cookie.split("; ");
-			var Fodder_Box=new Object;
-			for (var cookie in Cookies_Box) {
-				var pulverizer=Cookies_Box[cookie].split("=");
-				for (var timer=0;timer<pulverizer.length;timer++) {
-					switch (timer) {
-						case 0:
-							Fodder_Box[pulverizer[0]]="";
-							break;
-						case 1:
-						Fodder_Box[pulverizer[0]]=pulverizer[1];
-							break;
-							default:
-						Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
-					};
-				};
-			};
-			return Fodder_Box;
-		} else return {};
-	},
-	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
-		var expiresDate=new Date();
-		expiresDate.setFullYear(expiresDate.getFullYear()+1);
-		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
-	}
-};
-
 function AJAX(options) {
 	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null};
 	Object.assign(model,options);
@@ -176,3 +118,61 @@ function HADecoder(HtmlArray,unit) {
 	Operator(HtmlArray,HtmlArray.length,HtmlDoc);
 	return HtmlDoc
 }
+
+var Cookies={
+	"get":function(cookieName) {
+		var name=cookieName+"=";
+		var ca=document.cookie.split(";");
+		for (var i=0;i<ca.length;i++) {
+			var c=ca[i];
+			while (c.charAt(0)=="") {
+				c=c.substring(1);
+			}
+			if (c.indexOf(name)==0) {
+				return c.substring(name.length,c.length);
+			}
+		}
+		return "";
+	},
+	"get2":function(cookieName) {
+		Cookies.toObject()[cookieName]
+	},
+	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
+		if (typeof expiresDate!="undefined") expiresDate="expires="+expiresDate.toUTCString()+";";
+		if (typeof cookiePath=="undefined") cookiePath="/";
+		if (typeof cookieDomain!="undefined") cookieDomain=";domain="+cookieDomain;
+		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
+	},
+	"clear":function(cookieName) {
+		var expires=new Date();
+		expires.setTime(0);
+		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
+	},
+	"toObject":function() {
+		if (document.cookie!="") {
+			var Cookies_Box=document.cookie.split("; ");
+			var Fodder_Box=new Object;
+			for (var cookie in Cookies_Box) {
+				var pulverizer=Cookies_Box[cookie].split("=");
+				for (var timer=0;timer<pulverizer.length;timer++) {
+					switch (timer) {
+						case 0:
+							Fodder_Box[pulverizer[0]]="";
+							break;
+						case 1:
+						Fodder_Box[pulverizer[0]]=pulverizer[1];
+							break;
+							default:
+						Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
+					};
+				};
+			};
+			return Fodder_Box;
+		} else return {};
+	},
+	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
+		var expiresDate=new Date();
+		expiresDate.setFullYear(expiresDate.getFullYear()+1);
+		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
+	}
+};

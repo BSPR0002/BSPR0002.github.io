@@ -135,8 +135,6 @@ function Beginning() {
 	} else setTimeout("Beginning()",100);
 }
 
-Beginning();
-
 function ShowCardBoard(Node) {
 	var Board=Node.parentNode.parentNode.getElementsByClassName("card_board")[0];
 	var BoardTitleText=Board.getElementsByClassName("card_board_title_text")[0];
@@ -155,3 +153,5 @@ function ShowCardBoard(Node) {
 function CloseCardBoard(Node) {
 	Node.parentNode.parentNode.style.width=0;
 }
+
+Beginning();
