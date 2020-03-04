@@ -75,7 +75,6 @@
 }
 
 .card_link_button {
-	display:inline-block;
 	height:30px;
 	margin:0 6px 0 0;
 	padding:3px;
@@ -112,17 +111,25 @@
 	background-repeat:no-repeat;
 }
 
-.card_link_button_icon_BDND {
+.card_link_button_BDND .card_link_button_icon {
 	background-image:url(/Images/third_party/icon/BaiduNetdisk.png);
 }
 
-.card_link_button_icon_Torrent {
+.card_link_button_Torrent .card_link_button_icon {
 	background-image:url(/Images/third_party/icon/Torrent.png);
 }
 
 .card_link_button_text {
 	display:inline-block;
 	margin:2px;
+}
+
+.card_link_button_BDND .card_link_button_text:before {
+	content:"百度网盘";
+}
+
+.card_link_button_Torrent .card_link_button_text:before {
+	content:"磁力链接";
 }
 
 .card_board {
@@ -136,7 +143,7 @@
 	font-size:15px;
 	background-color:#92C1DC;
 	color:#000000;
-	transition:all 0.4s ease-in-out;
+	transition:width 0.4s ease-in-out;
 }
 
 .card_board a{text-decoration:underline}
@@ -163,7 +170,7 @@
 
 .card_board_title {
 	height:24px;
-	width:328px;
+	width:268px;
 	overflow:hidden;
 	margin:0 0 5px 0;
 }
@@ -192,6 +199,10 @@
 	text-overflow:ellipsis;
 }
 
+.card_board_BDND .card_board_title_text:before {
+	content:"百度网盘";
+}
+
 .card_board_content {
 	height:61px;
 	width:352px;
@@ -200,8 +211,23 @@
 	text-overflow:ellipsis;
 }
 
+.card_board_detail {
+	position:absolute;
+	top:0;
+	right:22px;
+	height:20px;
+	width:60px;
+	background-color:#FFFFFF;
+	color:#000000;
+	border:none;
+	font-size:12px;
+	border-radius:3px;
+}
+.card_board_detail:before {
+	content:"详细信息";
+}
+
 .card_board_close {
-	display:block;
 	background-color:transparent;
 	position:absolute;
 	width:20px;

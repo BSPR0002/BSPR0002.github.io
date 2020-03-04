@@ -86,7 +86,7 @@ function NotificationCreater(options) {
 
 function HADecoder(HtmlArray,unit) {
 	var HtmlDoc=document.createDocumentFragment();
-	var Operator=function(data,size,over) {
+	var Operator=function(data,over) {
 		try {
 			if (Array.isArray(data)==false) throw "检测到非数组的节点树！";
 			for (var item of data) {
@@ -103,7 +103,7 @@ function HADecoder(HtmlArray,unit) {
 										element.appendChild(document.createTextNode(item[1]));
 										break;
 									case "object":
-										Operator(item[1],item[1].length,element);
+										Operator(item[1],element);
 								};
 							}
 							for (let attribute in item[2]) {
@@ -115,7 +115,7 @@ function HADecoder(HtmlArray,unit) {
 			}
 		} catch(err) {console.error("HADecoder 汇报有数据错误："+err+"\n出错单位："+unit)}
 	};
-	Operator(HtmlArray,HtmlArray.length,HtmlDoc);
+	Operator(HtmlArray,HtmlDoc);
 	return HtmlDoc
 }
 
