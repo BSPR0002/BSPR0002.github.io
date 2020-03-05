@@ -149,9 +149,9 @@ var Cookies={
 		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
 	},
 	"toObject":function() {
+		var Fodder_Box=new Object;
 		if (document.cookie!="") {
 			var Cookies_Box=document.cookie.split("; ");
-			var Fodder_Box=new Object;
 			for (var cookie in Cookies_Box) {
 				var pulverizer=Cookies_Box[cookie].split("=");
 				for (var timer=0;timer<pulverizer.length;timer++) {
@@ -160,15 +160,15 @@ var Cookies={
 							Fodder_Box[pulverizer[0]]="";
 							break;
 						case 1:
-						Fodder_Box[pulverizer[0]]=pulverizer[1];
+							Fodder_Box[pulverizer[0]]=pulverizer[1];
 							break;
-							default:
-						Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
+						default:
+							Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
 					};
 				};
 			};
-			return Fodder_Box;
-		} else return {};
+		};
+		return Fodder_Box;
 	},
 	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
 		var expiresDate=new Date();

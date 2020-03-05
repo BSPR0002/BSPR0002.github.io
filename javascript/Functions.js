@@ -1,6 +1,6 @@
 //箭头控制器
 function WakeHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.borderBottomWidth="10px";
+	document.getElementById("nav_hover_pointer").style.height="10px";
 }
 
 function MoveHoverPointer(pst) {
@@ -8,7 +8,7 @@ function MoveHoverPointer(pst) {
 }
 
 function HideHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.borderBottomWidth="0";
+	document.getElementById("nav_hover_pointer").style.height="0";
 }
 
 function MovePointer(pst) {
@@ -55,6 +55,3 @@ var window_board={
 	}
 }
 
-function $(Eid) {
-	return document.getElementById(Eid);
-}

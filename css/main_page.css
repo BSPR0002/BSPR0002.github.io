@@ -1,4 +1,4 @@
-body {
+body,#nav_pointer,#nav_hover_pointer {
 	background-color:#92C1DC;
 	color:#000000;
 }
@@ -69,6 +69,8 @@ a:active {color:#4B97C5}
 	padding:10px 0;
 	z-index:23;
 	position:relative;
+	background-color:transparent;
+	border:none;
 }
 
 .navigation:link,.navigation:visited,.navigation:hover,.navigation:active {
@@ -76,22 +78,23 @@ a:active {color:#4B97C5}
 }
 
 #nav_pointer,#nav_hover_pointer {
-	width:0;
+	width:20px;
 	height:0;
-	border-left:10px solid transparent;
-	border-right:10px solid transparent;
-	border-bottom:10px solid #92C1DC;
-	z-index:22;
+	clip-path:polygon(0% 100%,50% 0%,100% 100%);
+	z-index:21;
 	position:absolute;
 	left:90px;
 	bottom:0px;
-	transition:all 0.4s ease-in-out;
+	transition-property:height,left;
+	transition-duration:0.2s;
+	transition-timing-function:ease-in-out;
 }
 
-#nav_hover_pointer {
-	border-bottom:0 solid #92C1DC;
-	z-index:21;
-	transition:all 0.2s ease-in-out;
+#nav_pointer {
+	height:10px;
+	background-image:linear-gradient(to bottom,#FFC0CB,transparent);
+	z-index:22;
+	transition-duration:0.4s;
 }
 
 #page_box {
