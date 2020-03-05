@@ -1,4 +1,5 @@
-//箭头控制器
+var sheet="home_page";
+
 function WakeHoverPointer() {
 	document.getElementById("nav_hover_pointer").style.height="10px";
 }
@@ -14,7 +15,13 @@ function HideHoverPointer() {
 function MovePointer(pst) {
 	document.getElementById("nav_pointer").style.left=pst+"px";
 }
-//箭头控制器-结束
+
+function ChangePage(page) {
+	if (page!=sheet) {
+		Load("/html/"+page+".html",document.getElementById("page_box"));
+		sheet=page;
+	}
+}
 
 var window_board={
 	"show":function() {

@@ -29,4 +29,5 @@ document.addEventListener("DOMContentLoaded",function() {
 		MovePointer(690);
 		ChangePage("about_us");
 	});
+	Load("/html/home_page.html",document.getElementById("page_box")); //页面切换
 },{"once":true});
