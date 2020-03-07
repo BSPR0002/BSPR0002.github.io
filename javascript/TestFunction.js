@@ -17,12 +17,8 @@ var LibraryData=[
 	}
 ];
 
-function DetectUA() {
-	alert(navigator.userAgent);
-}
-
 function testfunc() {
-	DetectUA();
+	if (DetectUA()=="Mobile") {alert("您的UA为移动设备")} else {alert("您的UA为电脑")}
 	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","keep":true});
 }
 

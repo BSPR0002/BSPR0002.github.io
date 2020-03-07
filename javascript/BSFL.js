@@ -177,13 +177,33 @@ function HAEncoder(Node,IncludeOuter) {
 	return HtmlArray;
 }
 
+function DetectUA() {
+	var Indentify={"Desktop":false,"Mobile":false,"label":"Desktop"};
+	var UA="Desktop";
+	var Detective=navigator.userAgent;
+	if (Detective.match(/Windows/gi)||Detective.match(/Macintosh/gi)||Detective.match(/Linux/gi)) Indentify.Desktop=true;
+	if (Detective.match(/Android/gi)||Detective.match(/iPhone/gi)||Detective.match(/iPad/gi)||Detective.match(/iPod/gi)) Indentify.Mobile=true;
+	if (Detective.match(/Mobile/gi)) Indentify.label="Mobile";
+	switch (Indentify.label) {
+		case "Desktop":
+			if (Indentify.Mobile) UA="Mobile";
+			break;
+		case "Mobile":
+			UA="Mobile";
+	};
+	return UA;
+}
+
 var Cookies={
 	"get":function(cookieName) {
+		return Cookies.toObject()[cookieName];
+	},
+	"get2":function(cookieName) {
 		var name=cookieName+"=";
 		var ca=document.cookie.split(";");
 		for (var i=0;i<ca.length;i++) {
 			var c=ca[i];
-			while (c.charAt(0)=="") {
+			while (c.charAt(0)==" ") {
 				c=c.substring(1);
 			}
 			if (c.indexOf(name)==0) {
