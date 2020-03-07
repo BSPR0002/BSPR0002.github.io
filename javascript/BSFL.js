@@ -86,37 +86,95 @@ function NotificationCreater(options) {
 
 function HADecoder(HtmlArray,unit) {
 	var HtmlDoc=document.createDocumentFragment();
-	var Operator=function(data,over) {
-		try {
-			if (Array.isArray(data)==false) throw "检测到非数组的节点树！";
+	var Operator=function(data,outer) {
+		if (Array.isArray(data)==true) {
 			for (var item of data) {
-				if (typeof item=="string"||Array.isArray(item)) {
+				if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
 					switch (typeof item) {
 						case "string":
-							over.appendChild(document.createTextNode(item));
+						case "number":
+							outer.appendChild(document.createTextNode(item));
 							break;
 						case "object":
-							let element=document.createElement(item[0]);
-							if (typeof item[1]=="string"||Array.isArray(item[1])) {
-								switch (typeof item[1]) {
-									case "string":
-										element.appendChild(document.createTextNode(item[1]));
-										break;
-									case "object":
-										Operator(item[1],element);
-								};
-							}
-							for (let attribute in item[2]) {
-								element.setAttribute(attribute,item[2][attribute])
+							try {
+								if (item[0]=="#comment") {outer.appendChild(document.createComment(item[1]))} else {
+									let element=document.createElement(item[0]);
+									if (typeof item[1]=="string"||typeof item[1]=="number"||Array.isArray(item[1])) {
+										switch (typeof item[1]) {
+											case "string":
+											case "number":
+												element.appendChild(document.createTextNode(item[1]));
+												break;
+											case "object":
+												Operator(item[1],element);
+										};
+									};
+									for (let attribute in item[2]) {
+										try {
+											element.setAttribute(attribute,item[2][attribute])
+										} catch (errorMessage) {
+											console.warn("HADecoder 汇报有数据错误：为节点添加属性时出错！\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"="+item[2][attribute])
+										};
+									};
+									outer.appendChild(element);
+								}
+							} catch(error) {
+								console.error("HADecoder 汇报有严重数据错误：发现无效的节点！\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
 							};
-							over.appendChild(element)
-					}
-				}
-			}
-		} catch(err) {console.error("HADecoder 汇报有数据错误："+err+"\n出错单位："+unit)}
+					};
+				} else {console.warn("HADecoder 汇报有数据错误：子节点树内有无法识别的节点！\n节点树：",data,"\n出错位置：",item)};
+			};
+		} else {
+			console.error("HADecoder 解析失败：接收到非数组的数据！\n出错单位："+unit+"\n接收内容：",data);
+			HtmlDoc=false;
+		};
 	};
 	Operator(HtmlArray,HtmlDoc);
 	return HtmlDoc
+}
+
+function HAEncoder(Node,IncludeOuter) {
+	var HtmlArray=new Array;
+	var Transporter=function (Node,outer){
+		if (Node.nodeName=="#text") {
+			outer.push(Node.textContent);
+		} else {
+			for (let child of Node.childNodes) {Operator(child,outer)};
+		};
+	};
+	var Operator=function (Node,outer){
+		switch (Node.nodeName) {
+			case "#text":
+				outer.push(Node.textContent);
+				break;
+			case "#comment":
+				outer.push(["#comment",Node.textContent]);
+				break;
+			default:
+				let child=[Node.nodeName];
+				if (Node.hasChildNodes()==true) {
+					child[1]=new Array;
+					Transporter(Node,child[1]);
+				};
+				try {
+					if (Node.hasAttributes()==true) {
+						child[2]=new Object;
+						let AttributesLength=Node.attributes.length;
+						for (let i=0;i<AttributesLength;i++) {
+							child[2][Node.attributes[i].name]=Node.attributes[i].value;
+						};
+					};
+				} catch(error) {console.warn("HAEncoder 汇报异常：未能获取到节点的属性！\n异常节点：",Node)}
+				outer.push(child);
+		}
+	};
+	try {
+		if (IncludeOuter===true) {Operator(Node,HtmlArray)} else {Transporter(Node,HtmlArray)};
+	} catch(error) {
+		console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
+		HtmlArray=false;
+	}
+	return HtmlArray;
 }
 
 var Cookies={
@@ -133,9 +191,6 @@ var Cookies={
 			}
 		}
 		return "";
-	},
-	"get2":function(cookieName) {
-		Cookies.toObject()[cookieName]
 	},
 	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
 		if (typeof expiresDate!="undefined") expiresDate="expires="+expiresDate.toUTCString()+";";
