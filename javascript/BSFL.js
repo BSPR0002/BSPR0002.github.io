@@ -213,9 +213,9 @@ var Cookies={
 		return "";
 	},
 	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
-		if (typeof expiresDate!="undefined") expiresDate="expires="+expiresDate.toUTCString()+";";
+		if (typeof expiresDate!="undefined") {expiresDate="expires="+expiresDate.toUTCString()+";"} else expiresDate="";
 		if (typeof cookiePath=="undefined") cookiePath="/";
-		if (typeof cookieDomain!="undefined") cookieDomain=";domain="+cookieDomain;
+		if (typeof cookieDomain!="undefined") {cookieDomain=";domain="+cookieDomain} else cookieDomain="";
 		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
 	},
 	"clear":function(cookieName) {
