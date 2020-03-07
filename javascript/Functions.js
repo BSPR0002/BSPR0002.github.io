@@ -61,4 +61,3 @@ var window_board={
 		window_board.show();
 	}
 }
-

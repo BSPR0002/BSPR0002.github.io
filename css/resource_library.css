@@ -259,3 +259,71 @@
 .card_board_BDND .card_board_close:before,.card_board_BDND .card_board_close:after {
 	border-color:#FFFFFF;
 }
+
+#library_search_bar {
+	display:flex;
+	width:100%;
+	height:35px;
+	border-radius:10px;
+	background-color:#FFFFFF;
+	margin-bottom:5px;
+	position:relative;
+	padding:5px;
+	box-sizing:border-box;
+	overflow:hidden;
+}
+
+#library_search_bar_magnifier {
+	flex-shrink:0;
+	width:25px;
+	height:25px;
+	position:relative;
+	margin-right:5px;
+	float:left;
+	padding:2px;
+	box-sizing:border-box;
+}
+#library_search_bar_magnifier:before {
+	content:"";
+	display:block;
+	box-sizing:border-box;
+	margin-bottom:-1px;
+	border:#000000 solid 1px;
+	width:10px;
+	height:2px;
+	border-radius:0 1px 1px 0;
+	transform:rotateZ(45deg);
+	position:absolute;
+	right:2.5px;
+	bottom:2.5px;
+	transform-origin:right center;
+}
+#library_search_bar_magnifier:after {
+	content:"";
+	display:block;
+	width:80%;
+	height:80%;
+	background-color:transparent;
+	box-sizing:border-box;
+	border:solid 2px #000000;
+	border-radius:50%;
+}
+
+#library_search_bar_search {
+	flex-shrink:0;
+	height:25px;
+	float:left;
+	margin-right:5px;
+	border:none;
+	border-radius:5px;
+	font-size:15px;
+}
+
+#library_search_bar_input {
+	width:100%;
+	height:25px;
+	border:solid 1px;
+	border-radius:5px;
+	padding-inline-start:5px;
+	padding-inline-end: 5px;
+}

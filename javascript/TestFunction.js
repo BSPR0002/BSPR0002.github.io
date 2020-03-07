@@ -38,7 +38,7 @@ var FileAPI={
 			default:
 				Operator.readAsText(target);
 		}
-		return Oerator.result;
+		return Operator.result;
 	},
 	"write":function(){console.warn("still building")}
 }

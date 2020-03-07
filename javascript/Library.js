@@ -11,8 +11,8 @@ function PullLibrary(callback) {
 }
 
 function ShowLibrary() {
-	EmptyElement(document.getElementById("show_box"));
-	Each(ShowData,function(i,obj) {
+	var ShowBox=document.createDocumentFragment();
+	for (let obj of ShowData) {
 		var Card=document.createElement("div");
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
@@ -29,10 +29,10 @@ function ShowLibrary() {
 		switch (obj.type) {
 			case "allinone":
 				var allinone="合集（";
-				Each(obj.AllInOne,function(i,val) {
+				for (let item of obj.AllInOne) {
 					if (allinone!="合集（") allinone=allinone+"、";
-					allinone=allinone+val;
-				})
+					allinone=allinone+item;
+				};
 				var Node=allinone+"）";
 				break;
 		}
@@ -116,8 +116,10 @@ function ShowLibrary() {
 		CardBoardFrame.appendChild(CardBoardClose);
 		CardBoard.appendChild(CardBoardFrame);
 		Card.appendChild(CardBoard);
-		document.getElementById("show_box").appendChild(Card);
-	});
+		ShowBox.appendChild(Card);
+	};
+	EmptyElement(document.getElementById("show_box"));
+	document.getElementById("show_box").appendChild(ShowBox);
 }
 
 function OverView() {

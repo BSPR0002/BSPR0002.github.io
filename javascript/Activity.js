@@ -10,7 +10,7 @@ var Activity={
 					window.location.href="/Mobile";
 					break;
 				default:
-					window_board.display(HADecoder(Activity.mobile_survey.HA),"调查")
+					window_board.display(HADecoder(Activity.mobile_survey.HA,"Activity.mobile_survey"),"调查")
 			};
 		},
 		"operate":function (result){
@@ -44,7 +44,13 @@ var Activity={
 				["input",,{"type":"radio","name":"mobile_survey","value":"0","checked":""}],"不，我要继续使用桌面版。",["br"],
 				["input",,{"type":"radio","name":"mobile_survey","value":"2"}],"我愿意尝试一次移动版。",["br"],
 				["input",,{"type":"radio","name":"mobile_survey","value":"1"}],"我希望在测试期内一直使用移动版。",["br"],
-				["button","确定",{"type":"button","style":"background-color:#FFFFFF;border:solid 1px #000000;border-radius:10px","onclick":"javascript:Activity.mobile_survey.operate(this.parentNode.elements.mobile_survey.value)"}]
+				["button","确定",{
+					"type":"button",
+					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s",
+					"onclick":"javascript:Activity.mobile_survey.operate(this.parentNode.elements.mobile_survey.value)",
+					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
+					"onmouseout":"javascript:this.style.backgroundColor=null"
+				}]
 			]],
 			["br"],
 			["p","请注意不要清理您的 cookie ，以免该提示再次弹出。"],
