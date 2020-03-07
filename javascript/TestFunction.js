@@ -22,8 +22,8 @@ function DetectUA() {
 }
 
 function testfunc() {
-	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","id":"Blue Sky Information Factory","keep":true});
-	DetectUA()
+	DetectUA();
+	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","keep":true});
 }
 
 var FileAPI={
