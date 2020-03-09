@@ -1,7 +1,7 @@
 [
 	{
 		"ID":1,
-		"name":"Nekopara",
+		"name":["Nekopara"],
 		"display":"ネコぱら",
 		"icon":"/Images/resource_icon/ID00000001.png",
 		"type":"allinone",

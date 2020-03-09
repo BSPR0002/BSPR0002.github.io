@@ -124,14 +124,6 @@
 	margin:2px;
 }
 
-.card_link_button_BDND .card_link_button_text:before {
-	content:"百度网盘";
-}
-
-.card_link_button_Torrent .card_link_button_text:before {
-	content:"磁力链接";
-}
-
 .card_board {
 	position:absolute;
 	right:15px;
@@ -223,9 +215,6 @@
 	font-size:12px;
 	border-radius:3px;
 }
-.card_board_detail:before {
-	content:"详细信息";
-}
 
 .card_board_close {
 	background-color:transparent;
@@ -301,8 +290,8 @@
 #library_search_bar_magnifier:after {
 	content:"";
 	display:block;
-	width:80%;
-	height:80%;
+	width:17px;
+	height:17px;
 	background-color:transparent;
 	box-sizing:border-box;
 	border:solid 2px #000000;
@@ -317,7 +306,11 @@
 	border:none;
 	border-radius:5px;
 	font-size:15px;
+	background-color:#92C1DC;
+	transition:background-color 0.2s;
 }
+#library_search_bar_search:hover {background-color:#87CEFA}
+
 
 #library_search_bar_input {
 	width:100%;

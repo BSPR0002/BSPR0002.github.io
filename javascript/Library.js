@@ -1,5 +1,4 @@
 var LibraryData=null;
-var ShowData=null;
 var TotalPage=null;
 var CurrentPage=null;
 
@@ -10,7 +9,7 @@ function PullLibrary(callback) {
 	})
 }
 
-function ShowLibrary() {
+function ShowLibrary(ShowData) {
 	var ShowBox=document.createDocumentFragment();
 	for (let obj of ShowData) {
 		var Card=document.createElement("div");
@@ -73,6 +72,7 @@ function ShowLibrary() {
 			CardLinkBDND.appendChild(CardLinkBDNDIcon);
 			var CardLinkBDNDText=document.createElement("p");
 			CardLinkBDNDText.className="card_link_button_text";
+			CardLinkBDNDText.appendChild(document.createTextNode("百度网盘"));
 			CardLinkBDND.appendChild(CardLinkBDNDText);
 			CardLink.appendChild(CardLinkBDND);
 		};
@@ -85,6 +85,7 @@ function ShowLibrary() {
 			CardLinkTorrent.appendChild(CardLinkTorrentIcon);
 			var CardLinkTorrentText=document.createElement("p");
 			CardLinkTorrentText.className="card_link_button_text";
+			CardLinkTorrentText.appendChild(document.createTextNode("磁力链接"));
 			CardLinkTorrent.appendChild(CardLinkTorrentText);
 			CardLink.appendChild(CardLinkTorrent);
 		};
@@ -107,6 +108,7 @@ function ShowLibrary() {
 		CardBoardFrame.appendChild(CardBoardContent);
 		var CardBoardShowDetail=document.createElement("button");
 		CardBoardShowDetail.className="card_board_detail";
+		CardBoardShowDetail.appendChild(document.createTextNode("详细信息"));
 		CardBoardShowDetail.addEventListener("click",function() {CardBoardDetail(this)});
 		CardBoardFrame.appendChild(CardBoardShowDetail);
 		var CardBoardClose=document.createElement("button");
@@ -125,16 +127,7 @@ function ShowLibrary() {
 function OverView() {
 	if (LibraryData==null) {
 		PullLibrary(OverView);
-	} else {
-		ShowData=LibraryData;
-		ShowLibrary();
-	};
-}
-
-function Beginning() {
-	if (document.getElementById("show_box")) {
-		OverView();
-	} else setTimeout("Beginning()",100);
+	} else ShowLibrary(LibraryData);
 }
 
 function ShowCardBoard(Node) {
@@ -159,4 +152,72 @@ function CardBoardDetail(Node) {
 	window_board.display(Container.cloneContents(),"详细信息");
 }
 
-Beginning();
+const SearchLibrary={
+	"engine":function() {
+		if (LibraryData==null) {
+			PullLibrary(SearchLibrary.engine);
+			return false;
+		};
+		SearchLibrary.wait=false;
+		var input=document.getElementById("library_search_bar_input").value;
+		if (input!="") {
+			var Data=LibraryData.slice();
+			keyword=input.trim();
+			var match_word=new Array;
+			match_word.push(RegExp(keyword,"i"));
+			var break_word=keyword.split(" ");
+			if (break_word.length!=1) {
+				let duplicate_removal=new Array;
+				for (let word of break_word) {
+					if (duplicate_removal.indexOf(word)==-1&&word!="") {
+						duplicate_removal.push(word);
+						match_word.push(RegExp(word,"i"));
+					};
+				};
+			};
+			var result=new Array;
+			for (let word of match_word) {
+				for (let i=Data.length-1;i>-1;i--) {
+					let name_match=false;
+					for (let name of Data[i].name) {
+						if (name.match(word)) {
+							name_match=true;
+							break;
+						};
+					};
+					if (name_match||Data[i].display.match(word)) result=Data.splice(i,1).concat(result);
+				};
+			};
+		} else result=LibraryData;
+		ShowLibrary(result);
+	},
+	"wait":false,
+	"auto":function() {
+		if (SearchLibrary.wait!=true) {
+			SearchLibrary.wait=true;
+			SearchLibrary.timeoutID=setTimeout(SearchLibrary.engine,1000);
+		};
+	},
+	"manual":function() {
+		clearTimeout(SearchLibrary.timeoutID);
+		SearchLibrary.engine();
+	},
+	"timeoutID":null
+};
+
+(function() { //Beginning
+	var Initial_view=function(self) {
+		if (document.getElementById("show_box")) {
+			OverView();
+		} else setTimeout(function(){self(self)},100);
+	};
+	var Search_Initialize=function(self) {
+		if (document.getElementById("library_search_bar")) {
+			document.getElementById("library_search_bar_input").addEventListener("input",SearchLibrary.auto);
+			document.getElementById("library_search_bar_input").addEventListener("keypress",function() {if (event.keyCode==13) SearchLibrary.manual()});
+			document.getElementById("library_search_bar_search").addEventListener("click",SearchLibrary.manual);
+		} else setTimeout(function(){self(self)},100);
+	};
+	Initial_view(Initial_view);
+	Search_Initialize(Search_Initialize);
+})();

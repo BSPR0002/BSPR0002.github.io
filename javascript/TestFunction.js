@@ -1,7 +1,7 @@
 var LibraryData=[
 	{
 		"ID":1,
-		"name":"Nekopara",
+		"name":["Nekopara"],
 		"display":"ネコぱら",
 		"icon":"/Images/resource_icon/ID00000001.png",
 		"type":"allinone",
@@ -18,7 +18,7 @@ var LibraryData=[
 ];
 
 function testfunc() {
-	if (DetectUA()=="Mobile") {alert("您的UA为移动设备")} else {alert("您的UA为电脑")}
+	if (DetectUA().Mobile==true) {alert("您的UA为移动设备")} else {alert("您的UA为电脑")}
 	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","keep":true});
 }
 

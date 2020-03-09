@@ -1,6 +1,21 @@
 var Activity={
+	"ReleaseAgreement":function() {
+		window_board.display(HADecoder([
+			"您好，欢迎访问蓝天信息工厂！",["BR"],
+			"欢迎您在我们网站的资源库中发布与投放内容。",["BR"],
+			"发布与投放内容需要遵守以下协定：",
+			["UL",[
+				["LI",["发布的内容需要经过我们的审查（审查质量、内容量、是否与库中现有内容重复以及归属问题）。"]],
+				["LI",["您需要向我们提供内容的链接（目前仅支持百度网盘与磁力链接）。"]],
+				["LI",["对于您自己的内容，你可以随时要求我们更改或下线。若与他人内容发生纠纷，请联系我们进行协商。"]],
+				["LI",["我们承诺，未经您的同意不会将您发布的内容以任何形式转载与用于盈利行为。"]],
+				["LI",["其他任何问题可与我们商议。"]]
+			]],
+			"若您有意，请通过“关于我们”版面的联系方式与我们接洽。"
+		],Activity.ReleaseAgreement),"发布协约");
+	},
 	"mobile_survey":{
-		"interface":function (){
+		"interface":function() {
 			switch (Cookies.toObject()["MobileDemo"]) {
 				case "0":
 					Cookies.keepAlive("MobileDemo");
@@ -13,7 +28,7 @@ var Activity={
 					window_board.display(HADecoder(Activity.mobile_survey.HA,"Activity.mobile_survey"),"调查")
 			};
 		},
-		"operate":function (result){
+		"operate":function(result) {
 			window_board.hide();
 			switch (result) {
 				case "0":
@@ -34,10 +49,8 @@ var Activity={
 		},
 		"HA":[
 			["p",[
-				"为追求移动端的高体验度，我们正在设计移动版页面。",
-				["br"],
-				"您是否愿意进行体验？（不推荐电脑用户使用）",
-				["br"]
+				"为追求移动端的高体验度，我们正在设计移动版页面。",["br"],
+				"您是否愿意进行体验？（不推荐电脑用户使用）",["br"]
 			]],
 			["br"],
 			["form",[

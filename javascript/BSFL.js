@@ -11,10 +11,10 @@ function AJAX(options) {
 			model.success(XHR.response);
 		} else model.fail(XHR.status);
 	};
-	XHR.send(model.send)
+	XHR.send(model.send);
 }
 
-function getJSON(url,callback,AllowCache){
+function getJSON(url,callback,AllowCache) {
 	var AJAXModel={"url":url,"type":"json","success":function(response) {
 		callback(response);
 	}};
@@ -162,9 +162,8 @@ function HAEncoder(Node,IncludeOuter) {
 					try {
 						if (Node.hasAttributes()==true) {
 							child[2]=new Object;
-							let AttributesLength=Node.attributes.length;
-							for (let i=0;i<AttributesLength;i++) {
-								child[2][Node.attributes[i].name]=Node.attributes[i].value;
+							for (let attribute of Node.attributes) {
+								child[2][attribute.name]=attribute.value;
 							};
 						};
 					} catch(error) {console.warn("HAEncoder 汇报异常：未能获取到节点的属性！\n异常节点：",Node)}
@@ -180,23 +179,14 @@ function HAEncoder(Node,IncludeOuter) {
 }
 
 function DetectUA() {
-	var Indentify={"Desktop":false,"Mobile":false,"label":"Desktop"};
-	var UA="Desktop";
+	var UA={"Desktop":false,"Mobile":false};
 	var Detective=navigator.userAgent;
-	if (Detective.match(/Windows/gi)||Detective.match(/Macintosh/gi)||Detective.match(/Linux/gi)) Indentify.Desktop=true;
-	if (Detective.match(/Android/gi)||Detective.match(/iPhone/gi)||Detective.match(/iPad/gi)||Detective.match(/iPod/gi)) Indentify.Mobile=true;
-	if (Detective.match(/Mobile/gi)) Indentify.label="Mobile";
-	switch (Indentify.label) {
-		case "Desktop":
-			if (Indentify.Mobile) UA="Mobile";
-			break;
-		case "Mobile":
-			UA="Mobile";
-	};
+	if (Detective.match(/Windows/i)||Detective.match(/Macintosh/i)||Detective.match(/Linux/i)) UA.Desktop=true;
+	if (Detective.match(/Mobile/i)||Detective.match(/Android/i)||Detective.match(/iPhone/i)||Detective.match(/iPad/i)||Detective.match(/iPod/i)) UA.Mobile=true;
 	return UA;
 }
 
-var Cookies={
+const Cookies={
 	"get":function(cookieName) {
 		return Cookies.toObject()[cookieName];
 	},
@@ -207,7 +197,7 @@ var Cookies={
 		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
 	},
 	"clear":function(cookieName) {
-		var expires=new Date();
+		var expires=new Date;
 		expires.setTime(0);
 		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
 	},
