@@ -10,7 +10,7 @@ var LibraryData=[
 			"BDND":{
 				"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA",
 				"password":"e1s7",
-				"detail":[["p","detail 测试"]]
+				"detail":["资源内的压缩包如果有密码，全部为“NKPR”。"]
 			},
 			"Torrent":"https://www.kisssub.org/search.php?keyword=NEKOPARA"
 		}

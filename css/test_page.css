@@ -1,3 +1,14 @@
+body,.body_color {
+	background-color:#92C1DC;
+	color:#000000;
+}
+
+a {text-decoration:none}
+a:link {color:#007FFF}
+a:visited {color:#007FFF}
+a:hover {color:#92C1DC}
+a:active {color:#4B97C5}
+
 #window_board_layer {
 	position:fixed;
 	top:0;
@@ -72,4 +83,8 @@
 }
 #window_board_close:after {
 	transform:rotate(135deg);
+}
+
+#show_box {
+	position:initial;
 }

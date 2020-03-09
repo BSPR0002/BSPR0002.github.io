@@ -16,12 +16,15 @@ function ShowLibrary(ShowData) {
 		Card.className="card";
 		Card.id="CardID"+obj.ID;
 		var CardIcon=document.createElement("div");
-		CardIcon.className="card_icon";
-		CardIcon.style.backgroundImage="url("+obj.icon+")";
+		CardIcon.className="card_icon body_color";
+		if (typeof obj.icon=="string") {
+			CardIcon.style.backgroundImage="url("+obj.icon+")";
+		} else CardIcon.className+=" card_icon_none";
 		Card.appendChild(CardIcon);
 		var CardName=document.createElement("p");
 		CardName.className="card_name";
 		CardName.appendChild(document.createTextNode(obj.display));
+		CardName.title=obj.display;
 		Card.appendChild(CardName);
 		var CardType=document.createElement("p");
 		CardType.className="card_type";
@@ -34,8 +37,9 @@ function ShowLibrary(ShowData) {
 				};
 				var Node=allinone+"）";
 				break;
-		}
+		};
 		CardType.appendChild(document.createTextNode(Node));
+		CardType.title=Node;
 		Card.appendChild(CardType);
 		var CardLink=document.createElement("div");
 		CardLink.className="card_link";
@@ -43,7 +47,7 @@ function ShowLibrary(ShowData) {
 			var CardLinkBDND=document.createElement("button");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
-			var CardLinkBDNDBoardContent=document.createElement("div");
+			var CardLinkBDNDBoardContent=document.createDocumentFragment();
 			var CardLinkBDNDBoardContentNode=document.createElement("p");
 			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("链接："));
 			var CardLinkBDNDBoardContentNodeA=document.createElement("a");
@@ -64,6 +68,7 @@ function ShowLibrary(ShowData) {
 			};
 			CardLinkBDND.Board={
 				"Theme":" card_board_BDND",
+				"Title":"百度网盘",
 				"Content":CardLinkBDNDBoardContent
 			};
 			CardLinkBDND.addEventListener("click",function() {ShowCardBoard(this)});
@@ -132,18 +137,23 @@ function OverView() {
 
 function ShowCardBoard(Node) {
 	var Board=Node.parentNode.parentNode.getElementsByClassName("card_board")[0];
+	var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
 	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
-	BoardTheme="card_board";
+	EmptyElement(BoardTitle);
+	BoardTitle.removeAttribute("title");
 	EmptyElement(BoardContent);
-	Board.className+=Node.Board.Theme;
-	var Operator=document.createRange();
-	Operator.selectNodeContents(Node.Board.Content);
-	BoardContent.appendChild(Operator.cloneContents());
-	Board.style.width="362px";
+	Board.className="card_board";
+	if (typeof Node.Board.Theme=="string") Board.className+=Node.Board.Theme;
+	if (typeof Node.Board.Title=="string") {
+		BoardTitle.appendChild(document.createTextNode(Node.Board.Title));
+		BoardTitle.title=Node.Board.Title;
+	};
+	BoardContent.appendChild(Node.Board.Content.cloneNode(true));
+	Board.style.left="130px";
 }
 
 function CloseCardBoard(Node) {
-	Node.parentNode.parentNode.style.width=0;
+	Node.parentNode.parentNode.style.left="100%";
 }
 
 function CardBoardDetail(Node) {

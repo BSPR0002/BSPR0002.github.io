@@ -1,51 +1,64 @@
 #box_frame {
 	width:1024px;
+	height:100%;
 	margin:0 auto;
 	position:relative;
 	overflow:hidden;
 }
 
 #show_box {
-	width:100%;
+	position:absolute;
+	top:40px;
+	bottom:0;
+	left:0;
+	right:0;
 	margin:0;
+	display:grid;
+	grid-template-rows:repeat(auto-fill,130px);
+	grid-template-columns:repeat(2,1fr);
+	grid-row-gap: 5px;
+	grid-column-gap: 5px;
+	overflow-y:auto;
+	overflow-x:hidden;
 }
 
 .card {
-	width:507px;
-	height:130px;
 	background-color:#FFFFFF;
 	border-radius:10px;
 	padding:15px;
 	box-sizing:border-box;
 	position:relative;
 	z-index:10;
-	margin:0 10px 10px 0;
-	float:left;
-}
-
-.card:nth-child(2n) {
-	margin:0 0 10px 0;
 }
 
 .card_icon {
 	width:100px;
 	height:100px;
-	background-color:#92C1DC;
 	background-size:100px;
 	background-repeat:no-repeat;
 	border-radius:5px;
 	box-sizing:border-box;
 	float:left;
 	margin:0 15px 0 0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
 	overflow:hidden;
 }
 
-.card_name {
+.card_icon_none:before {
+	color:#FFFFFF;
+	font-size:20px;
+	font-weight:bold;
+	content:"No Image";
+}
+
+.card_name,.card_type {
 	position:absolute;
 	top:15px;
 	left:130px;
+	right:15px;
 	font-size:30px;
-	width:362px;
 	margin:0 0 5px 0;
 	white-space:nowrap;
 	overflow:hidden;
@@ -53,34 +66,33 @@
 }
 
 .card_type {
-	position:absolute;
 	top:60px;
-	left:130px;
 	font-size:15px;
-	width:362px;
-	margin:0 0 5px 0;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
 }
 
 .card_link {
 	position:absolute;
 	top:85px;
 	left:130px;
+	right:15px;
 	font-size:15px;
 	height:30px;
-	width:362px;
 	margin:0;
+	overflow:hidden;
+	white-space:nowrap;
 }
 
 .card_link_button {
 	height:30px;
-	margin:0 6px 0 0;
+	margin-right:6px;
 	padding:3px;
 	border-radius:6px;
 	border:none;
-	transition:all 0.4s ease-in-out;
+	transition:background-color 0.2s ease-in-out;
+}
+
+.card_link_button:active {
+	background-image:linear-gradient(rgba(0,0,0,5%),rgba(0,0,0,5%));
 }
 
 .card_link_button_BDND {
@@ -97,7 +109,7 @@
 }
 
 .card_link_button_Torrent:hover {
-	background-color:#7FFF7F;
+	background-color:#9FFF9F;
 }
 
 .card_link_button_icon {
@@ -126,16 +138,16 @@
 
 .card_board {
 	position:absolute;
-	right:15px;
 	top:15px;
 	height:100px;
-	width:0;
+	right:15px;
+	left:100%;
 	border-radius:5px;
 	box-sizing:border-box;
 	font-size:15px;
 	background-color:#92C1DC;
 	color:#000000;
-	transition:width 0.4s ease-in-out;
+	transition:left 0.4s ease-in-out;
 }
 
 .card_board a{text-decoration:underline}
@@ -161,10 +173,13 @@
 }
 
 .card_board_title {
+	position:absolute;
+	top:0;
 	height:24px;
-	width:268px;
+	left:0;
+	right:84px;
 	overflow:hidden;
-	margin:0 0 5px 0;
+	margin-bottom:5px;
 }
 
 .card_board_title_icon {
@@ -184,20 +199,20 @@
 }
 
 .card_board_title_text {
-	display:block;
+	display:inline-block;
 	margin:2px 0;
 	white-space:nowrap;
 	overflow:hidden;
 	text-overflow:ellipsis;
 }
 
-.card_board_BDND .card_board_title_text:before {
-	content:"百度网盘";
-}
-
 .card_board_content {
+	position:absolute;
+	top:29px;
+	bottom:0;
 	height:61px;
-	width:352px;
+	left:0;
+	right:0;
 	overflow:hidden;
 	white-space:nowrap;
 	text-overflow:ellipsis;
@@ -307,10 +322,10 @@
 	border-radius:5px;
 	font-size:15px;
 	background-color:#92C1DC;
-	transition:background-color 0.2s;
+	transition:background-color 0.2s ease-in-out;
 }
 #library_search_bar_search:hover {background-color:#87CEFA}
-
+#library_search_bar_search:active {background-image:linear-gradient(rgba(0,0,0,5%),rgba(0,0,0,5%));}
 
 #library_search_bar_input {
 	width:100%;
