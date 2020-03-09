@@ -23,7 +23,7 @@ function ChangePage(page) {
 	}
 }
 
-const window_board={
+var window_board={
 	"show":function() {
 		var board=document.getElementById("window_board_layer");
 		board.style.display="flex";

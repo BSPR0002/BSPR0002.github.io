@@ -152,7 +152,7 @@ function CardBoardDetail(Node) {
 	window_board.display(Container.cloneContents(),"详细信息");
 }
 
-const SearchLibrary={
+var SearchLibrary={
 	"engine":function() {
 		if (LibraryData==null) {
 			PullLibrary(SearchLibrary.engine);

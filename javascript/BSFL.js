@@ -186,7 +186,7 @@ function DetectUA() {
 	return UA;
 }
 
-const Cookies={
+var Cookies={
 	"get":function(cookieName) {
 		return Cookies.toObject()[cookieName];
 	},
