@@ -113,6 +113,7 @@ var News={
 				},
 				"click":function(){
 					window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
+					this.close();
 				},
 				"close":News.operator,
 				"keep":true
