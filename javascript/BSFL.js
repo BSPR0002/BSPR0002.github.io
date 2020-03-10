@@ -1,5 +1,5 @@
 function AJAX(options) {
-	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"error":null};
+	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":function(){},"fail":function(){},"error":function(){}};
 	Object.assign(model,options);
 	var XHR=new XMLHttpRequest();
 	XHR.open(model.method,model.url,model.async,model.username,model.password);
