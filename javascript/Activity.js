@@ -101,7 +101,7 @@ var News={
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
-			if (News.CookieManager(data.ID)) {
+			if (News.CookieManager(data.ID)&&data.force!=true) {
 				News.operator()
 			} else NotificationCreater({
 				"title":data.title,

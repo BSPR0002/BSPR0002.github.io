@@ -1,6 +1,7 @@
 [
 	{
 		"ID":"test1",
+		"force":false,
 		"name":"魔女的夜宴",
 		"title":"怀旧库存",
 		"preview":{
