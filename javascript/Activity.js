@@ -101,7 +101,7 @@ var News={
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
-			if (typeof Cookies.get("News"+data.ID)!="undefined") {
+			if (typeof Cookies.get("News_"+data.ID)!="undefined") {
 				News.operator()
 			} else NotificationCreater({
 				"title":data.title,
@@ -111,7 +111,7 @@ var News={
 				"show":function(){
 					var expiresDate=new Date;
 					expiresDate.setTime(expiresDate.getTime()+604800000);
-					Cookies.set("News"+data.ID,"1",expiresDate);
+					Cookies.set("News_"+data.ID,"1",expiresDate);
 				},
 				"click":function(){
 					window_board.display(HADecoder(data.content,"News"+data.ID),data.title)
