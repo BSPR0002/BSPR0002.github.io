@@ -101,7 +101,7 @@ var News={
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
-			if (typeof Cookies.get("News_"+data.ID)!="undefined") {
+			if (News.CookieManager(data.ID)) {
 				News.operator()
 			} else NotificationCreater({
 				"title":data.title,
@@ -109,17 +109,40 @@ var News={
 				"image":data.preview.image,
 				"icon":"/favicon.png",
 				"show":function(){
-					var expiresDate=new Date;
-					expiresDate.setTime(expiresDate.getTime()+604800000);
-					Cookies.set("News_"+data.ID,"1",expiresDate);
+					News.CookieRecorder(data.ID);
 				},
 				"click":function(){
-					window_board.display(HADecoder(data.content,"News"+data.ID),data.title)
+					window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
 				},
 				"close":News.operator,
 				"keep":true
 			});
 		};
 	},
-	"Data":null
+	"Data":[],
+	"CookieManager":function(NewsID){
+		var data=Cookies.get("News");
+		if (typeof data=="string") {data=JSON.parse(data)} else {data=new Object};
+		try {
+			if (data[NewsID]) {
+				var time=new Date;
+				if (time.getTime()<data[NewsID]) {return true} else {
+					delete data[NewsID];
+					time.setMonth(time.getMonth()+1);
+					Cookies.set("News",JSON.stringify(data),time);
+				};
+			};
+		} catch(none) {};
+		return false;
+	},
+	"CookieRecorder":function(NewsID) {
+		var data=Cookies.get("News");
+		if (typeof data=="string") {data=JSON.parse(data)} else {data=new Object};
+		var time=new Date;
+		time.setTime(time.getTime()+604800000)
+		data[NewsID]=time.getTime();
+		var time=new Date;
+		time.setMonth(time.getMonth()+1);
+		Cookies.set("News",JSON.stringify(data),time);
+	}
 }

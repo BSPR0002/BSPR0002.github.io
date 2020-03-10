@@ -13,6 +13,7 @@ function AJAX(options) {
 	};
 	XHR.onerror=model.error;
 	XHR.send(model.send);
+	return XHR;
 }
 
 function getJSON(url,callback,AllowCache) {

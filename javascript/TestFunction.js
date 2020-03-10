@@ -33,7 +33,9 @@ var AJAX_Local={
 			]
 		}
 	]
-}
+};
+
+var Cookies_Local={"News":"{}"};
 
 function testfunc() {
 	if (DetectUA().Mobile==true) {alert("您的UA为移动设备")} else {alert("您的UA为电脑")}
@@ -43,6 +45,17 @@ function testfunc() {
 function AJAX(option) { //本地调试模拟AJAX
 	console.log("AJAX:",option);
 	option.success(AJAX_Local[option.url])
+}
+
+var Cookies={
+	"get":function(name) {
+		console.log("get cookie:",name,Cookies_Local[name]);
+		return Cookies_Local[name];
+	},
+	"set":function(name,value) {
+		console.log("set cookie:",name+"="+value);
+		Cookies_Local[name]=value;
+	}
 }
 
 var FileAPI={
