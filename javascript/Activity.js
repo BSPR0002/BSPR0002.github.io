@@ -110,7 +110,7 @@ var News={
 				"icon":"/favicon.png",
 				"show":function(){
 					var expiresDate=new Date;
-					expiresDate.setTime(ep.getTime()+604800000);
+					expiresDate.setTime(expiresDate.getTime()+604800000);
 					Cookies.set("News"+data.ID,"1",expiresDate);
 				},
 				"click":function(){
