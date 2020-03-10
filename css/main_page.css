@@ -135,7 +135,7 @@ a:active {color:#4B97C5}
 	font-size:15px;
 }
 
-#window_board hr{width:100%}
+#window_board_hr{width:100%}
 
 #window_board_top {
 	height:20px;
@@ -147,6 +147,11 @@ a:active {color:#4B97C5}
 	word-wrap:break-word;
 	word-break:normal;
 	overflow:auto;
+}
+
+#window_board_content img {
+	max-width:100%;
+	height:auto;
 }
 
 #window_board_title {

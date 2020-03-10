@@ -1,5 +1,5 @@
 function AJAX(options) {
-	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null};
+	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"error":null};
 	Object.assign(model,options);
 	var XHR=new XMLHttpRequest();
 	XHR.open(model.method,model.url,model.async,model.username,model.password);
@@ -11,6 +11,7 @@ function AJAX(options) {
 			model.success(XHR.response);
 		} else model.fail(XHR.status);
 	};
+	XHR.onerror=model.error;
 	XHR.send(model.send);
 }
 
@@ -51,27 +52,26 @@ function Each(obj,action) {
 }
 
 function requestNotificationPermission(){
+	if (!Notification) return 0;
 	switch (Notification.permission) {
 		case "default":
 			Notification.requestPermission();
-			break;
+			return 2;
 		case "denied":
-			return "User reject notification!";
-			break;
+			return 0;
 		case "granted":
-			return "User authorized!";
+			return 1;
 	}
 }
 
 function NotificationCreater(options) {
+	if (!Notification) return false;
 	switch (Notification.permission) {
 		case "default":
 			Notification.requestPermission(function(){NotificationCreater(options)});
-			return "Permission has not been requested!Please wait, if the user is authorized, the notification will be displayed later.";
-			break;
+			return 2;
 		case "denied":
-			return "User reject notification!";
-			break;
+			return false;
 		case "granted":
 			var model={"title":"","message":"","image":"","icon":"","id":"","data":"","timestamp":undefined,"dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
 			Object.assign(model,options);
@@ -88,7 +88,7 @@ function HADecoder(HtmlArray,unit) {
 	if (typeof unit=="undefined") unit="未知";
 	var HtmlDoc=document.createDocumentFragment();
 	var Operator=function(data,outer) {
-		if (Array.isArray(data)==true) {
+		if (Array.isArray(data)) {
 			for (var item of data) {
 				if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
 					switch (typeof item) {

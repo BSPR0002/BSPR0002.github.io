@@ -29,5 +29,10 @@ document.addEventListener("DOMContentLoaded",function() {
 		MovePointer(690);
 		ChangePage("about_us");
 	});
+	document.getElementById("window_board_close").addEventListener("click",window_board.hide);
 	Load("/html/home_page.html",document.getElementById("page_box")); //加载主页
+},{"once":true});
+
+window.addEventListener("load",function() {
+	News.request();
 },{"once":true});

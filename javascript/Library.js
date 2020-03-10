@@ -63,9 +63,7 @@ function ShowLibrary(ShowData) {
 				CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 				CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
 			};
-			if (typeof obj.resource.BDND.detail!="undefined"&&obj.resource.BDND.detail!=null) {
-				CardLinkBDNDBoardContent.appendChild(HADecoder(obj.resource.BDND.detail,"ID"+obj.ID));
-			};
+			if (Array.isArray(obj.resource.BDND.detail)) CardLinkBDNDBoardContent.appendChild(HADecoder(obj.resource.BDND.detail,"ID"+obj.ID));
 			CardLinkBDND.Board={
 				"Theme":" card_board_BDND",
 				"Title":"百度网盘",

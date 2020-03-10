@@ -17,7 +17,7 @@ var Activity={
 				["LI",["未经您的同意，我们不会将您发布的内容以任何形式转载或用于盈利行为。"]],
 				["LI",["有任何问题可与我们商议。"]]
 			]],
-			"若您有意，请通过“关于我们”版面的联系方式与我们接洽。"
+			"若您有意，请通过“关于我们”页面的联系方式与我们接洽。"
 		],Activity.ReleaseAgreement),"发布协约");
 	},
 	"mobile_survey":{
@@ -75,4 +75,51 @@ var Activity={
 			["p","请注意不要清理您的 cookie ，以免该提示再次弹出。"],
 		]
 	}
+}
+
+var News={
+	"request":function() {
+		if (requestNotificationPermission()!=0) {
+			AJAX({
+				"url":"/json/News.json",
+				"type":"json",
+				"success":News.play,
+				"fail":function() {
+					if (News.retry<5) {
+						News.retry++;
+						News.request();
+					}
+				}
+			})
+		}
+	},
+	"retry":0,
+	"play":function(data) {
+		News.Data=data;
+		News.operator();
+	},
+	"operator":function() {
+		if (requestNotificationPermission()!=0&&News.Data[0]) {
+			var data=News.splice(0,1)[0];
+			if (typeof Cookies.get("News"+data.ID)!="undefined") {
+				News.operator()
+			} else NotificationCreater({
+				"title":data.title,
+				"message":data.preview.message,
+				"image":data.preview.image,
+				"icon":"/favicon.png",
+				"show":function(){
+					var expiresDate=new Date;
+					expiresDate.setTime(ep.getTime()+604800000);
+					Cookies.set("News"+data.ID,"1",expiresDate);
+				},
+				"click":function(){
+					window_board.display(HADecoder(data.content,"News"+data.ID),data.title)
+				},
+				"close":News.operator,
+				"keep":true
+			});
+		};
+	},
+	"Data":null
 }

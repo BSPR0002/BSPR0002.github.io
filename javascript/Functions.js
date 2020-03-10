@@ -37,11 +37,14 @@ var window_board={
 		},{"once":true});
 		board.style.opacity="0";
 	},
-	"display":function(content,title,boardSize) {
-		var size=Object.assign({},boardSize);
+	"display":function(content,title,NoManualClose,boardSize) {
+		var size={};
+		try {Object.assign(size,boardSize)} catch(error) {console.warn("无法接收参数 boardSize ！\n",boardSize)};
 		var board=document.getElementById("window_board");
 		var board_title=document.getElementById("window_board_title");
+		var board_close=document.getElementById("window_board_close");
 		var board_content=document.getElementById("window_board_content");
+		if (NoManualClose===true) {board_close.style.display="none"} else {board_close.style.display="block"};
 		if (typeof title=="string") {
 			board_title.innerText=title;
 		} else {
