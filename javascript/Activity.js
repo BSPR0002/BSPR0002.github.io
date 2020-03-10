@@ -100,7 +100,7 @@ var News={
 	},
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
-			var data=News.splice(0,1)[0];
+			var data=News.Data.splice(0,1)[0];
 			if (typeof Cookies.get("News"+data.ID)!="undefined") {
 				News.operator()
 			} else NotificationCreater({
