@@ -112,6 +112,7 @@ var News={
 					News.CookieRecorder(data.ID);
 				},
 				"click":function(){
+					window.focus();
 					window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
 					this.close();
 				},
@@ -121,29 +122,35 @@ var News={
 		};
 	},
 	"Data":[],
-	"CookieManager":function(NewsID){
+	"CookieReader":function() {
 		var data=Cookies.get("News");
-		if (typeof data=="string") {data=JSON.parse(data)} else {data=new Object};
-		try {
-			if (data[NewsID]) {
-				var time=new Date;
-				if (time.getTime()<data[NewsID]) {return true} else {
-					delete data[NewsID];
-					time.setMonth(time.getMonth()+1);
-					Cookies.set("News",JSON.stringify(data),time);
-				};
-			};
-		} catch(none) {};
-		return false;
+		var history=new Object;
+		if (typeof data=="string") {
+			try {
+				history=JSON.parse(data);
+			} catch(none) {};
+		};
+		return history;
 	},
 	"CookieRecorder":function(NewsID) {
-		var data=Cookies.get("News");
-		if (typeof data=="string") {data=JSON.parse(data)} else {data=new Object};
+		var data=News.CookieReader();
 		var time=new Date;
-		time.setTime(time.getTime()+604800000)
+		time.setTime(time.getTime()+259200000);
 		data[NewsID]=time.getTime();
 		var time=new Date;
 		time.setMonth(time.getMonth()+1);
 		Cookies.set("News",JSON.stringify(data),time);
+	},
+	"CookieManager":function(NewsID){
+		var data=News.CookieReader();
+		if (data[NewsID]) {
+			var time=new Date;
+			if (time.getTime()<data[NewsID]) {return true} else {
+				delete data[NewsID];
+				time.setMonth(time.getMonth()+1);
+				Cookies.set("News",JSON.stringify(data),time);
+			};
+		};
+		return false;
 	}
 }

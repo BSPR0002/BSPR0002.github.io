@@ -15,11 +15,19 @@ var AJAX_Local={
 				},
 				"Torrent":"https://www.kisssub.org/search.php?keyword=NEKOPARA"
 			}
+		},
+		{
+			"ID":2,
+			"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWiCchi"],
+			"display":"サノバウィッチ",
+			"icon":"/Images/resource_icon/ID00000002.jpg",
+			"type":"PC Game",
+			"resource":{}
 		}
 	],
 	"/json/News.json":[
 		{
-			"ID":"test1",
+			"ID":"SabbatOfTheWitch",
 			"name":"魔女的夜宴",
 			"title":"怀旧库存",
 			"preview":{
@@ -35,27 +43,87 @@ var AJAX_Local={
 	]
 };
 
-var Cookies_Local={"News":"{}"};
-
 function testfunc() {
 	if (DetectUA().Mobile==true) {alert("您的UA为移动设备")} else {alert("您的UA为电脑")}
 	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","keep":true});
 }
 
-function AJAX(option) { //本地调试模拟AJAX
-	console.log("AJAX:",option);
-	option.success(AJAX_Local[option.url])
+function AJAX(options) { //本地调试模拟 AJAX 基础
+	console.log("AJAX:",options);
+	if (typeof AJAX_Local[options.url]!="undefined") {
+		options.success(AJAX_Local[options.url])
+	} else {
+		console.warn("404 Not found");
+		try {options.fail(404)} catch(error) {console.warn("No fail function or fail function error!")}
+	};
+	return "Local Debug";
 }
 
-var Cookies={
+var Cookies={ //本地调试模拟 cookie
 	"get":function(name) {
-		console.log("get cookie:",name,Cookies_Local[name]);
-		return Cookies_Local[name];
+		console.log("get cookie:",name,Cookies.Local[name]);
+		return Cookies.Local[name];
 	},
 	"set":function(name,value) {
 		console.log("set cookie:",name+"="+value);
-		Cookies_Local[name]=value;
+		Cookies.Local[name]=value;
+	},
+	"delete":function(name) {
+		console.log("delete cookie:",name,value);
+		delete Cookies.Local[name];
+	},
+	"empty":function() {Cookies.Local={}},
+	"Local":{
+		"News":"{}"
 	}
+};
+
+Notification={ //本地调试模拟 Notification API
+	"requestPermission":function() {
+		return {
+			"info":"Local Debug",
+			"then":function(){}
+		}
+	},
+	"permission":"granted"
+};
+
+function NotificationCreater(options) {
+	console.log("Notification",options);
+	var preview={"icon":"","body":"","image":""};
+	if (options.icon) preview.icon="\"\\nicon:\",options.icon,";
+	if (options.message) preview.body=",\"\\nbody:\",options.message";
+	if (options.image) preview.image=",\"\\nicon:\",options.image";
+	var VM={
+		"close":function() {
+			delete VM.click;
+			console.log("Notification closed");
+			VM.onclose();
+			delete VM.close;
+		},
+		"onshow":options.show,
+		"onclick":options.click,
+		"onclose":options.close,
+		"onerror":options.error
+	};
+	eval("console.info(\"Notification Content:\","+preview.icon+"\"\\ntitle:\",options.title"+preview.body+preview.image+")");
+	if (options.keep!=true) {
+		VM.VM_interface=setTimeout(VM.close,25000);
+		VM.click=function() {
+			clearTimeout(VM.VM_interface);
+			VM.VM_interface=setTimeout(VM.close,25000);
+			console.info("NotificationVM Interface:","click");
+			VM.onclick();
+		}
+	} else VM.click=function() {
+		console.info("NotificationVM Interface:","click");
+		VM.onclick();
+	}
+	if (typeof VM.onshow!="undefined") {try {VM.onshow()} catch(none) {console.log("Notification onshow error!")}};
+	var VM_ID="NotificationVM"+Math.floor(Math.random()*10);
+	window[VM_ID]=VM;
+	console.info("Notification Interface:",VM_ID);
+	return VM;
 }
 
 var FileAPI={
@@ -77,5 +145,4 @@ var FileAPI={
 		return Operator.result;
 	},
 	"write":function(){console.warn("still building")}
-}
-
+};

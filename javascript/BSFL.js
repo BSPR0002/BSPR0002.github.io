@@ -88,7 +88,7 @@ function NotificationCreater(options) {
 function HADecoder(HtmlArray,unit) {
 	if (typeof unit=="undefined") unit="未知";
 	var HtmlDoc=document.createDocumentFragment();
-	var Operator=function(data,outer) {
+	function Operator(data,outer) {
 		if (Array.isArray(data)) {
 			for (var item of data) {
 				if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
@@ -121,7 +121,7 @@ function HADecoder(HtmlArray,unit) {
 									outer.appendChild(element);
 								}
 							} catch(error) {
-								console.error("HADecoder 汇报有严重数据错误：发现无效的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
+								console.warn("HADecoder 汇报有数据错误：发现无效的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
 							};
 					};
 				} else {console.warn("HADecoder 汇报有数据错误：子节点树内有无法识别的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item)};
@@ -139,14 +139,14 @@ function HAEncoder(Node,IncludeOuter) {
 	try {
 		Node=Node.cloneNode(true);
 		var HtmlArray=new Array;
-		var Transporter=function (Node,outer){
+		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {
 				outer.push(Node.textContent);
 			} else {
 				for (let child of Node.childNodes) {Operator(child,outer)};
 			};
 		};
-		var Operator=function (Node,outer){
+		function Operator(Node,outer) {
 			switch (Node.nodeName) {
 				case "#text":
 					outer.push(Node.textContent);
@@ -197,10 +197,14 @@ var Cookies={
 		if (typeof cookieDomain!="undefined") {cookieDomain=";domain="+cookieDomain} else cookieDomain="";
 		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
 	},
-	"clear":function(cookieName) {
+	"delete":function(cookieName) {
 		var expires=new Date;
 		expires.setTime(0);
 		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
+	},
+	"empty":function() {
+		var box=Cookies.toObject();
+		for (var cookie in box) {Cookies.delete(cookie)};
 	},
 	"toObject":function() {
 		var Fodder_Box=new Object;

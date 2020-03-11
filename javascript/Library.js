@@ -37,6 +37,9 @@ function ShowLibrary(ShowData) {
 				};
 				var Node=allinone+"）";
 				break;
+			case "PC Game":
+				var Node="PC 游戏";
+				break;
 		};
 		CardType.appendChild(document.createTextNode(Node));
 		CardType.title=Node;
@@ -214,12 +217,12 @@ var SearchLibrary={
 };
 
 (function() { //Beginning
-	var Initial_view=function(self) {
+	function Initial_view(self) {
 		if (document.getElementById("show_box")) {
 			OverView();
 		} else setTimeout(function(){self(self)},100);
 	};
-	var Search_Initialize=function(self) {
+	function Search_Initialize(self) {
 		if (document.getElementById("library_search_bar")) {
 			document.getElementById("library_search_bar_input").addEventListener("input",SearchLibrary.auto);
 			document.getElementById("library_search_bar_input").addEventListener("keypress",function() {if (event.keyCode==13) SearchLibrary.manual()});
