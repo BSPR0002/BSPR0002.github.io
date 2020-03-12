@@ -59,6 +59,19 @@ function AJAX(options) { //本地调试模拟 AJAX 基础
 	return "Local Debug";
 }
 
+/*
+var VM_cookie={
+	"getter":"",
+	"setter":"",
+	"data":"",
+	"pagePath":"",
+};
+Object.defineProperty(document,"cookie",{
+	get
+});
+*/
+
+
 var Cookies={ //本地调试模拟 cookie
 	"get":function(name) {
 		console.log("get cookie:",name,Cookies.Local[name]);
@@ -67,14 +80,16 @@ var Cookies={ //本地调试模拟 cookie
 	"set":function(name,value) {
 		console.log("set cookie:",name+"="+value);
 		Cookies.Local[name]=value;
+		console.log("Present cookie:",Cookies.Local);
 	},
 	"delete":function(name) {
-		console.log("delete cookie:",name,value);
+		console.log("delete cookie:",name);
 		delete Cookies.Local[name];
+		console.log("Present cookie:",Cookies.Local);
 	},
 	"empty":function() {Cookies.Local={}},
 	"Local":{
-		"News":"{}"
+		"News_log_ID_SabbatOfTheWitch":"{\"have_read\":2583978669458}"
 	}
 };
 

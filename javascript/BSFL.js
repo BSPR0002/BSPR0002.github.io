@@ -191,16 +191,16 @@ var Cookies={
 	"get":function(cookieName) {
 		return Cookies.toObject()[cookieName];
 	},
-	"set":function(cookieName,cookieValue,expiresDate,cookiePath,cookieDomain) {
-		if (typeof expiresDate!="undefined") {expiresDate="expires="+expiresDate.toUTCString()+";"} else expiresDate="";
-		if (typeof cookiePath=="undefined") cookiePath="/";
-		if (typeof cookieDomain!="undefined") {cookieDomain=";domain="+cookieDomain} else cookieDomain="";
-		document.cookie=cookieName+"="+cookieValue+";"+expiresDate+"path="+cookiePath+cookieDomain;
+	"set":function(name,value,expiresDate,path,domain) {
+		if (expiresDate) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
+		if (typeof path=="string") {path=";Path="+path+";"} else path="";
+		if (typeof domain=="string") {domain=";domain="+domain} else domain="";
+		document.cookie=name+"="+value+expiresDate+path+domain;
 	},
-	"delete":function(cookieName) {
+	"delete":function(cookieName,cookiePath,cookieDomain) {
 		var expires=new Date;
 		expires.setTime(0);
-		document.cookie=cookieName+"=;expires="+expires.toUTCString()+";path=/";
+		Cookies.set(cookieName,"",expires,cookiePath,cookieDomain);
 	},
 	"empty":function() {
 		var box=Cookies.toObject();

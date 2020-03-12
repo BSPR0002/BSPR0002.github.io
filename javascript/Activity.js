@@ -79,19 +79,16 @@ var Activity={
 
 var News={
 	"request":function() {
-		if (requestNotificationPermission()!=0) {
-			AJAX({
-				"url":"/json/News.json",
-				"type":"json",
-				"success":News.play,
-				"fail":function() {
-					if (News.retry<5) {
-						News.retry++;
-						News.request();
-					}
+		if (requestNotificationPermission()!=0) AJAX({
+			"url":"/json/News.json","type":"json",
+			"success":News.play,
+			"fail":function() {
+				if (News.retry<5) {
+					News.retry++;
+					News.request();
 				}
-			})
-		}
+			}
+		});
 	},
 	"retry":0,
 	"play":function(data) {
@@ -101,56 +98,43 @@ var News={
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
-			if (News.CookieManager(data.ID)&&data.force!=true) {
-				News.operator()
-			} else NotificationCreater({
-				"title":data.title,
-				"message":data.preview.message,
-				"image":data.preview.image,
-				"icon":"/favicon.png",
-				"show":function(){
-					News.CookieRecorder(data.ID);
-				},
-				"click":function(){
-					window.focus();
-					window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
-					this.close();
-				},
-				"close":News.operator,
-				"keep":true
-			});
+			if (News.CookieManager(data.ID)||data.force==true) {
+					NotificationCreater({
+					"title":data.title,"message":data.preview.message,"image":data.preview.image,"icon":"/favicon.png","keep":true,
+					"show":function(){
+						News.CookieRecorder(data.ID);
+					},
+					"click":function(){
+						window.focus();
+						window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
+						this.close();
+					},
+					"close":News.operator
+				});
+			} else News.operator();
 		};
 	},
 	"Data":[],
-	"CookieReader":function() {
-		var data=Cookies.get("News");
-		var history=new Object;
+	"CookieManager":function(NewsID) {
+		var data=Cookies.get("News_log_ID_"+NewsID);
 		if (typeof data=="string") {
 			try {
-				history=JSON.parse(data);
-			} catch(none) {};
-		};
-		return history;
+				var log=JSON.parse(data);
+				if (typeof log!="object"||typeof log.have_read!="number") throw "log corrupted";
+				var pass=(new Date).getTime()-log.have_read;
+				if (pass>259200000||!(pass>0)) {
+					Cookies.delete("News_log_ID_"+NewsID);
+					throw "expired";
+				};
+				return false;
+			} catch(error) {console.log("Abnormal News log:",NewsID,error)};
+		}
+		return true;
 	},
 	"CookieRecorder":function(NewsID) {
-		var data=News.CookieReader();
 		var time=new Date;
+		var log={"have_read":time.getTime()};
 		time.setTime(time.getTime()+259200000);
-		data[NewsID]=time.getTime();
-		var time=new Date;
-		time.setMonth(time.getMonth()+1);
-		Cookies.set("News",JSON.stringify(data),time);
-	},
-	"CookieManager":function(NewsID){
-		var data=News.CookieReader();
-		if (data[NewsID]) {
-			var time=new Date;
-			if (time.getTime()<data[NewsID]) {return true} else {
-				delete data[NewsID];
-				time.setMonth(time.getMonth()+1);
-				Cookies.set("News",JSON.stringify(data),time);
-			};
-		};
-		return false;
+		Cookies.set("News_log_ID_"+NewsID,JSON.stringify(log),time);
 	}
 }
