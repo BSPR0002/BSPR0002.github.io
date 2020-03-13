@@ -193,7 +193,7 @@ var Cookies={
 	},
 	"set":function(name,value,expiresDate,path,domain) {
 		if (expiresDate) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
-		if (typeof path=="string") {path=";Path="+path+";"} else path="";
+		if (typeof path=="string") {path=";Path="+path} else path="";
 		if (typeof domain=="string") {domain=";domain="+domain} else domain="";
 		document.cookie=name+"="+value+expiresDate+path+domain;
 	},

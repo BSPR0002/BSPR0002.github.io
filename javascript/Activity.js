@@ -98,15 +98,15 @@ var News={
 	"operator":function() {
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
-			if (News.CookieManager(data.ID)||data.force==true) {
+			if (News.LogManager(data.ID)||data.force==true) {
 					NotificationCreater({
-					"title":data.title,"message":data.preview.message,"image":data.preview.image,"icon":"/favicon.png","keep":true,
+					"title":data.title,"message":data.notification.message,"image":data.notification.image,"icon":"/favicon.png","keep":true,
 					"show":function(){
-						News.CookieRecorder(data.ID);
+						News.LogRecorder(data.ID);
 					},
 					"click":function(){
 						window.focus();
-						window_board.display(HADecoder(data.content,"News_"+data.ID),data.title)
+						window_board.display(HADecoder(data.board,"News_"+data.ID),data.title)
 						this.close();
 					},
 					"close":News.operator
@@ -115,15 +115,15 @@ var News={
 		};
 	},
 	"Data":[],
-	"CookieManager":function(NewsID) {
-		var data=Cookies.get("News_log_ID_"+NewsID);
-		if (typeof data=="string") {
+	"LogManager":function(NewsID) {
+		var data=localStorage.getItem("News_log_ID_"+NewsID);
+		if (data!=null) {
 			try {
 				var log=JSON.parse(data);
 				if (typeof log!="object"||typeof log.have_read!="number") throw "log corrupted";
 				var pass=(new Date).getTime()-log.have_read;
-				if (pass>259200000||!(pass>0)) {
-					Cookies.delete("News_log_ID_"+NewsID);
+				if (pass>259200000||pass<=0) {
+					localStorage.removeItem("News_log_ID_"+NewsID);
 					throw "expired";
 				};
 				return false;
@@ -131,10 +131,10 @@ var News={
 		}
 		return true;
 	},
-	"CookieRecorder":function(NewsID) {
+	"LogRecorder":function(NewsID) {
 		var time=new Date;
 		var log={"have_read":time.getTime()};
 		time.setTime(time.getTime()+259200000);
-		Cookies.set("News_log_ID_"+NewsID,JSON.stringify(log),time);
+		localStorage.setItem("News_log_ID_"+NewsID,JSON.stringify(log));
 	}
 }

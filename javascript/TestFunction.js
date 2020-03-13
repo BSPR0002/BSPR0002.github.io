@@ -30,11 +30,11 @@ var AJAX_Local={
 			"ID":"SabbatOfTheWitch",
 			"name":"魔女的夜宴",
 			"title":"怀旧库存",
-			"preview":{
+			"notification":{
 				"image":"/Images/News/SabbatOfTheWitch_preview.jpg",
 				"message":"资源库将于3月20日收录游戏《サノバウィッチ》（魔女的夜宴）。"
 			},
-			"content":[
+			"board":[
 				"怀旧款，《魔女的夜宴》将于3月20日收录到资源库中。",["BR"],
 				"来重温下老游戏吧！即使从未听闻也值得一玩喔！",["BR"],
 				["IMG",[],{"src":"/Images/News/SabbatOfTheWitch.jpg"}]
@@ -48,7 +48,8 @@ function testfunc() {
 	NotificationCreater({"title":"检测UA","message":navigator.userAgent,"icon":"/favicon.png","keep":true});
 }
 
-function AJAX(options) { //本地调试模拟 AJAX 基础
+if (window.location.origin=="file://") { //本地模拟函数
+var AJAX=function(options) {
 	console.log("AJAX:",options);
 	if (typeof AJAX_Local[options.url]!="undefined") {
 		options.success(AJAX_Local[options.url])
@@ -57,22 +58,9 @@ function AJAX(options) { //本地调试模拟 AJAX 基础
 		try {options.fail(404)} catch(error) {console.warn("No fail function or fail function error!")}
 	};
 	return "Local Debug";
-}
-
-/*
-var VM_cookie={
-	"getter":"",
-	"setter":"",
-	"data":"",
-	"pagePath":"",
 };
-Object.defineProperty(document,"cookie",{
-	get
-});
-*/
 
-
-var Cookies={ //本地调试模拟 cookie
+var Cookies={
 	"get":function(name) {
 		console.log("get cookie:",name,Cookies.Local[name]);
 		return Cookies.Local[name];
@@ -93,7 +81,7 @@ var Cookies={ //本地调试模拟 cookie
 	}
 };
 
-Notification={ //本地调试模拟 Notification API
+var Notification={
 	"requestPermission":function() {
 		return {
 			"info":"Local Debug",
@@ -103,7 +91,7 @@ Notification={ //本地调试模拟 Notification API
 	"permission":"granted"
 };
 
-function NotificationCreater(options) {
+var NotificationCreater=function(options) {
 	console.log("Notification",options);
 	var preview={"icon":"","body":"","image":""};
 	if (options.icon) preview.icon="\"\\nicon:\",options.icon,";
@@ -139,7 +127,8 @@ function NotificationCreater(options) {
 	window[VM_ID]=VM;
 	console.info("Notification Interface:",VM_ID);
 	return VM;
-}
+};
+};
 
 var FileAPI={
 	"read":function(target,type) {
