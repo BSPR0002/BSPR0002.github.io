@@ -18,7 +18,7 @@ var Activity={
 				["LI",["有任何问题可与我们商议。"]]
 			]],
 			"若您有意，请通过“关于我们”页面的联系方式与我们接洽。"
-		],Activity.ReleaseAgreement),"发布协约");
+		],"ReleaseAgreement"),"发布协约");
 	},
 	"mobile_survey":{
 		"interface":function() {
