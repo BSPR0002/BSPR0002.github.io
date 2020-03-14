@@ -99,18 +99,18 @@ var News={
 		if (requestNotificationPermission()!=0&&News.Data[0]) {
 			var data=News.Data.splice(0,1)[0];
 			if (News.LogManager(data.ID)||data.force==true) {
-					NotificationCreater({
-					"title":data.title,"message":data.notification.message,"image":data.notification.image,"icon":"/favicon.png","keep":true,
-					"show":function(){
-						News.LogRecorder(data.ID);
-					},
-					"click":function(){
-						window.focus();
-						window_board.display(HADecoder(data.board,"News_"+data.ID),data.title)
-						this.close();
-					},
+				var model={
+					"title":data.title,"message":data.notification.message,"icon":"/favicon.png","keep":true,
+					"show":function(){News.LogRecorder(data.ID)},
 					"close":News.operator
-				});
+				};
+				if (data.notification.image) model.image=data.notification.image;
+				if (data.board) model.click=function(){
+					window.focus();
+					window_board.display(HADecoder(data.board,"News_"+data.ID),data.title)
+					this.close();
+				};
+				NotificationCreater(model);
 			} else News.operator();
 		};
 	},

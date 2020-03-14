@@ -7,18 +7,22 @@
 			function type_start() {
 				var textNode=document.getElementById("textNode");
 				var cursor=document.getElementById("cursor");
-				var flicker_id=0;
-				function flicker1() {
-					document.getElementById("cursor").style.visibility="hidden";
-					flicker_id=setTimeout(flicker2,500);
-				};
-				function flicker2() {
-					document.getElementById("cursor").style.visibility="visible";
-					flicker_id=setTimeout(flicker1,500);
+				window.pflicker_id1=0;
+				window.pflicker_id2=0;
+				window.pflicker_id3=0;
+				function flicker() {
+					cursor.style.visibility="hidden";
+					window.pflicker_id1=setTimeout(function(){
+						cursor.style.visibility="visible";
+						window.pflicker_id3=setInterval("if (typeof cursor!=\"undefined\") {cursor.style.visibility=\"visible\"} else clearInterval(window.pflicker_id3)",1000)
+					},500);
+					window.pflicker_id2=setInterval("if (typeof cursor!=\"undefined\") {cursor.style.visibility=\"hidden\"} else clearInterval(window.pflicker_id2)",1000);
 				};
 				function reset_flicker() {
-					clearTimeout(flicker_id);
-					flicker1();
+					clearTimeout(window.pflicker_id1);
+					clearInterval(window.pflicker_id2);
+					clearInterval(window.pflicker_id3);
+					flicker();
 				};
 				function order(delay,text) {
 					setTimeout(reset_flicker,delay);
@@ -28,7 +32,7 @@
 					setTimeout(reset_flicker,delay);
 					setTimeout(extension,delay);
 				};
-				flicker1();
+				flicker();
 				order(10000,"User [Aoyuki] loged in.\nAoyuki> ");
 				order(15000,".");
 				order(15100,".");
@@ -73,9 +77,9 @@
 				delay(29100,"temp.innerText=\"あたしとあそんでくれ\"");
 				delay(29200,"temp.innerText=\"あたしとあそんでくれｒ\"");
 				delay(29300,"temp.innerText=\"あたしとあそんでくれる\"");
-				delay(29400,"temp.innerText=\"あたしとあそんでくれる？\"");
-				delay(29500,"temp.innerText=\"あたしと遊んでくれる？\"");
-				delay(29600,"textNode.innerText=temp2+temp.innerText");
+				delay(29500,"temp.innerText=\"あたしとあそんでくれる？\"");
+				delay(29600,"temp.innerText=\"あたしと遊んでくれる？\"");
+				delay(29700,"textNode.innerText=temp2+temp.innerText");
 				order(30000,"\nAoyuki> ");
 				order(40000,"\nsystem> User [Aoyuki] disconnected.\nsystem> ");
 			};

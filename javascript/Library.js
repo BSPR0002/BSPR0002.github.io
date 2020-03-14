@@ -46,14 +46,14 @@ function ShowLibrary(ShowData) {
 		Card.appendChild(CardType);
 		var CardLink=document.createElement("div");
 		CardLink.className="card_link";
-		if (typeof obj.resource.BDND=="object"&&obj.resource.BDND!=null) {
+		if (obj.resource.BDND) {
 			var CardLinkBDND=document.createElement("button");
 			CardLinkBDND.href="javascript:void(0)";
 			CardLinkBDND.className="card_link_button card_link_button_BDND";
 			var CardLinkBDNDBoardContent=document.createDocumentFragment();
-			var CardLinkBDNDBoardContentNode=document.createElement("p");
+			let CardLinkBDNDBoardContentNode=document.createElement("p");
 			CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("链接："));
-			var CardLinkBDNDBoardContentNodeA=document.createElement("a");
+			let CardLinkBDNDBoardContentNodeA=document.createElement("a");
 			CardLinkBDNDBoardContentNodeA.href=obj.resource.BDND.link;
 			CardLinkBDNDBoardContentNodeA.target="_blank";
 			CardLinkBDNDBoardContentNodeA.appendChild(document.createTextNode(obj.resource.BDND.link));
@@ -61,12 +61,23 @@ function ShowLibrary(ShowData) {
 			CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 			CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
 			if (typeof obj.resource.BDND.password=="string") {
-				var CardLinkBDNDBoardContentNode=document.createElement("p");
+				let CardLinkBDNDBoardContentNode=document.createElement("p");
 				CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
 				CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 				CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
 			};
-			if (Array.isArray(obj.resource.BDND.detail)) CardLinkBDNDBoardContent.appendChild(HADecoder(obj.resource.BDND.detail,"ID"+obj.ID));
+			if (obj.resource.BDND.detail) {
+				let CardLinkBDNDBoardContentNode=document.createDocumentFragment();
+				if (typeof obj.resource.BDND.detail.tips=="string") {
+					let CardBoardDetailTips=document.createElement("p");
+					CardBoardDetailTips.appendChild(document.createTextNode(obj.resource.BDND.detail.tips));
+					CardBoardDetailTips.appendChild(document.createElement("br"));
+					CardBoardDetailTips.className="CardBoardDetailTips";
+					CardLinkBDNDBoardContentNode.appendChild(CardBoardDetailTips);
+				};
+				if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(HADecoder(obj.resource.BDND.detail.content,"ID"+obj.ID));
+				CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
+			};
 			CardLinkBDND.Board={
 				"Theme":" card_board_BDND",
 				"Title":"百度网盘",
@@ -171,7 +182,10 @@ var SearchLibrary={
 		};
 		SearchLibrary.wait=false;
 		var input=document.getElementById("library_search_bar_input").value;
+		var ShowState=document.getElementById("library_search_bar_magnifier");
 		if (input!="") {
+			ShowState.className="searching";
+			ShowState.clientTop;
 			var Data=LibraryData.slice();
 			keyword=input.trim();
 			var match_word=new Array;
@@ -188,6 +202,7 @@ var SearchLibrary={
 			};
 			var result=new Array;
 			for (let word of match_word) {
+				let resultc=new Array;
 				for (let i=Data.length-1;i>-1;i--) {
 					let name_match=false;
 					for (let name of Data[i].name) {
@@ -196,16 +211,19 @@ var SearchLibrary={
 							break;
 						};
 					};
-					if (name_match||Data[i].display.match(word)) result=Data.splice(i,1).concat(result);
+					if (name_match||Data[i].display.match(word)) resultc=Data.splice(i,1).concat(resultc);
 				};
+				result=result.concat(resultc);
 			};
 		} else result=LibraryData;
+		ShowState.className="null";
 		ShowLibrary(result);
 	},
 	"wait":false,
 	"auto":function() {
 		if (SearchLibrary.wait!=true) {
 			SearchLibrary.wait=true;
+			document.getElementById("library_search_bar_magnifier").className="waiting";
 			SearchLibrary.timeoutID=setTimeout(SearchLibrary.engine,1000);
 		};
 	},

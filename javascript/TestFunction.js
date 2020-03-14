@@ -11,7 +11,9 @@ var AJAX_Local={
 				"BDND":{
 					"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA",
 					"password":"e1s7",
-					"detail":["资源内的压缩包如果有密码，全部为“NKPR”。"]
+					"detail":{
+						"content":["资源内的压缩包如果有密码，全部为“NKPR”。"]
+					}
 				},
 				"Torrent":"https://www.kisssub.org/search.php?keyword=NEKOPARA"
 			}
@@ -22,7 +24,20 @@ var AJAX_Local={
 			"display":"サノバウィッチ",
 			"icon":"/Images/resource_icon/ID00000002.jpg",
 			"type":"PC Game",
-			"resource":{}
+			"resource":{
+				"BDND":{
+					"link":"https://pan.baidu.com/s/10H9kqaOEi53WE-xXoew0eg",
+					"password":"l3xf",
+					"detail":{
+						"tips":"请点击“详细信息”查看密码等说明。",
+						"content":[
+							"压缩包的密码写在压缩包文件名末尾的中括号内。",["br"],
+							"暂不提供解包、CD等资源。"
+						]
+					}
+				},
+				"Torrent":"magnet:?xt=urn:btih:7RYT3XTCUKF3YBR3C5KUM7UOF2BPLSND&dn=[150227] [ゆずソフト] サノバウィッチ ‐SABBAT OF THE WITCH‐ + Drama CD + Character Songs + Bonus + Manual + Update 1.1"
+			}
 		}
 	],
 	"/json/News.json":[

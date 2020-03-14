@@ -45,17 +45,6 @@ a:active {color:#4B97C5}
 	flex-shrink:0;
 }
 
-#window_board_content {
-	word-wrap:break-word;
-	word-break:normal;
-	overflow:auto;
-}
-
-#window_board_content img {
-	max-width:100%;
-	height:auto;
-}
-
 #window_board_title {
 	position:absolute;
 	top:0;
@@ -101,3 +90,16 @@ a:active {color:#4B97C5}
 #show_box {
 	position:initial;
 }
+
+#window_board_content {
+	word-wrap:break-word;
+	word-break:normal;
+	overflow:auto;
+}
+
+#window_board_content img {
+	max-width:100%;
+	height:auto;
+}
+
+#window_board_content .CardBoardDetailTips {display:none}

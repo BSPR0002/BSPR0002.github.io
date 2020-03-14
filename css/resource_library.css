@@ -307,11 +307,14 @@
 	display:block;
 	width:17px;
 	height:17px;
+	position: absolute;
 	background-color:transparent;
 	box-sizing:border-box;
 	border:solid 2px #000000;
 	border-radius:50%;
 }
+#library_search_bar_magnifier.waiting:after {background-color:#FFFF00}
+#library_search_bar_magnifier.searching:after {background-color:#00FF00}
 
 #library_search_bar_search {
 	flex-shrink:0;
