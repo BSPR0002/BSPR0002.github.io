@@ -17,8 +17,3 @@
 	word-wrap:break-word;
 	word-break:normal;
 }
-
-body {
-	background-color:black;
-}
-h1,p{display:inline}
