@@ -22,12 +22,10 @@ var Activity={
 	},
 	"mobile_survey":{
 		"interface":function() {
-			switch (Cookies.toObject()["MobileDemo"]) {
+			switch (localStorage.getItem("MobileDemo")) {
 				case "0":
-					Cookies.keepAlive("MobileDemo");
-					break;
+					return false;
 				case "1":
-					Cookies.keepAlive("MobileDemo");
 					window.location.href="/Mobile";
 					break;
 				default:
@@ -38,19 +36,12 @@ var Activity={
 			window_board.hide();
 			switch (result) {
 				case "0":
-					var expiresDate=new Date();
-					expiresDate.setFullYear(expiresDate.getFullYear()+1);
-					Cookies.set("MobileDemo","0",expiresDate);
+					localStorage.setItem("MobileDemo","0");
 					break;
 				case "1":
-					var expiresDate=new Date();
-					expiresDate.setFullYear(expiresDate.getFullYear()+1);
-					Cookies.set("MobileDemo","1",expiresDate);
-					window.location.href="/Mobile";
-					break;
+					localStorage.setItem("MobileDemo","1");
 				case "2":
 					window.location.href="/Mobile";
-					break;
 			}
 		},
 		"HA":[
@@ -71,8 +62,6 @@ var Activity={
 					"onmouseout":"javascript:this.style.backgroundColor=null"
 				}]
 			]],
-			["br"],
-			["p","请注意不要清理您的 cookie ，以免该提示再次弹出。"],
 		]
 	}
 }

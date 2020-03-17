@@ -2,129 +2,28 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<!--<link rel="stylesheet" type="text/css" href="/css/projects.css">-->
-		<script>
-			function type_start() {
-				var textNode=document.getElementById("textNode");
-				var cursor=document.getElementById("cursor");
-				window.pflicker_id1=0;
-				window.pflicker_id2=0;
-				window.pflicker_id3=0;
-				function flicker() {
-					cursor.style.visibility="hidden";
-					window.pflicker_id1=setTimeout(function(){
-						cursor.style.visibility="visible";
-						window.pflicker_id3=setInterval("if (typeof cursor!=\"undefined\") {cursor.style.visibility=\"visible\"} else clearInterval(window.pflicker_id3)",1000)
-					},500);
-					window.pflicker_id2=setInterval("if (typeof cursor!=\"undefined\") {cursor.style.visibility=\"hidden\"} else clearInterval(window.pflicker_id2)",1000);
-				};
-				function reset_flicker() {
-					clearTimeout(window.pflicker_id1);
-					clearInterval(window.pflicker_id2);
-					clearInterval(window.pflicker_id3);
-					flicker();
-				};
-				function order(delay,text) {
-					setTimeout(reset_flicker,delay);
-					setTimeout("textNode.innerText+="+(JSON.stringify(text)),delay);
-				};
-				function delay(delay,extension) {
-					setTimeout(reset_flicker,delay);
-					setTimeout(extension,delay);
-				};
-				flicker();
-				order(10000,"User [Aoyuki] loged in.\nAoyuki> ");
-				order(15000,".");
-				order(15100,".");
-				order(15200,".");
-				order(16000,"\nAoyuki> ");
-				delay(21000,
-				"var temp=document.createElement(\"p\");"+
-				"var temp2=textNode.innerText;"+
-				"textNode.appendChild(temp);"+
-				"temp.className=\"wordselect\";"+
-				"temp.innerText=\"ｓ\"");
-				delay(21100,"temp.innerText=\"さ\"");
-				delay(21200,"temp.innerText=\"さｍ\"");
-				delay(21300,"temp.innerText=\"さみ\"");
-				delay(21400,"temp.innerText=\"さみｓ\"");
-				delay(21500,"temp.innerText=\"さみし\"");
-				delay(21600,"temp.innerText=\"さみしい\"");
-				delay(21700,"temp.innerText=\"寂しい\"");
-				delay(21800,"textNode.innerText=temp2+temp.innerText");
-				order(22500,"\nAoyuki> ");
-				delay(27500,
-				"var temp=document.createElement(\"p\");"+
-				"var temp2=textNode.innerText;"+
-				"textNode.appendChild(temp);"+
-				"temp.className=\"wordselect\";"+
-				"temp.innerText=\"あ\"");
-				delay(27600,"temp.innerText=\"あｔ\"");
-				delay(27700,"temp.innerText=\"あた\"");
-				delay(27800,"temp.innerText=\"あたｓ\"");
-				delay(27900,"temp.innerText=\"あたし\"");
-				delay(28000,"temp.innerText=\"あたしｔ\"");
-				delay(28100,"temp.innerText=\"あたしと\"");
-				delay(28200,"temp.innerText=\"あたしとあ\"");
-				delay(28300,"temp.innerText=\"あたしとあｓ\"");
-				delay(28400,"temp.innerText=\"あたしとあそ\"");
-				delay(28500,"temp.innerText=\"あたしとあそｎ\"");
-				delay(28600,"temp.innerText=\"あたしとあそんｄ\"");
-				delay(28700,"temp.innerText=\"あたしとあそんで\"");
-				delay(28800,"temp.innerText=\"あたしとあそんでｋ\"");
-				delay(28900,"temp.innerText=\"あたしとあそんでく\"");
-				delay(29000,"temp.innerText=\"あたしとあそんでくｒ\"");
-				delay(29100,"temp.innerText=\"あたしとあそんでくれ\"");
-				delay(29200,"temp.innerText=\"あたしとあそんでくれｒ\"");
-				delay(29300,"temp.innerText=\"あたしとあそんでくれる\"");
-				delay(29500,"temp.innerText=\"あたしとあそんでくれる？\"");
-				delay(29600,"temp.innerText=\"あたしと遊んでくれる？\"");
-				delay(29700,"textNode.innerText=temp2+temp.innerText");
-				order(30000,"\nAoyuki> ");
-				order(40000,"\nsystem> User [Aoyuki] disconnected.\nsystem> ");
-			};
-			(function(){
-				function anime_start(){
-					if (document.getElementById("textNode")) {
-						type_start();
-					} else {
-						setTimeout(anime_start,100);
-					};
-				};
-				anime_start();
-			})();
-		</script>
-		<style>
-			#box_frame {
-				width:1024px;
-				height:576px;
-				margin:0 auto;
-				position:relative;
-				overflow:hidden;
-			}
-			.prj_box {
-				font-family:"Segoe UI",sans-serif,serif;
-				width:100%;
-				height:100%;
-				margin-bottom:5px;
-				background-color:#002080;
-				color:#FFFFFF;
-				border-radius:10px;
-				padding:20px;
-				box-sizing:border-box;
-				position:relative;
-				overflow:hidden;
-				word-wrap:break-word;
-				word-break:normal;
-			}
-			#cursor {font-weight:bold}
-			.wordselect {text-decoration:underline}
-		</style>
+		<link rel="stylesheet" type="text/css" href="/css/projects.css">
 	</head>
 	<body>
-		<div id="box_frame">
+		<div id="project_box_frame">
 			<div class="prj_box">
-				<p id="textNode">system> </p><p id="cursor">_</p>
+				<h1>更新日记：网站页面</h1>
+				<h2>未来</h2>
+				<p>网站尚在设计初期，可能会因为如下计划而发生 bug 、访问不稳定等情况，尽情谅解。</p>
+				<ul>
+					<li>开发移动端页面</li>
+					<li>为资源库添加分页浏览</li>
+					<li>将工程页面改为目前工程展示</li>
+					<li style="text-decoration:line-through">给主页整点花里胡哨的</li>
+				</ul>
+				<h2>最早</h2>
+				<ul>
+					<li>为导航栏当前页箭头添加彩色样式</li>
+					<li>为资源库卡片添加详细信息功能</li>
+					<li>为资源库添加搜索功能</li>
+					<li>为资源库搜索功能添加状态显示</li>
+					<li>添加网站消息推送系统</li>
+				</ul>
 			</div>
 		</div>
 	</body>

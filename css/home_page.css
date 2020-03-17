@@ -1,4 +1,4 @@
-#box_frame {
+#home_box_frame {
 	width:1024px;
 	height:576px;
 	margin:0 auto;
@@ -10,7 +10,7 @@
 	overflow:hidden;
 }
 
-#box_frame:before {
+#home_box_frame:before {
 	position:absolute;
 	left:0;
 	top:0;
