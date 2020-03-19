@@ -196,4 +196,4 @@ a:active {color:#4B97C5}
 	height:auto;
 }
 
-#window_board_content.CardBoardDetailTips {display:none}
+#window_board_content .CardBoardDetailTips {display:none}
