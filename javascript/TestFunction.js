@@ -22,7 +22,7 @@ var AJAX_Local={
 			"ID":2,
 			"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWiCchi"],
 			"display":"サノバウィッチ",
-			"icon":"/Images/resource_icon/ID00000002.jpg",
+			"icon":"/Images/resource_icon/ID00000002.png",
 			"type":"PC Game",
 			"resource":{
 				"BDND":{
