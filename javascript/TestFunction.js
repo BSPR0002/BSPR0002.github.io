@@ -41,20 +41,7 @@ var AJAX_Local={
 		}
 	],
 	"/json/News.json":[
-		{
-			"ID":"SabbatOfTheWitch",
-			"name":"魔女的夜宴",
-			"title":"怀旧库存",
-			"notification":{
-				"image":"/Images/News/SabbatOfTheWitch_preview.jpg",
-				"message":"资源库将于3月20日收录游戏《サノバウィッチ》（魔女的夜宴）。"
-			},
-			"board":[
-				"怀旧款，《魔女的夜宴》将于3月20日收录到资源库中。",["BR"],
-				"来重温下老游戏吧！即使从未听闻也值得一玩喔！",["BR"],
-				["IMG",[],{"src":"/Images/News/SabbatOfTheWitch.jpg"}]
-			]
-		}
+		
 	]
 };
 
