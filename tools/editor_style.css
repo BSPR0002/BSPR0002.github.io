@@ -218,30 +218,29 @@ button {
 }
 
 #file_SC {
-	height:100%;
-	width:210px;
+	display:grid;
+	grid-template-columns:repeat(4,1fr);
+	grid-column-gap:10px;
 }
 
-#file_S,#file_C {
+#file_S,#file_C,#filter_S,#filter_C {
 	height:100%;
-	width:100px;
+	width:100%;
 	border:solid #000000 1px;
 	border-radius:5px;
-	float:left;
 	background-color:#00ff00;
 	outline:none;
 }
 
-#file_C {
-	margin-left:10px;
-	background-color:#ffff00;
-}
+#file_C {background-color:#ffff00}
 
-#file_S:hover,#file_C:hover {
+#filter_S,#filter_C {background-color:#ff0000}
+
+#file_S:hover,#file_C:hover,#filter_S:hover,#filter_C:hover {
 	background-color:#00bfff;
 }
 
-#file_S:active,#file_C:active {
+#file_S:active,#file_C:active,#filter_S:active,#filter_C:active {
 	background-image:linear-gradient(rgba(0,0,0,10%),rgba(0,0,0,10%));
 }
 

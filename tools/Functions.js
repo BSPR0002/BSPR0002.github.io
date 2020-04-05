@@ -41,7 +41,7 @@ function generate_preview(data) {
 					break;
 				case "object":
 					if (data[index]===null) {
-						operator_meta(outer,index,"null","null",path);
+						operator_meta(outer,index,null,"null",path);
 					} else {
 						if (Array.isArray(data[index])) {
 							var otype="Array";
@@ -197,16 +197,18 @@ function file_Close() {
 	} else fclose();
 }
 
-function add_filter() {
+function add_filter(title,value) {
+	if (typeof title!="string") title="索引器";
+	if (typeof value!="string") value="";
 	var filter=HADecoder([
 		["DIV",[
 			["DIV",[
-				["INPUT",null,{"class":"filter_title_input","type":"text","value":"索引器"}],
+				["INPUT",null,{"class":"filter_title_input","type":"text","value":title}],
 				["BUTTON",null,{"class":"filter_delete","title":"删除这个索引器"}]
 			],{"class":"filter_title"}],
 			["DIV",[
 				["P",["索引路径"]],
-				["INPUT",null,{"class":"filter_path_input","type":"search","placeholder":"索引编号占位符 ${i}"}]
+				["INPUT",null,{"class":"filter_path_input","type":"search","placeholder":"索引编号占位符 ${i}","value":value}]
 			],{"class":"filter_path"}],
 			["INPUT",null,{"class":"filter_edit","type":"text"}]
 		],{"class":"filter"}]
@@ -223,6 +225,34 @@ function add_filter() {
 function remove_filter() {
 	var target=this.parentNode.parentNode;
 	target.parentNode.removeChild(target);
+}
+
+function save_filters() {
+	var data=new Array;
+	for (let member of document.getElementsByClassName("filter")) {
+		var name=member.getElementsByClassName("filter_title_input")[0].value;
+		var value=member.getElementsByClassName("filter_path_input")[0].value;
+		data.push({"name":name,"value":value});
+	};
+	localStorage.setItem("M2-PSB-SCN-JSON-EDITOR-filter",JSON.stringify(data));
+	window_board.display("保存完成！");
+}
+
+function read_filters() {
+	var data=localStorage.getItem("M2-PSB-SCN-JSON-EDITOR-filter");
+	if (typeof data=="string") {
+		data=JSON.parse(data);
+		document.getElementById("filter_0_title").value=data[0].name;
+		document.getElementById("filter_0_path").value=data[0].value;
+		for (let i=1,l=data.length;i<l;i++) {
+			add_filter(data[i].name,data[i].value);
+		};
+	};
+}
+
+function clear_filters_save() {
+	localStorage.removeItem("M2-PSB-SCN-JSON-EDITOR-filter");
+	window_board.display("已清除！");
 }
 
 var window_board={
@@ -282,11 +312,14 @@ document.getElementById("input_file").addEventListener("change",function(){
 });
 document.getElementById("file_S").addEventListener("click",file_Save);
 document.getElementById("file_C").addEventListener("click",file_Close);
+document.getElementById("filter_S").addEventListener("click",save_filters);
+document.getElementById("filter_C").addEventListener("click",clear_filters_save);
 document.getElementById("filter_add_button").addEventListener("click",add_filter);
 document.getElementById("index_set").addEventListener("input",editor.radio_onAir);
 document.getElementById("filter_0_path").addEventListener("input",editor.radio_inside);
 document.getElementById("filter_0_edit").addEventListener("radio",editor.radio_listen);
 document.getElementById("filter_0_edit").addEventListener("input",editor.edit);
+read_filters();
 window.onbeforeunload=function(event){
 	if (editor.file.modified) event.returnValue="文件已被修改。若未保存，修改将会丢失！";
 };
