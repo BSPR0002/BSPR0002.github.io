@@ -132,23 +132,12 @@ var NotificationCreater=function(options) {
 };
 };
 
-var FileAPI={
-	"read":function(target,type) {
-		var Operator=new FileReader;
-		switch (type) {
-			case 1:
-				Operator.readAsArrayBuffer(target);
-			break;
-			case 2:
-				Operator.readAsBinaryString(target);
-			break;
-			case 3:
-				Operator.readAsDataURL(target);
-			break;
-			default:
-				Operator.readAsText(target);
-		}
-		return Operator.result;
-	},
-	"write":function(){console.warn("still building")}
-};
+class MultiThread {
+	constructor(codeString,listener,name,error) {
+		this.core=new Worker(URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"})));
+		this.core.onmessage=listener;
+		this.core.onerror=error;
+	}
+	send(data){this.core.postMessage(data)}
+	shut(){this.core.terminate()}
+}

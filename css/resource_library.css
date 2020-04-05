@@ -185,8 +185,7 @@
 .card_board_title_icon {
 	height:24px;
 	width:24px;
-	margin:0 5px 0 0;
-	float:left;
+	margin-right:5px;
 	display:none;
 	border-radius:3px;
 	box-sizing:border-box;
@@ -199,6 +198,11 @@
 }
 
 .card_board_title_text {
+	position:absolute;
+	left:29px;
+	right:0;
+	top:0;
+	bottom:0;
 	display:inline-block;
 	margin:2px 0;
 	white-space:nowrap;

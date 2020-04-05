@@ -234,3 +234,34 @@ var Cookies={
 		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
 	}
 };
+
+var FileAPI={
+	"read":function(target,type) {
+		var Operator=new FileReader;
+		switch (type) {
+			case 1:
+				Operator.readAsArrayBuffer(target);
+			break;
+			case 2:
+				Operator.readAsBinaryString(target);
+			break;
+			case 3:
+				Operator.readAsDataURL(target);
+			break;
+			default:
+				Operator.readAsText(target);
+		}
+		return Operator.result;
+	},
+	"save":function(object,saveName){
+		var obj_URL=URL.createObjectURL(object);
+		var address=document.createElement("a");
+		address.href=obj_URL;
+		if (typeof saveName=="undefined") {
+			address.download="";
+		} else address.download=saveName;
+		var VM_Click=new MouseEvent("click",{"button":0});
+		address.dispatchEvent(VM_Click);
+		URL.revokeObjectURL(obj_URL);
+	}
+};
