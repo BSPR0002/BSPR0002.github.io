@@ -236,8 +236,11 @@ var Cookies={
 };
 
 var FileAPI={
-	"read":function(target,type) {
+	"read":function(target,type,callback) {
 		var Operator=new FileReader;
+		Operator.onload=function(){
+			callback(this.result);
+		};
 		switch (type) {
 			case 1:
 				Operator.readAsArrayBuffer(target);
@@ -251,7 +254,7 @@ var FileAPI={
 			default:
 				Operator.readAsText(target);
 		}
-		return Operator.result;
+		return Operator;
 	},
 	"save":function(object,saveName){
 		var obj_URL=URL.createObjectURL(object);
