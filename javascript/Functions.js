@@ -1,5 +1,3 @@
-var sheet="home_page";
-
 function WakeHoverPointer() {
 	document.getElementById("nav_hover_pointer").style.height="10px";
 }
@@ -16,12 +14,21 @@ function MovePointer(pst) {
 	document.getElementById("nav_pointer").style.left=pst+"px";
 }
 
-function ChangePage(page) {
-	if (page!=sheet) {
-		Load("/html/"+page+".html",document.getElementById("page_box"));
-		sheet=page;
+var ChangePage=(function(){
+	var currentSheet=null;
+	var lastLoad={
+		"state":false,
+		"AJAX":null
 	}
-}
+	return function(sheet) {
+		if (sheet!=currentSheet) {
+			if (lastLoad.state) lastLoad.AJAX.abort();
+			lastLoad.state=true;
+			lastLoad.AJAX=Load("/html/"+sheet+".html",document.getElementById("page_box"));
+			currentSheet=sheet;
+		}
+	}
+})();
 
 var window_board={
 	"show":function() {

@@ -21,7 +21,7 @@ function getJSON(url,callback,AllowCache) {
 		callback(response);
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
-	AJAX(AJAXModel);
+	return AJAX(AJAXModel);
 }
 
 function getXML(url,callback,AllowCache) {
@@ -29,13 +29,7 @@ function getXML(url,callback,AllowCache) {
 		callback(response);
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
-	AJAX(AJAXModel);
-}
-
-function EmptyElement(TargetElement) {
-	var Operator=document.createRange();
-	Operator.selectNodeContents(TargetElement);
-	Operator.deleteContents();
+	return AJAX(AJAXModel);
 }
 
 function Load(url,TargetElement,AllowCache) {
@@ -45,11 +39,13 @@ function Load(url,TargetElement,AllowCache) {
 		TargetElement.appendChild(Operator);
 	}};
 	if (AllowCache==false) AJAXModel.cache=false;
-	AJAX(AJAXModel);
+	return AJAX(AJAXModel);
 }
 
-function Each(obj,action) {
-	for (var key in obj){action(key,obj[key])};
+function EmptyElement(TargetElement) {
+	var Operator=document.createRange();
+	Operator.selectNodeContents(TargetElement);
+	Operator.deleteContents();
 }
 
 function requestNotificationPermission(){

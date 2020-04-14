@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded",function() {
 		ChangePage("about_us");
 	});
 	document.getElementById("window_board_close").addEventListener("click",window_board.hide);
-	Load("/html/home_page.html",document.getElementById("page_box")); //加载主页
+	ChangePage("home_page"); //加载主页
 },{"once":true});
 
 window.addEventListener("load",function() {
