@@ -16,15 +16,11 @@ function MovePointer(pst) {
 
 var ChangePage=(function(){
 	var currentSheet=null;
-	var lastLoad={
-		"state":false,
-		"AJAX":null
-	}
+	var lastLoad={"readyState":4};
 	return function(sheet) {
 		if (sheet!=currentSheet) {
-			if (lastLoad.state) lastLoad.AJAX.abort();
-			lastLoad.state=true;
-			lastLoad.AJAX=Load("/html/"+sheet+".html",document.getElementById("page_box"));
+			if (lastLoad.readyState!=4) lastLoad.abort();
+			lastLoad=Load("/html/"+sheet+".html",document.getElementById("page_box"));
 			currentSheet=sheet;
 		}
 	}

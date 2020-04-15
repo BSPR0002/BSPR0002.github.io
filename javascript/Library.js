@@ -241,7 +241,7 @@ var ResourceLibrary=(function(){
 			}
 		}
 	})();
-	 return {
+	return {
 		"overview":overview,
 		"show":show,
 		"pull":pullData,
@@ -259,7 +259,7 @@ var ResourceLibrary=(function(){
 	function Search_Initialize(self) {
 		if (document.getElementById("library_search_bar")) {
 			document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-			document.getElementById("library_search_bar_input").addEventListener("keypress",function() {if (event.keyCode==13) ResourceLibrary.Search.manual()});
+			document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
 			document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
 		} else setTimeout(function(){self(self)},100);
 	};
