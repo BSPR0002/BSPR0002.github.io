@@ -248,20 +248,18 @@
 .card_board_close:before,.card_board_close:after {
 	position:absolute;
 	display:block;
-	top:0;
-	right:9px;
+	top:50%;
+	right:50%;
 	width:2px;
 	height:20px;
 	content:"";
-	border-style:solid;
-	border-width:1px;
+	background-color:#FFFFFF;
 	box-sizing:border-box;
-	border-color:#000000;
-	transform:rotate(45deg);
+	transform:translate(50%,-50%) rotate(45deg);
 }
 
 .card_board_close:after {
-	transform:rotate(135deg);
+	transform:translate(50%,-50%) rotate(135deg);
 }
 
 .card_board_BDND .card_board_close:before,.card_board_BDND .card_board_close:after {

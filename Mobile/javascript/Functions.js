@@ -1,17 +1,11 @@
-function WakeHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.height="10px";
+function MoveTab(sheet) {
+	document.getElementById("top_sheet_tab").style.left=(sheet-1)*4+"rem";
 }
 
-function MoveHoverPointer(pst) {
-	document.getElementById("nav_hover_pointer").style.left=pst+"px";
-}
-
-function HideHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.height="0";
-}
-
-function MovePointer(pst) {
-	document.getElementById("nav_pointer").style.left=pst+"px";
+function ChangeSheet(sheet) {
+	var SheetList=["resource_library","information"]
+	MoveTab(sheet);
+	ChangePage(SheetList[sheet-1]);
 }
 
 var ChangePage=(function(){
@@ -20,7 +14,7 @@ var ChangePage=(function(){
 	return function(sheet) {
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/html/"+sheet+".html",document.getElementById("page_box"));
+			lastLoad=Load("html/"+sheet+".html",document.getElementById("page"));
 			currentSheet=sheet;
 		}
 	}
@@ -66,6 +60,4 @@ var window_board={
 		if (typeof size.height!="undefined") board.style.width=size.height;
 		window_board.show();
 	}
-};
-
-//if (DetectUA().Mobile) window.location.href="/Mobile";
+}

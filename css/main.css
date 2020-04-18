@@ -169,20 +169,18 @@ a:active {color:#4B97C5}
 #window_board_close:before,#window_board_close:after {
 	position:absolute;
 	display:block;
-	top:0;
-	right:9px;
+	top:50%;
+	right:50%;
 	width:2px;
 	height:20px;
 	content:"";
-	border-style:solid;
-	border-width:1px;
+	background-color:#000000;
 	box-sizing:border-box;
-	border-color:#000000;
-	transform:rotate(45deg);
+	transform:translate(50%,-50%) rotate(45deg);
 }
 
 #window_board_close:after {
-	transform:rotate(135deg);
+	transform:translate(50%,-50%) rotate(135deg);
 }
 
 #window_board_content {
