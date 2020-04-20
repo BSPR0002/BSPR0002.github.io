@@ -7,6 +7,7 @@
 	display:grid;
 	grid-template-rows:1.9rem 1fr;
 	grid-row-gap:0.5rem;
+	overflow:hidden;
 }
 
 #search {
@@ -88,7 +89,7 @@
 	border-radius:0.4rem;
 	padding:0.4rem;
 	display:grid;
-	grid-template-rows:2rem 2.6rem 1.875rem;
+	grid-template-rows:2.1rem 2.5rem 1.875rem;
 	grid-template-columns:5rem 1fr;
 	grid-gap:0.4rem;
 	grid-template-areas:"icon name" "icon type" "link link";
@@ -124,10 +125,7 @@
 
 .card_type {
 	grid-area:type;
-	display:-webkit-box;
-	-webkit-box-orient:vertical;
-	-webkit-line-clamp:2;
-	overflow:hidden;
+	overflow:auto;
 }
 
 .card_name,.card_type {

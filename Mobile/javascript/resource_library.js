@@ -135,14 +135,15 @@ var ResourceLibrary=(function(){
 		} else show(libraryData);
 	};
 	var Search=(function(){
-		var last="done";
+		var wait=false;
+		var timeoutID=null;
 		function engine() {
 			if (libraryData==null) {
 				document.getElementById("search_button").className="pulling";
 				pullData(engine);
 				return false;
 			};
-			last="done";
+			wait=false;
 			var input=document.getElementById("search_input").value;
 			var ShowState=document.getElementById("search_button");
 			if (input!="") {
@@ -182,13 +183,15 @@ var ResourceLibrary=(function(){
 			show(result);
 		};
 		return {
-			"hint":function() {
-				if (last=="done") {
-					last="wait";
+			"auto":function() {
+				if (wait!=true) {
+					wait=true;
 					document.getElementById("search_button").className="waiting";
+					timeoutID=setTimeout(engine,1000);
 				};
 			},
-			"start":function() {
+			"manual":function() {
+				clearTimeout(timeoutID);
 				engine();
 			}
 		}
@@ -210,9 +213,9 @@ var ResourceLibrary=(function(){
 	};
 	function Search_Initialize(self) {
 		if (document.getElementById("search")) {
-			document.getElementById("search_input").addEventListener("input",ResourceLibrary.Search.hint);
-			document.getElementById("search_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.start()});
-			document.getElementById("search_button").addEventListener("click",ResourceLibrary.Search.start);
+			document.getElementById("search_input").addEventListener("input",ResourceLibrary.Search.auto);
+			document.getElementById("search_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
+			document.getElementById("search_button").addEventListener("click",ResourceLibrary.Search.manual);
 		} else setTimeout(function(){self(self)},100);
 	};
 	Initial_view(Initial_view);

@@ -294,6 +294,7 @@
 	border:solid 2px #000000;
 	border-radius:50%;
 }
+#library_search_bar_magnifier.pulling:after {background-color:#FF0000}
 #library_search_bar_magnifier.waiting:after {background-color:#FFFF00}
 #library_search_bar_magnifier.searching:after {background-color:#00FF00}
 

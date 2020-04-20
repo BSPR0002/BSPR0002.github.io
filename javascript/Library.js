@@ -185,6 +185,7 @@ var ResourceLibrary=(function(){
 		var timeoutID=null;
 		function engine() {
 			if (libraryData==null) {
+				document.getElementById("library_search_bar_magnifier").className="pulling";
 				pullData(engine);
 				return false;
 			};
