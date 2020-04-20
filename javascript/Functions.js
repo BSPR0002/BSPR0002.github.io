@@ -68,4 +68,4 @@ var window_board={
 	}
 };
 
-//if (DetectUA().Mobile) window.location.href="/Mobile";
+//if (DetectUA().Mobile) window.location.href="/Mobile/";

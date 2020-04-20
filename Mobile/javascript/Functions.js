@@ -14,7 +14,7 @@ var ChangePage=(function(){
 	return function(sheet) {
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("html/"+sheet+".html",document.getElementById("page"));
+			lastLoad=Load("/Mobile/html/"+sheet+".html",document.getElementById("page"));
 			currentSheet=sheet;
 		}
 	}

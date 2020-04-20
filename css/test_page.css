@@ -1,3 +1,5 @@
+* {box-sizing:border-box}
+
 body,.body_color {
 	background-color:#92C1DC;
 	color:#000000;

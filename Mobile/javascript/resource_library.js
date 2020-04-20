@@ -1,31 +1,13 @@
 var TotalPage=null;
 var CurrentPage=null;
 
-function ShowCardBoard(Node) {
-	var Board=Node.parentNode.parentNode.getElementsByClassName("card_board")[0];
-	var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
-	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
-	EmptyElement(BoardTitle);
-	BoardTitle.removeAttribute("title");
-	EmptyElement(BoardContent);
-	Board.className="card_board";
-	if (typeof Node.Board.Theme=="string") Board.className+=Node.Board.Theme;
-	if (typeof Node.Board.Title=="string") {
-		BoardTitle.appendChild(document.createTextNode(Node.Board.Title));
-		BoardTitle.title=Node.Board.Title;
-	};
+function ShowLinkInfo(Node) {
+	var CardName=Node.parentNode.parentNode.getElementsByClassName("card_name")[0].title;
+	var BoardLink="";
+	if (typeof Node.Board.Title=="string") BoardLink=Node.Board.Title;
+	var BoardContent=HADecoder([BoardLink,["br"]]);
 	BoardContent.appendChild(Node.Board.Content.cloneNode(true));
-	Board.style.left="130px";
-}
-
-function CloseCardBoard(Node) {
-	Node.parentNode.parentNode.style.left="100%";
-}
-
-function CardBoardDetail(Node) {
-	var Container=document.createRange();
-	Container.selectNodeContents(Node.parentNode.getElementsByClassName("card_board_content")[0]);
-	window_board.display(Container.cloneContents(),"详细信息");
+	window_board.display(BoardContent,CardName);
 }
 
 var ResourceLibrary=(function(){
@@ -118,7 +100,7 @@ var ResourceLibrary=(function(){
 					"Title":"百度网盘",
 					"Content":CardLinkBDNDBoardContent
 				};
-				CardLinkBDND.addEventListener("click",function(){ShowCardBoard(this)});
+				CardLinkBDND.addEventListener("click",function(){ShowLinkInfo(this)});
 				var CardLinkBDNDIcon=document.createElement("div");
 				CardLinkBDNDIcon.className="card_link_button_icon";
 				CardLinkBDND.appendChild(CardLinkBDNDIcon);
@@ -142,34 +124,6 @@ var ResourceLibrary=(function(){
 				CardLink.appendChild(CardLinkTorrent);
 			};
 			Card.appendChild(CardLink);
-			var CardBoard=document.createElement("div");
-			CardBoard.className="card_board";
-			var CardBoardFrame=document.createElement("div");
-			CardBoardFrame.className="card_board_frame";
-			var CardBoardTitle=document.createElement("div");
-			CardBoardTitle.className="card_board_title";
-			var CardBoardTitleIcon=document.createElement("div");
-			CardBoardTitleIcon.className="card_board_title_icon";
-			CardBoardTitle.appendChild(CardBoardTitleIcon);
-			var CardBoardTitleText=document.createElement("p");
-			CardBoardTitleText.className="card_board_title_text";
-			CardBoardTitle.appendChild(CardBoardTitleText);
-			CardBoardFrame.appendChild(CardBoardTitle);
-			var CardBoardContent=document.createElement("div");
-			CardBoardContent.className="card_board_content";
-			CardBoardFrame.appendChild(CardBoardContent);
-			var CardBoardShowDetail=document.createElement("button");
-			CardBoardShowDetail.className="card_board_detail";
-			CardBoardShowDetail.appendChild(document.createTextNode("详细信息"));
-			CardBoardShowDetail.addEventListener("click",function() {CardBoardDetail(this)});
-			CardBoardFrame.appendChild(CardBoardShowDetail);
-			var CardBoardClose=document.createElement("button");
-			CardBoardClose.className="card_board_close";
-			CardBoardClose.href="javascript:void(0)";
-			CardBoardClose.addEventListener("click",function() {CloseCardBoard(this)});
-			CardBoardFrame.appendChild(CardBoardClose);
-			CardBoard.appendChild(CardBoardFrame);
-			Card.appendChild(CardBoard);
 			ShowBox.appendChild(Card);
 		};
 		EmptyElement(document.getElementById("show_box"));
@@ -181,16 +135,16 @@ var ResourceLibrary=(function(){
 		} else show(libraryData);
 	};
 	var Search=(function(){
-		var wait=false;
-		var timeoutID=null;
+		var last="done";
 		function engine() {
 			if (libraryData==null) {
+				document.getElementById("search_button").className="pulling";
 				pullData(engine);
 				return false;
 			};
-			wait=false;
-			var input=document.getElementById("library_search_bar_input").value;
-			var ShowState=document.getElementById("library_search_bar_magnifier");
+			last="done";
+			var input=document.getElementById("search_input").value;
+			var ShowState=document.getElementById("search_button");
 			if (input!="") {
 				ShowState.className="searching";
 				ShowState.clientTop;
@@ -228,15 +182,13 @@ var ResourceLibrary=(function(){
 			show(result);
 		};
 		return {
-			"auto":function() {
-				if (wait!=true) {
-					wait=true;
-					document.getElementById("library_search_bar_magnifier").className="waiting";
-					timeoutID=setTimeout(engine,1000);
+			"hint":function() {
+				if (last=="done") {
+					last="wait";
+					document.getElementById("search_button").className="waiting";
 				};
 			},
-			"manual":function() {
-				clearTimeout(timeoutID);
+			"start":function() {
 				engine();
 			}
 		}
@@ -257,10 +209,10 @@ var ResourceLibrary=(function(){
 		} else setTimeout(function(){self(self)},100);
 	};
 	function Search_Initialize(self) {
-		if (document.getElementById("library_search_bar")) {
-			document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-			document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
-			document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
+		if (document.getElementById("search")) {
+			document.getElementById("search_input").addEventListener("input",ResourceLibrary.Search.hint);
+			document.getElementById("search_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.start()});
+			document.getElementById("search_button").addEventListener("click",ResourceLibrary.Search.start);
 		} else setTimeout(function(){self(self)},100);
 	};
 	Initial_view(Initial_view);

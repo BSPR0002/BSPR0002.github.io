@@ -56,10 +56,35 @@ var AJAX=function(options) {
 	if (typeof AJAX_Local[options.url]!="undefined") {
 		options.success(AJAX_Local[options.url])
 	} else {
-		console.warn("404 Not found");
-		try {options.fail(404)} catch(error) {console.warn("No fail function or fail function error!")}
+		function fail(){
+			console.warn("404 Not found");
+			try {options.fail(404)} catch(error) {console.warn("No fail function or fail function error!")}
+		};
+		var doc=HADecoder([
+			"您的脚本正在通过 XmlHttpRequest 请求网络资源。",["br"],
+			"请求的资源：",["br"],
+			options.url,["br"],
+			"AJAX 本地模拟功能在脚本的预置库中找不到此资源，请您选择一个文件作为此资源的响应，或指定此次请求失败。",["br"],
+			["input",null,{"type":"file"}],["br"],
+			["button","指定此次请求失败",{
+				"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s",
+				"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
+				"onmouseout":"javascript:this.style.backgroundColor=null"
+			}]
+		],"AJAX Local");
+		doc.querySelector("input").addEventListener("change",function(){
+			window_board.hide();
+			FileAPI.read(this.files[0],4,function(text){
+				options.success(text);
+			});
+		});
+		doc.querySelector("button").addEventListener("click",function(){
+			window_board.hide();
+			fail();
+		});
+		if (window_board) {window_board.display(doc,"请求文件",true)} else {fail()};
 	};
-	return "Local Debug";
+	return {0:"Local Debug","readyState":4};
 };
 
 var Cookies={

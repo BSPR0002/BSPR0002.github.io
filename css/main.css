@@ -1,3 +1,5 @@
+* {box-sizing:border-box}
+
 body,.body_color {
 	background-color:#92C1DC;
 	color:#000000;
@@ -122,8 +124,6 @@ a:active {color:#4B97C5}
 
 #window_board {
 	margin:auto;
-	display:flex;
-	flex-direction:column;
 	min-width:256px;
 	min-height:128px;
 	max-width:80%;
@@ -132,23 +132,18 @@ a:active {color:#4B97C5}
 	border-radius:10px;
 	overflow:hidden;
 	padding:10px;
+	display:grid;
+	grid-template-rows:20px auto 1fr;
 	font-size:15px;
 }
 
-#window_board_hr{width:100%}
-
 #window_board_top {
-	height:20px;
-	position:relative;
-	flex-shrink:0;
+	display:grid;
+	grid-template-columns:1fr 20px;
+	grid-column-gap:2px;
 }
 
 #window_board_title {
-	position:absolute;
-	top:0;
-	bottom:0;
-	left:0;
-	right:22px;
 	margin:0;
 	white-space:nowrap;
 	overflow:hidden;
@@ -157,13 +152,11 @@ a:active {color:#4B97C5}
 
 #window_board_close{
 	display:block;
+	position:relative;
 	background-color:transparent;
-	position:absolute;
 	width:20px;
 	height:20px;
 	border:none;
-	right:0;
-	top:0;
 }
 
 #window_board_close:before,#window_board_close:after {
@@ -183,6 +176,11 @@ a:active {color:#4B97C5}
 	transform:translate(50%,-50%) rotate(135deg);
 }
 
+#window_board_hr{
+	width:100%;
+	border-radius:1px;
+}
+
 #window_board_content {
 	word-wrap:break-word;
 	word-break:normal;
@@ -193,5 +191,3 @@ a:active {color:#4B97C5}
 	max-width:100%;
 	height:auto;
 }
-
-#window_board_content .CardBoardDetailTips {display:none}
