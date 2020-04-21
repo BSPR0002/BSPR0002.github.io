@@ -1,7 +1,5 @@
 @media all {html{font-size:calc(100vmin/360*16)}}
 
-* {box-sizing:border-box}
-
 body,.body_color {background:#FFFFFF}
 
 #top {

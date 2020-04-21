@@ -252,6 +252,7 @@
 
 #library_search_bar {
 	width:100%;
+	box-sizing:border-box;
 	border-radius:10px;
 	background-color:#FFFFFF;
 	position:relative;
@@ -266,6 +267,7 @@
 	width:25px;
 	height:25px;
 	position:relative;
+	box-sizing:border-box;
 	padding:2px;
 }
 #library_search_bar_magnifier:before {
@@ -312,5 +314,5 @@
 #library_search_bar_input {
 	border:solid 1px;
 	border-radius:5px;
-	padding:5px;
+	padding:1px 5px;
 }
