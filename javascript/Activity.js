@@ -66,64 +66,68 @@ var Activity={
 	}
 }
 
-var News={
-	"request":function() {
-		if (requestNotificationPermission()!=0) AJAX({
+var News=(function(){
+	var retry=0;
+	var Data=[];
+	function request() {
+		if (getNotificationPermission(request)===1) AJAX({
 			"url":"/json/News.json","type":"json",
-			"success":News.play,
+			"success":play,
 			"fail":function() {
-				if (News.retry<5) {
-					News.retry++;
-					News.request();
+				if (retry<5) {
+					retry++;
+					request();
 				}
 			}
 		});
-	},
-	"retry":0,
-	"play":function(data) {
-		News.Data=data;
-		News.operator();
-	},
-	"operator":function() {
-		if (requestNotificationPermission()!=0&&News.Data[0]) {
-			var data=News.Data.splice(0,1)[0];
-			if (News.LogManager(data.ID)||data.force==true) {
+	};
+	function play(data) {
+		Data=data;
+		operator();
+	};
+	function operator() {
+		if (getNotificationPermission()!=0&&Data[0]) {
+			var data=Data.splice(0,1)[0];
+			if ((LogManager(data.ID,data.name)||data.force==true)&&data.unshow!=true) {
 				var model={
-					"title":data.title,"message":data.notification.message,"icon":"/favicon.png","keep":true,
-					"show":function(){News.LogRecorder(data.ID)},
-					"close":News.operator
+					"title":data.title,"message":data.preview.message,"icon":"/favicon.png","keep":true,
+					"show":function(){LogRecorder(data.ID,data.name)},
+					"close":operator
 				};
-				if (data.notification.image) model.image=data.notification.image;
+				if (data.preview.image) model.image=data.preview.image;
 				if (data.board) model.click=function(){
 					window.focus();
 					window_board.display(HADecoder(data.board,"News_"+data.ID),data.title)
 					this.close();
 				};
 				NotificationCreater(model);
-			} else News.operator();
+			} else operator();
 		};
-	},
-	"Data":[],
-	"LogManager":function(NewsID) {
+	};
+	function LogManager(NewsID,NewsName) {
 		var data=localStorage.getItem("News_log_ID_"+NewsID);
 		if (data!=null) {
 			try {
 				var log=JSON.parse(data);
-				if (typeof log!="object"||typeof log.have_read!="number") throw "log corrupted";
+				if (typeof log!="object"||typeof log.have_read!="number"||typeof log.name!="string") throw "推送记录损坏";
 				var pass=(new Date).getTime()-log.have_read;
-				if (pass>259200000||pass<=0) {
+				if (NewsName!=log.name||pass>259200000||pass<=0) {
 					localStorage.removeItem("News_log_ID_"+NewsID);
-					throw "expired";
+					throw "推送记录过期";
 				};
 				return false;
-			} catch(error) {console.log("Abnormal News log:",NewsID,error)};
+			} catch(error) {console.log("异常的推送记录:"+"ID"+NewsID,error)};
 		}
 		return true;
-	},
-	"LogRecorder":function(NewsID) {
-		var time=new Date;
-		var log={"have_read":time.getTime()};
-		time.setTime(time.getTime()+259200000);
+	};
+	function LogRecorder(NewsID,NewsName) {
+		if (typeof NewsName!="string") NewsName="";
+		var log={"name":NewsName,"have_read":(new Date).getTime()};
 		localStorage.setItem("News_log_ID_"+NewsID,JSON.stringify(log));
-	}
-}
+	};
+	return {
+		"request":request,
+		"play":play,
+	};
+})();
+

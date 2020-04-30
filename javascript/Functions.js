@@ -1,3 +1,5 @@
+//if (DetectUA().Mobile) window.location.href="/Mobile/";
+
 function WakeHoverPointer() {
 	document.getElementById("nav_hover_pointer").style.height="10px";
 }
@@ -67,5 +69,3 @@ var window_board={
 		window_board.show();
 	}
 };
-
-//if (DetectUA().Mobile) window.location.href="/Mobile/";

@@ -48,28 +48,24 @@ function EmptyElement(TargetElement) {
 	Operator.deleteContents();
 }
 
-function requestNotificationPermission(){
+function getNotificationPermission(callback){
 	if (!Notification) return 0;
 	switch (Notification.permission) {
 		case "default":
-			Notification.requestPermission();
+			Notification.requestPermission(callback);
 			return 2;
-		case "denied":
-			return 0;
 		case "granted":
 			return 1;
+		default:
+			return 0;
 	}
 }
 
 function NotificationCreater(options) {
-	if (!Notification) return false;
-	switch (Notification.permission) {
-		case "default":
-			Notification.requestPermission(function(){NotificationCreater(options)});
+	switch (getNotificationPermission()) {
+		case 2:
 			return 2;
-		case "denied":
-			return false;
-		case "granted":
+		case 1:
 			var model={"title":"","message":"","image":"","icon":"","id":"","data":"","timestamp":undefined,"dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
 			Object.assign(model,options);
 			var NotificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"timestamp":model.timestamp,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
@@ -78,6 +74,8 @@ function NotificationCreater(options) {
 			NotificationInterface.onclose=model.close;
 			NotificationInterface.onerror=model.error;
 			return NotificationInterface;
+		default:
+			return false;
 	}
 }
 
@@ -128,7 +126,7 @@ function HADecoder(HtmlArray,unit) {
 		};
 	};
 	Operator(HtmlArray,HtmlDoc);
-	return HtmlDoc
+	return HtmlDoc;
 }
 
 function HAEncoder(Node,IncludeOuter) {
@@ -234,9 +232,7 @@ var Cookies={
 var FileAPI={
 	"read":function(target,type,callback) {
 		var Operator=new FileReader;
-		Operator.onload=function(){
-			callback(this.result);
-		};
+		if (typeof callback=="function") Operator.onload=function(){callback(this.result)};
 		switch (type) {
 			case 1:
 				Operator.readAsArrayBuffer(target);
@@ -264,3 +260,17 @@ var FileAPI={
 		URL.revokeObjectURL(obj_URL);
 	}
 };
+
+class MultiThread {
+	constructor(codeString,listener,onerror,name) {
+		var codeFile=URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"}));
+		this.core=new Worker(codeFile,{"name":name});
+		if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)};
+		if (typeof onerror=="function") this.core.onerror=onerror;
+		URL.revokeObjectURL(codeFile);
+	}
+	send(data) {this.core.postMessage(data)}
+	transfer(ArrayBuffer) {this.core.postMessage(ArrayBuffer,[ArrayBuffer])}
+	changeListener(listener) {if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)}}
+	shut(){this.core.terminate()}
+}

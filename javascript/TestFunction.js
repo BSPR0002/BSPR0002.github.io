@@ -39,9 +39,6 @@ var AJAX_Local={
 				"Torrent":"magnet:?xt=urn:btih:7RYT3XTCUKF3YBR3C5KUM7UOF2BPLSND&dn=[150227] [ゆずソフト] サノバウィッチ ‐SABBAT OF THE WITCH‐ + Drama CD + Character Songs + Bonus + Manual + Update 1.1"
 			}
 		}
-	],
-	"/json/News.json":[
-		
 	]
 };
 
@@ -52,14 +49,32 @@ function testfunc() {
 
 if (window.location.origin=="file://") { //本地模拟函数
 var AJAX=function(options) {
+	function success(data) {
+		switch (options.type) {
+			case "json":
+				try {
+					data=JSON.parse(data);
+				} catch(e) {fail(-11)}
+		};
+		options.success(data);
+	};
+	function fail(state){
+		switch (state){
+			case 404:
+				console.warn("404 Not found");
+				break;
+			case -11:
+				console.warn("Received data cannot be resolved to JSON!");
+				break;
+			default:
+				console.warn("Unknown XmlHttpRequest error!");
+		};
+		try {options.fail()} catch(error) {console.warn("No fail function or fail function error!")}
+	};
 	console.log("AJAX:",options);
 	if (typeof AJAX_Local[options.url]!="undefined") {
 		options.success(AJAX_Local[options.url])
 	} else {
-		function fail(){
-			console.warn("404 Not found");
-			try {options.fail(404)} catch(error) {console.warn("No fail function or fail function error!")}
-		};
 		var doc=HADecoder([
 			"您的脚本正在通过 XmlHttpRequest 请求网络资源。",["br"],
 			"请求的资源：",["br"],
@@ -75,14 +90,14 @@ var AJAX=function(options) {
 		doc.querySelector("input").addEventListener("change",function(){
 			window_board.hide();
 			FileAPI.read(this.files[0],4,function(text){
-				options.success(text);
+				success(text);
 			});
 		});
 		doc.querySelector("button").addEventListener("click",function(){
 			window_board.hide();
-			fail();
+			fail(404);
 		});
-		if (window_board) {window_board.display(doc,"请求文件",true)} else {fail()};
+		if (window_board) {window_board.display(doc,"请求文件",true)} else {fail(404)};
 	};
 	return {0:"Local Debug","readyState":4};
 };
@@ -112,7 +127,7 @@ var Notification={
 	"requestPermission":function() {
 		return {
 			"info":"Local Debug",
-			"then":function(){}
+			"then":function(callback){callback;}
 		}
 	},
 	"permission":"granted"
@@ -157,12 +172,3 @@ var NotificationCreater=function(options) {
 };
 };
 
-class MultiThread {
-	constructor(codeString,listener,name,error) {
-		this.core=new Worker(URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"})));
-		this.core.onmessage=listener;
-		this.core.onerror=error;
-	}
-	send(data){this.core.postMessage(data)}
-	shut(){this.core.terminate()}
-}

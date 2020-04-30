@@ -1,38 +1,35 @@
 var TotalPage=null;
 var CurrentPage=null;
 
-function ShowCardBoard(Node) {
-	var Board=Node.parentNode.parentNode.getElementsByClassName("card_board")[0];
-	var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
-	var BoardContent=Board.getElementsByClassName("card_board_content")[0];
-	EmptyElement(BoardTitle);
-	BoardTitle.removeAttribute("title");
-	EmptyElement(BoardContent);
-	Board.className="card_board";
-	if (typeof Node.Board.Theme=="string") Board.className+=Node.Board.Theme;
-	if (typeof Node.Board.Title=="string") {
-		BoardTitle.appendChild(document.createTextNode(Node.Board.Title));
-		BoardTitle.title=Node.Board.Title;
-	};
-	BoardContent.appendChild(Node.Board.Content.cloneNode(true));
-	Board.style.left="130px";
-}
-
-function CloseCardBoard(Node) {
-	Node.parentNode.parentNode.style.left="100%";
-}
-
-function CardBoardDetail(Node) {
-	var Container=document.createRange();
-	Container.selectNodeContents(Node.parentNode.getElementsByClassName("card_board_content")[0]);
-	window_board.display(Container.cloneContents(),"详细信息");
-}
-
 var ResourceLibrary=(function(){
 	var libraryData=null;
 	var pullState={
 		"state":false,
 		"callback":null
+	};
+	var Cardboard={
+		"show":function() {
+			var Board=this.parentNode.parentNode.getElementsByClassName("card_board")[0];
+			var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
+			var BoardContent=Board.getElementsByClassName("card_board_content")[0];
+			EmptyElement(BoardTitle);
+			BoardTitle.removeAttribute("title");
+			EmptyElement(BoardContent);
+			Board.className="card_board";
+			if (typeof this.Board.Theme=="string") Board.className+=this.Board.Theme;
+			if (typeof this.Board.Title=="string") {
+				BoardTitle.appendChild(document.createTextNode(this.Board.Title));
+				BoardTitle.title=this.Board.Title;
+			};
+			BoardContent.appendChild(this.Board.Content.cloneNode(true));
+			Board.style.left="130px";
+		},
+		"close":function(){this.parentNode.parentNode.style.left="100%"},
+		"detail":function CardBoardDetail() {
+			var Container=document.createRange();
+			Container.selectNodeContents(this.parentNode.getElementsByClassName("card_board_content")[0]);
+			window_board.display(Container.cloneContents(),"详细信息");
+		}
 	};
 	function pullData(callback) {
 		pullState.callback=callback;
@@ -83,7 +80,6 @@ var ResourceLibrary=(function(){
 			CardLink.className="card_link";
 			if (obj.resource.BDND) {
 				var CardLinkBDND=document.createElement("button");
-				CardLinkBDND.href="javascript:void(0)";
 				CardLinkBDND.className="card_link_button card_link_button_BDND";
 				var CardLinkBDNDBoardContent=document.createDocumentFragment();
 				let CardLinkBDNDBoardContentNode=document.createElement("p");
@@ -118,7 +114,7 @@ var ResourceLibrary=(function(){
 					"Title":"百度网盘",
 					"Content":CardLinkBDNDBoardContent
 				};
-				CardLinkBDND.addEventListener("click",function(){ShowCardBoard(this)});
+				CardLinkBDND.addEventListener("click",Cardboard.show);
 				var CardLinkBDNDIcon=document.createElement("div");
 				CardLinkBDNDIcon.className="card_link_button_icon";
 				CardLinkBDND.appendChild(CardLinkBDNDIcon);
@@ -161,12 +157,11 @@ var ResourceLibrary=(function(){
 			var CardBoardShowDetail=document.createElement("button");
 			CardBoardShowDetail.className="card_board_detail";
 			CardBoardShowDetail.appendChild(document.createTextNode("详细信息"));
-			CardBoardShowDetail.addEventListener("click",function() {CardBoardDetail(this)});
+			CardBoardShowDetail.addEventListener("click",Cardboard.detail);
 			CardBoardFrame.appendChild(CardBoardShowDetail);
 			var CardBoardClose=document.createElement("button");
 			CardBoardClose.className="card_board_close";
-			CardBoardClose.href="javascript:void(0)";
-			CardBoardClose.addEventListener("click",function() {CloseCardBoard(this)});
+			CardBoardClose.addEventListener("click",Cardboard.close);
 			CardBoardFrame.appendChild(CardBoardClose);
 			CardBoard.appendChild(CardBoardFrame);
 			Card.appendChild(CardBoard);
@@ -247,7 +242,6 @@ var ResourceLibrary=(function(){
 		"show":show,
 		"pull":pullData,
 		"Search":Search,
-		"data":libraryData
 	}
 })();
 
