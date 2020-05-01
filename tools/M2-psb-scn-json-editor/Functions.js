@@ -314,12 +314,12 @@ document.getElementById("input_file").addEventListener("change",function(){
 	this.value=null;
 	FileAPI.read(file,4,function(text){
 		try {
-			data=JSON.parse(text);
+			var data=JSON.parse(text);
 		} catch(error) {
 			window_board.display("选择的不是 JSON 文件！","错误！");
 			return false;
 		};
-		editor.startEdit(JSON.parse(text),file.name);
+		editor.startEdit(data,file.name);
 	});
 });
 document.getElementById("file_S").addEventListener("click",editor.saveFile);
