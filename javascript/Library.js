@@ -245,19 +245,16 @@ var ResourceLibrary=(function(){
 	}
 })();
 
-(function(){ //Beginning
-	function Initial_view(self) {
-		if (document.getElementById("show_box")) {
-			ResourceLibrary.overview();
-		} else setTimeout(function(){self(self)},100);
-	};
-	function Search_Initialize(self) {
-		if (document.getElementById("library_search_bar")) {
-			document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-			document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
-			document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
-		} else setTimeout(function(){self(self)},100);
-	};
-	Initial_view(Initial_view);
-	Search_Initialize(Search_Initialize);
+//Beginning
+(function() { //Initial_view
+	if (document.getElementById("show_box")) {
+		ResourceLibrary.overview();
+	} else setTimeout(arguments.callee,100);
+})();
+(function() { //Search_Initialize
+	if (document.getElementById("library_search_bar")) {
+		document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
+		document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
+		document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
+	} else setTimeout(arguments.callee,100);
 })();

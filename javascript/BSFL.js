@@ -248,8 +248,8 @@ var FileAPI={
 		}
 		return Operator;
 	},
-	"save":function(object,saveName){
-		var obj_URL=URL.createObjectURL(object);
+	"save":function(file,saveName){
+		var obj_URL=URL.createObjectURL(file);
 		var address=document.createElement("a");
 		address.href=obj_URL;
 		if (typeof saveName=="undefined") {

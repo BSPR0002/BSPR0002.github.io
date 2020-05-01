@@ -31,8 +31,6 @@ button {
 
 #window_board {
 	margin:auto;
-	display:flex;
-	flex-direction:column;
 	min-width:256px;
 	min-height:128px;
 	max-width:80%;
@@ -41,27 +39,18 @@ button {
 	border-radius:10px;
 	overflow:hidden;
 	padding:10px;
+	display:grid;
+	grid-template-rows:20px auto 1fr;
 	font-size:15px;
 }
 
-#window_board_hr{
-	width:100%;
-	border-style:solid;
-	border-radius:1px;
-}
-
 #window_board_top {
-	height:20px;
-	position:relative;
-	flex-shrink:0;
+	display:grid;
+	grid-template-columns:1fr 20px;
+	grid-column-gap:2px;
 }
 
 #window_board_title {
-	position:absolute;
-	top:0;
-	bottom:0;
-	left:0;
-	right:22px;
 	margin:0;
 	white-space:nowrap;
 	overflow:hidden;
@@ -70,32 +59,34 @@ button {
 
 #window_board_close{
 	display:block;
+	position:relative;
 	background-color:transparent;
-	position:absolute;
 	width:20px;
 	height:20px;
 	border:none;
-	right:0;
-	top:0;
 }
 
 #window_board_close:before,#window_board_close:after {
 	position:absolute;
 	display:block;
-	top:0;
-	right:9px;
+	top:50%;
+	right:50%;
 	width:2px;
 	height:20px;
 	content:"";
-	border-style:solid;
-	border-width:1px;
+	background-color:#000000;
 	box-sizing:border-box;
-	border-color:#000000;
-	transform:rotate(45deg);
+	transform:translate(50%,-50%) rotate(45deg);
 }
 
 #window_board_close:after {
-	transform:rotate(135deg);
+	transform:translate(50%,-50%) rotate(135deg);
+}
+
+#window_board_hr{
+	width:100%;
+	border-radius:1px;
+	border-color:#000000;
 }
 
 #window_board_content {
@@ -105,6 +96,7 @@ button {
 }
 
 #window_board_content img {
+	display:block;
 	max-width:100%;
 	height:auto;
 }

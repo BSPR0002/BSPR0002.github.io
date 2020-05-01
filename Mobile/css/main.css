@@ -91,6 +91,7 @@ body,.body_color {background:#FFFFFF}
 }
 
 #window_board {
+	box-sizing:border-box;
 	margin:auto;
 	min-width:12rem;
 	min-height:8rem;

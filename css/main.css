@@ -121,6 +121,7 @@ a:active {color:#4B97C5}
 }
 
 #window_board {
+	box-sizing:border-box;
 	margin:auto;
 	min-width:256px;
 	min-height:128px;
@@ -186,6 +187,7 @@ a:active {color:#4B97C5}
 }
 
 #window_board_content img {
+	display:block;
 	max-width:100%;
 	height:auto;
 }
