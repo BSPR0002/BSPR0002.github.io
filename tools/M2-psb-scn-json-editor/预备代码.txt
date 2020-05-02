@@ -2,19 +2,22 @@
 
 var pp=FileAPI.read($0.files[0],4,function(result){rr=JSON.parse(result)});
 
-for (let length=0,long=editor.file.file_json.scenes[1].texts.length;length<long;length++) {
-	tt[length]=editor.file.file_json.scenes[1].texts[length][0]
+for (let length=0,long=editor.file.scenes[1].texts.length;length<long;length++) {
+	tt[length]=editor.file.scenes[1].texts[length][0]
 };
 
 for (let length=0,long=tt.length;length<long;length++) {
-	if (tt[length]=="匹配字串") editor.file.file_json.scenes[1].texts[length][0]="替换字串"
+	if (tt[length]=="匹配字串") editor.file.scenes[1].texts[length][0]="替换字串"
 };
 
-FileAPI.save(new Blob([JSON.stringify(editor.file.file_json)]),"1.json");
+FileAPI.save(new Blob([JSON.stringify(editor.file)]),"1.json");
 
-for (let item of aa) {
-	for (let length=0,long=tt.length;length<long;length++) {
-		if (tt[length]==item[0]) editor.file.file_json.scenes[1].texts[length][0]=item[1]
+for (let length=0,long=tt.length;length<long;length++) {
+	for (let item of aa) {
+		if (tt[length]==item[0]) {
+			editor.file.scenes[1].texts[length][0]=item[1];
+			break;
+		}
 	}
 };
 
