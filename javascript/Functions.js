@@ -17,15 +17,17 @@ function MovePointer(pst) {
 }
 
 var ChangePage=(function(){
+	var SheetList=["home_page","resource_library","projects","about_us"];
 	var currentSheet=null;
 	var lastLoad={"readyState":4};
-	return function(sheet) {
+	return function(sheet){
+		MovePointer(sheet*200-110);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/html/"+sheet+".html",document.getElementById("page_box"));
+			lastLoad=Load("/html/"+SheetList[sheet-1]+".html",document.getElementById("page_box"));
 			currentSheet=sheet;
 		}
-	}
+	};
 })();
 
 var window_board={

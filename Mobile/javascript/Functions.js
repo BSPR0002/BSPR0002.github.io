@@ -2,22 +2,18 @@ function MoveTab(sheet) {
 	document.getElementById("top_sheet_tab").style.left=(sheet-1)*4+"rem";
 }
 
-function ChangeSheet(sheet) {
-	var SheetList=["resource_library","information"]
-	MoveTab(sheet);
-	ChangePage(SheetList[sheet-1]);
-}
-
 var ChangePage=(function(){
+	var SheetList=["resource_library","information"];
 	var currentSheet=null;
 	var lastLoad={"readyState":4};
-	return function(sheet) {
+	return function(sheet){
+		MoveTab(sheet);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/Mobile/html/"+sheet+".html",document.getElementById("page"));
+			lastLoad=Load("/Mobile/html/"+SheetList[sheet-1]+".html",document.getElementById("page"));
 			currentSheet=sheet;
 		}
-	}
+	};
 })();
 
 var window_board={

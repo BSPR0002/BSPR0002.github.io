@@ -48,11 +48,11 @@ function EmptyElement(TargetElement) {
 	Operator.deleteContents();
 }
 
-function getNotificationPermission(callback){
+function getNotificationPermission(){
 	if (!Notification) return 0;
 	switch (Notification.permission) {
 		case "default":
-			Notification.requestPermission(callback);
+			Notification.requestPermission();
 			return 2;
 		case "granted":
 			return 1;
