@@ -2,7 +2,7 @@ function MoveTab(sheet) {
 	document.getElementById("top_sheet_tab").style.left=(sheet-1)*4+"rem";
 }
 
-var ChangePage=(function(){
+var ChangeSheet=(function(){
 	var SheetList=["resource_library","information"];
 	var currentSheet=null;
 	var lastLoad={"readyState":4};
