@@ -79,59 +79,79 @@ function NotificationCreater(options) {
 	}
 }
 
-function HADecoder(HtmlArray,unit) {
-	if (typeof unit=="undefined") unit="未知";
-	var HtmlDoc=document.createDocumentFragment();
-	function Operator(data,outer) {
-		if (Array.isArray(data)) {
-			for (var item of data) {
-				if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
-					switch (typeof item) {
-						case "string":
-						case "number":
-							outer.appendChild(document.createTextNode(item));
-							break;
-						case "object":
-							try {
-								if (item[0]=="#comment") {outer.appendChild(document.createComment(item[1]))} else {
-									let element=document.createElement(item[0]);
-									if (typeof item[1]=="string"||typeof item[1]=="number"||Array.isArray(item[1])) {
-										switch (typeof item[1]) {
-											case "string":
-											case "number":
-												element.appendChild(document.createTextNode(item[1]));
-												break;
-											case "object":
-												Operator(item[1],element);
-										};
-									};
-									for (let attribute in item[2]) {
-										try {
-											element.setAttribute(attribute,item[2][attribute])
-										} catch (errorMessage) {
-											console.warn("HADecoder 汇报有数据错误：为节点添加属性时出错！\n出错单位：",unit,"\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"="+item[2][attribute])
-										};
-									};
-									outer.appendChild(element);
-								}
-							} catch(error) {
-								console.warn("HADecoder 汇报有数据错误：发现无效的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
-							};
-					};
-				} else {console.warn("HADecoder 汇报有数据错误：子节点树内有无法识别的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item)};
-			};
-		} else {
-			console.error("HADecoder 解析失败：接收到非数组的数据！\n出错单位：",unit,"\n接收内容：",data);
-			HtmlDoc=false;
-		};
-	};
-	Operator(HtmlArray,HtmlDoc);
-	return HtmlDoc;
+function DetectUA() {
+	var UA={"Desktop":false,"Mobile":false};
+	var Detective=navigator.userAgent;
+	if (Detective.match(/Windows/i)||Detective.match(/Macintosh/i)||Detective.match(/Linux/i)) UA.Desktop=true;
+	if (Detective.match(/Mobile/i)||Detective.match(/Android/i)||Detective.match(/iPhone/i)||Detective.match(/iPad/i)||Detective.match(/iPod/i)) UA.Mobile=true;
+	return UA;
 }
 
-function HAEncoder(Node,IncludeOuter) {
-	try {
-		Node=Node.cloneNode(true);
+class MultiThread {
+	constructor(codeString,listener,onerror,name) {
+		var codeFile=URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"}));
+		this.core=new Worker(codeFile,{"name":name});
+		if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)};
+		if (typeof onerror=="function") this.core.onerror=onerror;
+		URL.revokeObjectURL(codeFile);
+	}
+	send(data) {this.core.postMessage(data)}
+	transfer(ArrayBuffer) {this.core.postMessage(ArrayBuffer,[ArrayBuffer])}
+	changeListener(listener) {if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)}}
+	shut(){this.core.terminate()}
+}
+
+var HtmlArray={
+	"decoder":function(HtmlArray,unit) {
+		if (typeof unit=="undefined") unit="未知";
+		var HtmlDoc=document.createDocumentFragment();
+		function Operator(data,outer) {
+			if (Array.isArray(data)) {
+				for (var item of data) {
+					if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
+						switch (typeof item) {
+							case "string":
+							case "number":
+								outer.appendChild(document.createTextNode(item));
+								break;
+							case "object":
+								try {
+									if (item[0]=="#comment") {outer.appendChild(document.createComment(item[1]))} else {
+										let element=document.createElement(item[0]);
+										if (typeof item[1]=="string"||typeof item[1]=="number"||Array.isArray(item[1])) {
+											switch (typeof item[1]) {
+												case "string":
+												case "number":
+													element.appendChild(document.createTextNode(item[1]));
+													break;
+												case "object":
+													Operator(item[1],element);
+											};
+										};
+										for (let attribute in item[2]) {
+											try {
+												element.setAttribute(attribute,item[2][attribute])
+											} catch (errorMessage) {
+												console.warn("HADecoder 汇报有数据错误：为节点添加属性时出错！\n出错单位：",unit,"\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"="+item[2][attribute])
+											};
+										};
+										outer.appendChild(element);
+									}
+								} catch(error) {
+									console.warn("HADecoder 汇报有数据错误：发现无效的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
+								};
+						};
+					} else {console.warn("HADecoder 汇报有数据错误：子节点树内有无法识别的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item)};
+				};
+			} else {
+				console.error("HADecoder 解析失败：接收到非数组的数据！\n出错单位：",unit,"\n接收内容：",data);
+				HtmlDoc=false;
+			};
+		};
+		Operator(HtmlArray,HtmlDoc);
+		return HtmlDoc;
+	},
+	"encoder":function HAEncoder(Node,IncludeOuter) {
 		var HtmlArray=new Array;
 		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {
@@ -165,21 +185,16 @@ function HAEncoder(Node,IncludeOuter) {
 					outer.push(child);
 			}
 		};
-		if (IncludeOuter===true) {Operator(Node,HtmlArray)} else {Transporter(Node,HtmlArray)};
-	} catch(error) {
-		console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
-		HtmlArray=false;
+		try {
+			Node=Node.cloneNode(true);
+			if (IncludeOuter===true) {Operator(Node,HtmlArray)} else {Transporter(Node,HtmlArray)};
+		} catch(error) {
+			console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
+			HtmlArray=false;
+		}
+		return HtmlArray;
 	}
-	return HtmlArray;
-}
-
-function DetectUA() {
-	var UA={"Desktop":false,"Mobile":false};
-	var Detective=navigator.userAgent;
-	if (Detective.match(/Windows/i)||Detective.match(/Macintosh/i)||Detective.match(/Linux/i)) UA.Desktop=true;
-	if (Detective.match(/Mobile/i)||Detective.match(/Android/i)||Detective.match(/iPhone/i)||Detective.match(/iPad/i)||Detective.match(/iPod/i)) UA.Mobile=true;
-	return UA;
-}
+};
 
 var Cookies={
 	"get":function(cookieName) {
@@ -261,16 +276,48 @@ var FileAPI={
 	}
 };
 
-class MultiThread {
-	constructor(codeString,listener,onerror,name) {
-		var codeFile=URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"}));
-		this.core=new Worker(codeFile,{"name":name});
-		if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)};
-		if (typeof onerror=="function") this.core.onerror=onerror;
-		URL.revokeObjectURL(codeFile);
+var Base64={
+	"encode":function(data) {
+		if (!(typeof data=="object"&&data instanceof ArrayBuffer)) throw new Error("Base64 encoder accepts only ArrayBuffer objects.");
+		var table=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"];
+		var operator=new Uint8Array(data);
+		var result=padding=bits="";
+		for (let byte=0,bytes=operator.length;byte<bytes;byte++) {
+			let temp=operator[byte].toString(2);
+			for (null;temp.length<8;temp="0"+temp);
+			bits+=temp;
+		};
+		for (let remain=3-operator.length%3;remain!=0;remain--) {
+			bits+="00";
+			padding+="=";
+		};
+		for (let byte=0,bytes=bits.length/6;byte<bytes;byte++) {
+			result+=table[Number("0b"+bits.substring(byte*6,(byte+1)*6))]
+		};
+		return result+padding;
+	},
+	"decode":function(Base64String) {
+		if (typeof Base64String!="string") throw new Error("Base64 decoder accepts only strings.");
+		var length=Base64String.length;
+		if (length%4!=0) throw new Error("Invalid string, string length is not a multiple of 4.");
+		var table={"A":"000000","B":"000001","C":"000010","D":"000011","E":"000100","F":"000101","G":"000110","H":"000111","I":"001000","J":"001001","K":"001010","L":"001011","M":"001100","N":"001101","O":"001110","P":"001111","Q":"010000","R":"010001","S":"010010","T":"010011","U":"010100","V":"010101","W":"010110","X":"010111","Y":"011000","Z":"011001","a":"011010","b":"011011","c":"011100","d":"011101","e":"011110","f":"011111","g":"100000","h":"100001","i":"100010","j":"100011","k":"100100","l":"100101","m":"100110","n":"100111","o":"101000","p":"101001","q":"101010","r":"101011","s":"101100","t":"101101","u":"101110","v":"101111","w":"110000","x":"110001","y":"110010","z":"110011","0":"110100","1":"110101","2":"110110","3":"110111","4":"111000","5":"111001","6":"111010","7":"111011","8":"111100","9":"111101","+":"111110","/":"111111"};
+		var padding=0;
+		for (let i=1;i<4;i++) {
+			if (Base64String[length-i]!="=") break;
+			if (i>2) throw new Error("Invalid string with more than 2 complements(=).");
+			padding++;
+		};
+		length-=padding;
+		var bits="";
+		for (let i=0;i<length;i++) {
+			if (typeof table[Base64String[i]]=="undefined") throw new Error("Invalid string with invalid character \""+Base64String[i]+"\" at ["+i+"].");
+			bits+=table[Base64String[i]];
+		};
+		var bytes=(bits.length-padding*2)/8;
+		var operator=new Uint8Array(bytes);
+		for (let byte=0;byte<bytes;byte++) {
+			operator[byte]=Number("0b"+bits.substring(byte*8,(byte+1)*8))
+		};
+		return operator.buffer
 	}
-	send(data) {this.core.postMessage(data)}
-	transfer(ArrayBuffer) {this.core.postMessage(ArrayBuffer,[ArrayBuffer])}
-	changeListener(listener) {if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)}}
-	shut(){this.core.terminate()}
-}
+};

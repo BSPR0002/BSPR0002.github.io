@@ -75,7 +75,7 @@ var AJAX=function(options) {
 	if (typeof AJAX_Local[options.url]!="undefined") {
 		options.success(AJAX_Local[options.url])
 	} else {
-		var doc=HADecoder([
+		var doc=HtmlArray.decoder([
 			"您的脚本正在通过 XmlHttpRequest 请求网络资源。",["br"],
 			"请求的资源：",["br"],
 			options.url,["br"],
@@ -171,4 +171,3 @@ var NotificationCreater=function(options) {
 	return VM;
 };
 };
-
