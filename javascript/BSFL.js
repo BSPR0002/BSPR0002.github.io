@@ -5,7 +5,7 @@ function AJAX(options) {
 	XHR.open(model.method,model.url,model.async,model.username,model.password);
 	XHR.responseType=model.type;
 	XHR.timeout=model.timeout;
-	if (model.cache==false) XHR.setRequestHeader("If-Modified-Since","0");
+	if (model.cache===false) XHR.setRequestHeader("If-Modified-Since","0");
 	XHR.onload=function() {
 		if ((XHR.status>=200&&XHR.status<300)||XHR.status==304) {
 			model.success(XHR.response);
@@ -20,7 +20,7 @@ function getJSON(url,callback,AllowCache) {
 	var AJAXModel={"url":url,"type":"json","success":function(response) {
 		callback(response);
 	}};
-	if (AllowCache==false) AJAXModel.cache=false;
+	if (AllowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
@@ -28,17 +28,89 @@ function getXML(url,callback,AllowCache) {
 	var AJAXModel={"url":url,"type":"document","success":function(response) {
 		callback(response);
 	}};
-	if (AllowCache==false) AJAXModel.cache=false;
+	if (AllowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
-function Load(url,TargetElement,AllowCache) {
+function Load(url,TargetElement,AllowCache,fully) {
 	var AJAXModel={"url":url,"success":function(response) {
 		var Operator=document.createRange().createContextualFragment(response);
 		EmptyElement(TargetElement);
 		TargetElement.appendChild(Operator);
 	}};
-	if (AllowCache==false) AJAXModel.cache=false;
+	if (AllowCache===false) AJAXModel.cache=false;
+	if (fully===true) {
+		var FullLoadInterface={"readyState":0,"children":null};
+		AJAXModel.success=function(response){
+			FullLoadInterface.readyState=3;
+			var Operator=document.createRange().createContextualFragment(response);
+			var requests={"list":[]};
+			FullLoadInterface.children=requests.list;
+			var count=-1;
+			Object.defineProperty(requests,"number",{
+				get:function(){return count},
+				set:function(value){
+					count=value;
+					if (value==0) {
+						FullLoadInterface.abort=function(){};
+						FullLoadInterface.readyState=4;
+						EmptyElement(TargetElement);
+						TargetElement.appendChild(Operator);
+					};
+				},
+				configrable:true,
+				enumerable:true,
+			});
+			for (let item of Operator.querySelectorAll("script")) {
+				if (item.src!="") {
+					requests.list.push(AJAX({
+						"url":item.src,
+						"cache":AllowCache,
+						"success":function(response){
+							var temp=document.createElement("script");
+							temp.appendChild(document.createTextNode(response));
+							item.parentNode.replaceChild(temp,item);
+							requests.number--
+						},
+						"fail":function(){
+							console.warn("The resource \""+item.src+"\" of FullLoad \""+url+"\" request failed.");
+							requests.number--
+						}
+					}))
+				}
+			};
+			for (let item of Operator.querySelectorAll("link")) {
+				if (item.getAttribute("rel")=="stylesheet") {
+					requests.list.push(AJAX({
+						"url":item.getAttribute("href"),
+						"cache":AllowCache,
+						"success":function(response){
+							var temp=document.createElement("style");
+							temp.appendChild(document.createTextNode(response));
+							item.parentNode.replaceChild(temp,item);
+							requests.number--
+						},
+						"fail":function(){
+							console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.");
+							requests.number--
+						}
+					}))
+				}
+			};
+			requests.number=requests.list.length;
+			FullLoadInterface.abort=function(){
+				count=-1;
+				FullLoadInterface.readyState=4;
+				for (let item of requests.list) {
+					item.abort();
+				};
+				FullLoadInterface.abort=function(){};
+			};
+		};
+		FullLoadInterface.AJAX=AJAX(AJAXModel);
+		FullLoadInterface.abort=FullLoadInterface.AJAX.abort;
+		return FullLoadInterface;
+	};
 	return AJAX(AJAXModel);
 }
 
