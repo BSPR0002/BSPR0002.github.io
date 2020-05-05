@@ -24,7 +24,7 @@ var ChangePage=(function(){
 		MovePointer(sheet*200-110);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/html/"+SheetList[sheet-1]+".html",document.getElementById("page_box"));
+			lastLoad=Load("/html/"+SheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
 			currentSheet=sheet;
 		}
 	};

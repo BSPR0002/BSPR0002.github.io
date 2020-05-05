@@ -1,15 +1,17 @@
 function AJAX(options) {
-	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":function(){},"fail":function(){},"error":function(){}};
+	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"error":null};
 	Object.assign(model,options);
 	var XHR=new XMLHttpRequest();
 	XHR.open(model.method,model.url,model.async,model.username,model.password);
-	XHR.responseType=model.type;
-	XHR.timeout=model.timeout;
+	if (model.async!==false) {
+		XHR.responseType=model.type;
+		XHR.timeout=model.timeout;
+	};
 	if (model.cache===false) XHR.setRequestHeader("If-Modified-Since","0");
 	XHR.onload=function() {
-		if ((XHR.status>=200&&XHR.status<300)||XHR.status==304) {
-			model.success(XHR.response);
-		} else model.fail(XHR.status);
+		if ((this.status>=200&&this.status<300)||this.status==304) {
+			if (typeof model.success=="function") model.success(this.response);
+		} else if (typeof model.fail=="function") model.fail(this.status);
 	};
 	XHR.onerror=model.error;
 	XHR.send(model.send);
@@ -33,11 +35,7 @@ function getXML(url,callback,AllowCache) {
 }
 
 function Load(url,TargetElement,AllowCache,fully) {
-	var AJAXModel={"url":url,"success":function(response) {
-		var Operator=document.createRange().createContextualFragment(response);
-		EmptyElement(TargetElement);
-		TargetElement.appendChild(Operator);
-	}};
+	var AJAXModel={"url":url};
 	if (AllowCache===false) AJAXModel.cache=false;
 	if (fully===true) {
 		var FullLoadInterface={"readyState":0,"children":null};
@@ -110,6 +108,11 @@ function Load(url,TargetElement,AllowCache,fully) {
 		FullLoadInterface.AJAX=AJAX(AJAXModel);
 		FullLoadInterface.abort=FullLoadInterface.AJAX.abort;
 		return FullLoadInterface;
+	};
+	AJAXModel.success=function(response) {
+		var Operator=document.createRange().createContextualFragment(response);
+		EmptyElement(TargetElement);
+		TargetElement.appendChild(Operator);
 	};
 	return AJAX(AJAXModel);
 }

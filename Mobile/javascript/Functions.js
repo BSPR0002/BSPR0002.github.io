@@ -10,7 +10,7 @@ var ChangeSheet=(function(){
 		MoveTab(sheet);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/Mobile/html/"+SheetList[sheet-1]+".html",document.getElementById("page"));
+			lastLoad=Load("/Mobile/html/"+SheetList[sheet-1]+".html",document.getElementById("page"),true,true);
 			currentSheet=sheet;
 		}
 	};
