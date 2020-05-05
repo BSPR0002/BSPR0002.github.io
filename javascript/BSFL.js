@@ -362,7 +362,7 @@ var Base64={
 			for (null;temp.length<8;temp="0"+temp);
 			bits+=temp;
 		};
-		for (let remain=3-operator.length%3;remain!=0;remain--) {
+		for (let remain=(3-operator.length%3)%3;remain!=0;remain--) {
 			bits+="00";
 			padding+="=";
 		};
