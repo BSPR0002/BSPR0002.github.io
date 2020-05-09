@@ -75,6 +75,8 @@ var ResourceLibrary=(function(){
 				case "game":
 					var Node="游戏";
 					break;
+				default:
+					var Node="？？？";
 			};
 			CardType.appendChild(document.createTextNode(Node));
 			CardType.title=Node;
