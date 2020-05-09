@@ -171,3 +171,13 @@ var NotificationCreater=function(options) {
 	return VM;
 };
 };
+
+function yyi(){
+    var a1=0,b2=1,c3=0;
+    for (null;a1+1!=c3;null) {
+    	a1+=b2;
+    	c3=a1;
+    	b2*=10;
+    };
+    return c3;
+}

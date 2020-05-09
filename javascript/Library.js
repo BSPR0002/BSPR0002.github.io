@@ -69,8 +69,11 @@ var ResourceLibrary=(function(){
 					};
 					var Node=allinone+"）";
 					break;
-				case "PC Game":
+				case "PC game":
 					var Node="PC 游戏";
+					break;
+				case "game":
+					var Node="游戏";
 					break;
 			};
 			CardType.appendChild(document.createTextNode(Node));

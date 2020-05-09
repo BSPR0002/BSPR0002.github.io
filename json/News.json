@@ -10,22 +10,5 @@
 		"board":["HtmlArray","详细内容"],
 		"force":false,
 		"unshow":true
-	},
-	{
-		"ID":1,
-		"name":"LovesickPuppies",
-		"title":"资源库更新预告",
-		"preview":{
-			"message":"资源库将于5月10日添加游戏：LOVESICK PUPPIES -僕らは恋するために生まれてきた-",
-			"image":"/Images/News/preview_LSP.png"
-		},
-		"board":[
-			"资源库将于5月10日添加游戏：LOVESICK PUPPIES -僕らは恋するために生まれてきた-",["br"],
-			"简介：五位犬系女主角与主角相遇，了解“她”的故事，敞开“她”的心扉，结成羁绊。",["br"],
-			"评价：入门级别 GAL ，与资源库此前收录的游戏相比，选项稍加复杂，攻略个别女主角需要消耗更多脑细胞的能量，适合由废萌向普通级别过渡。",["br"],
-			["img",null,{"src":"/Images/News/preview_LSP_board.png"}]
-		],
-		"force":false,
-		"unshow":false
 	}
 ]
