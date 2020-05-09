@@ -40,7 +40,7 @@
 	{
 		"ID":3,
 		"display":"LOVESICK PUPPIES -僕らは恋するために生まれてきた-",
-		"name":[],
+		"name":["lovesickpuppies","我们为恋爱而生"],
 		"icon":"/Images/resource_icon/ID00000003.png",
 		"type":"game",
 		"resource":{
