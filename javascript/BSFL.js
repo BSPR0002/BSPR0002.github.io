@@ -106,7 +106,7 @@ function Load(url,TargetElement,AllowCache,fully) {
 			};
 		};
 		FullLoadInterface.AJAX=AJAX(AJAXModel);
-		FullLoadInterface.abort=FullLoadInterface.AJAX.abort;
+		FullLoadInterface.abort=function(){FullLoadInterface.AJAX.abort()};
 		return FullLoadInterface;
 	};
 	AJAXModel.success=function(response) {
