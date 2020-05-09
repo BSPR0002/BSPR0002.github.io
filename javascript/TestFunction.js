@@ -1,9 +1,9 @@
 var AJAX_Local={
 	"/json/resource.json":[
-		{
+			{
 			"ID":1,
-			"name":["Nekopara"],
 			"display":"ネコぱら",
+			"name":["Nekopara","猫娘乐园","巧克力与香子兰"],
 			"icon":"/Images/resource_icon/ID00000001.png",
 			"type":"allinone",
 			"AllInOne":["PC版游戏","手机版游戏","Steam R18 DLC","解包","动画","周边"],
@@ -14,20 +14,19 @@ var AJAX_Local={
 					"detail":{
 						"content":["资源内的压缩包如果有密码，全部为“NKPR”。"]
 					}
-				},
-				"Torrent":"https://www.kisssub.org/search.php?keyword=NEKOPARA"
+				}
 			}
 		},
 		{
 			"ID":2,
-			"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWiCchi"],
 			"display":"サノバウィッチ",
+			"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWicChi"],
 			"icon":"/Images/resource_icon/ID00000002.png",
-			"type":"PC Game",
+			"type":"PC game",
 			"resource":{
 				"BDND":{
-					"link":"https://pan.baidu.com/s/10H9kqaOEi53WE-xXoew0eg",
-					"password":"l3xf",
+					"link":"https://pan.baidu.com/s/133cnugefJqWhqg9TqMJz-g",
+					"password":"2z48",
 					"detail":{
 						"tips":"请点击“详细信息”查看密码等说明。",
 						"content":[
@@ -37,6 +36,24 @@ var AJAX_Local={
 					}
 				},
 				"Torrent":"magnet:?xt=urn:btih:7RYT3XTCUKF3YBR3C5KUM7UOF2BPLSND&dn=[150227] [ゆずソフト] サノバウィッチ ‐SABBAT OF THE WITCH‐ + Drama CD + Character Songs + Bonus + Manual + Update 1.1"
+			}
+		},
+		{
+			"ID":3,
+			"display":"LOVESICK PUPPIES -僕らは恋するために生まれてきた-",
+			"name":[],
+			"icon":"/Images/resource_icon/ID00000003.png",
+			"type":"game",
+			"resource":{
+				"BDND":{
+					"link":"https://pan.baidu.com/s/17xe4XMleMHVcpRlFN4tYmg",
+					"password":"0tuk",
+					"detail":{
+						"content":[
+							"解包与手机版将在5月12日后更新。"
+						]
+					}
+				}
 			}
 		}
 	]
