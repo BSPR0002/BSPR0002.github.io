@@ -46,8 +46,8 @@ function Load(url,TargetElement,AllowCache,fully) {
 			FullLoadInterface.children=requests.list;
 			var count=-1;
 			Object.defineProperty(requests,"number",{
-				get:function(){return count},
-				set:function(value){
+				"get":function(){return count},
+				"set":function(value){
 					count=value;
 					if (value==0) {
 						FullLoadInterface.abort=function(){};
@@ -56,8 +56,8 @@ function Load(url,TargetElement,AllowCache,fully) {
 						TargetElement.appendChild(Operator);
 					};
 				},
-				configrable:true,
-				enumerable:true,
+				"configrable":true,
+				"enumerable":true,
 			});
 			for (let item of Operator.querySelectorAll("script")) {
 				if (item.src!="") {

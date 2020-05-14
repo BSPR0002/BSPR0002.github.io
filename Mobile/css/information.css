@@ -1,5 +1,10 @@
 #page_frame {
-	margin:0.5rem 0.5rem 0 0.5rem;
-	position:relative;
+	height:100%;
+	width:100%;
+	box-sizing:border-box;
+	padding:0.5rem 0.5rem 0 0.5rem;
+	position:absolute;
+	display:grid;
+	/*grid-template-rows:1.9rem 1fr;
+	grid-row-gap:0.5rem;*/
 }
-
