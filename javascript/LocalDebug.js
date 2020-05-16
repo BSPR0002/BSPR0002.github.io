@@ -643,8 +643,8 @@ Notification.VM_count=0;
 					if (typeof JSON.parse(expires)=="number") var temp3=false;
 				} catch(no) {var temp3=true};
 				if (temp3) {
-					expires=new Data(expires).getTime();
-					if (!(expires.getTime()>-1)) expires=-1;
+					expires=new Date(expires).getTime();
+					if (!(expires>-1)) expires=-1;
 				} else expires=-1;
 			} else expires=-1;
 			if (maxAge) {
@@ -652,7 +652,7 @@ Notification.VM_count=0;
 					if (typeof JSON.parse(maxAge)=="number") var temp3=true;
 				} catch(no) {var temp3=false};
 				if (temp3) {
-					maxAge=new Data(maxAge*1000).getTime();
+					maxAge=new Date((new Date).getTime()+maxAge*1000).getTime();
 					if (!(maxAge>-1)) maxAge=-1;
 				} else maxAge=-1;
 			} else maxAge=-1;
