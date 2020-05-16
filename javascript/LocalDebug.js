@@ -1,6 +1,4 @@
-//if (window.location.origin=="file://") { //本地模拟函数
-
-//XHR模拟
+//XMLHttpRequest 模拟
 var XHR_Local={
 	"/json/resource.json":[
 			{
@@ -79,7 +77,7 @@ function XHR_request(url) {
 					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
 					"onmouseout":"javascript:this.style.backgroundColor=null"
 				}]
-			],"AJAX Local");
+			],"XHR Local");
 			doc.querySelector("input").addEventListener("change",function(){
 				window_board.hide();
 				FileAPI.read(this.files[0],4,function(text){
@@ -136,7 +134,7 @@ class XMLHttpRequest {
 			"set":function(value) {
 				self.VM.value.readyState=value;
 				if (typeof self.onreadystatechange=="function") try {self.onreadystatechange(new Event("readystatechange",{"currentTarget":self,"srcElement":self,"target":self}))} catch(error) {console.error(error)};
-			},
+			}
 		});
 		this.onabort=null;
 		this.onerror=null;
@@ -151,45 +149,58 @@ class XMLHttpRequest {
 		Object.defineProperties(this,{
 			"readyState":{
 				"get":function(){return this.VM.value.readyState},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"response":{
 				"get":function(){return this.VM.value.response},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"responseText":{
 				"get":function(){return this.VM.value.responseText},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"responseType":{
 				"get":function(){return this.VM.value.responseType},
 				"set":function(value){
 					if (self.VM.async==false&&value!=="") throw new DOMException("Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be changed for synchronous requests made from a document.");
 					self.VM.value.responseType=value;
-				}
+					return value;
+				},
+				"enumerable":true
 			},
 			"responseURL":{
 				"get":function(){return this.VM.value.responseURL},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"responseXML":{
 				"get":function(){return this.VM.value.responseXML},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"status":{
 				"get":function(){return this.VM.value.status},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"statusText":{
 				"get":function(){return this.VM.value.statusText},
-				"set":function(){console.warn("只读")}
+				"set":function(){console.warn("只读")},
+				"enumerable":true
 			},
 			"timeout":{
 				"get":function(){return this.VM.value.timeout},
 				"set":function(value){
 					if (self.VM.async==false&&value!==0) throw new DOMException("Failed to set the 'timeout' property on 'XMLHttpRequest': Timeouts cannot be set for synchronous requests made from a document.");
-					if (typeof value=="number") {self.VM.value.timeout=value} else {console.warn("输入值不为数字！")};
-				}
+					if (typeof value=="number") {
+						self.VM.value.timeout=value;
+						return value;
+					} else {console.warn("输入值不为数字！")};
+				},
+				"enumerable":true
 			}
 		});
 	}
@@ -320,7 +331,7 @@ class XMLHttpRequest {
 						self.VM.value.statusText="Not Found";
 					};
 				};
-				setInterval(self.VM.progressID);
+				clearInterval(self.VM.progressID);
 				if (!(self.VM.stop||self.VM.abort||self.VM.timeout)) self.VM.port.readyState=4;
 				if (!self.VM.stop&&!inerror&&typeof self.onload=="function") await (async function(){
 					try {self.onload(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))} catch(error) {console.error(error)};
@@ -430,74 +441,226 @@ class XMLHttpRequest {
 }
 XMLHttpRequest.NetworkError=false;
 
-//Cookies模拟
-var Cookies={
-	"get":function(name) {
-		console.log("get cookie:",name,Cookies.Local[name]);
-		return Cookies.Local[name];
-	},
-	"set":function(name,value) {
-		console.log("set cookie:",name+"="+value);
-		Cookies.Local[name]=value;
-		console.log("Present cookie:",Cookies.Local);
-	},
-	"delete":function(name) {
-		console.log("delete cookie:",name);
-		delete Cookies.Local[name];
-		console.log("Present cookie:",Cookies.Local);
-	},
-	"empty":function() {Cookies.Local={}},
-	"Local":{
-		"News_log_ID_SabbatOfTheWitch":"{\"have_read\":2583978669458}"
+//Notification 模拟
+class Notification {
+	constructor(title,options) {
+		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
+		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":(new Date).getTime(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
+		Object.assign(model,options);
+		this.actions=[];
+		this.badge=model.badge;
+		this.body=model.body;
+		this.data=model.data;
+		this.dir=model.dir;
+		this.icon=model.icon;
+		this.image=model.image;
+		this.lang=model.lang;
+		this.onclick=null;
+		this.onclose=null;
+		this.onerror=null;
+		this.onshow=null;
+		this.renotify=model.renotify;
+		this.requireInteraction=model.requireInteraction;
+		this.silent=model.silent;
+		this.tag=model.tag;
+		this.timestamp=model.timestamp;
+		this.title=model.title;
+		this.vibrate=model.vibrate;
+		this.VM={
+			"autoClose":{"auto":false,"timeoutID":null},
+			"CLOSED":false
+		};
+		var self=this;
+		new Promise(function(done){
+			setTimeout(function(){
+				if (Notification.permission=="granted") {
+					Notification.VM[Notification.VM_count]={
+						"close":function(){self.close},
+						"click":function() {
+							if (self.VM.CLOSED!==true) {
+								console.log("点击通知",self);
+								if (self.VM.autoClose.auto) {
+									clearTimeout(self.VM.autoClose.timeoutID);
+									self.VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
+								};
+								if (typeof self.onclick=="function") try {self.onclick()} catch(error) {console.error(error)};
+							} else console.warn("此通知已经被关闭！");
+						}
+					};
+					console.log("Notification Interface:",Notification.VM_count++);
+					var preview={"icon":"","body":"","image":""};
+					if (model.icon!=="") preview.icon="\"\\nicon:\",model.icon,";
+					if (model.body!=="") preview.body=",\"\\nbody:\",model.body";
+					if (model.image!=="") preview.image=",\"\\nicon:\",model.image";
+					eval("console.log(\"Notification Content:\","+preview.icon+"\"\\ntitle:\",model.title"+preview.body+preview.image+")");
+					if (model.requireInteraction!==true) {
+						self.VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
+						self.VM.autoClose.auto=true;
+					};
+					if (typeof self.onshow=="function") try {self.onshow()} catch(error) {console.error(error)};
+				} else console.warn("未获得通知权限",Notification.permission);
+				done();
+			},50)
+		});
 	}
-};
-
-//通知模拟
-var Notification={
-	"requestPermission":function() {
-		return {
-			"info":"Local Debug",
-			"then":function(callback){callback;}
+	close(){
+		if (this.VM.CLOSED!==true) {
+			this.VM.CLOSED=true;
+			clearTimeout(this.VM.autoClose.timeoutID);
+			console.log("通知关闭",this);
+			if (typeof this.onclose=="function") try {this.onclose()} catch(error) {console.error(error)};
+		} else console.warn("此通知已经被关闭！");
+	}
+}
+Notification.changePermission=(function(){
+	if (window_board) {var permission="default"} else {var permission="granted"};
+	Object.defineProperty(Notification,"permission",{
+		"get":function(){return permission},
+		"set":function(){return false},
+		"enumerable":true
+	});
+	return function(n){
+		switch (n) {
+			case 0:
+				permission="denied";
+				break;
+			case 1:
+				permission="granted";
+				break;
+			default:
+				permission="default";
 		}
-	},
-	"permission":"granted"
-};
-
-var NotificationCreater=function(options) {
-	console.log("Notification",options);
-	var preview={"icon":"","body":"","image":""};
-	if (options.icon) preview.icon="\"\\nicon:\",options.icon,";
-	if (options.message) preview.body=",\"\\nbody:\",options.message";
-	if (options.image) preview.image=",\"\\nicon:\",options.image";
-	var VM={
-		"close":function() {
-			delete VM.click;
-			console.log("Notification closed");
-			VM.onclose();
-			delete VM.close;
-		},
-		"onshow":options.show,
-		"onclick":options.click,
-		"onclose":options.close,
-		"onerror":options.error
+	}
+})();
+Notification.requestPermission=function(){
+	if (Notification.permission=="default") {
+		return new Promise(function(resolve,reject){
+			var doc=HtmlArray.decoder([
+				"您的脚本正在请求通知权限，请指定响应结果。",["br"],
+				["br"],
+				["button","允许",{
+					"id":"Npb1",
+					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;margin-right:10px;float:left",
+					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
+					"onmouseout":"javascript:this.style.backgroundColor=null"
+				}],
+				["button","禁止",{
+					"id":"Npb2",
+					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;margin-right:10px;float:left",
+					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
+					"onmouseout":"javascript:this.style.backgroundColor=null"
+				}],
+				["button","忽略",{
+					"id":"Npb3",
+					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;float:left",
+					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
+					"onmouseout":"javascript:this.style.backgroundColor=null"
+				}]
+			],"Notification Local");
+			doc.getElementById("Npb1").addEventListener("click",function(){
+				Notification.changePermission(1);
+				window_board.hide();
+				resolve(Notification.permission);
+			});
+			doc.getElementById("Npb2").addEventListener("click",function(){
+				Notification.changePermission(0);
+				window_board.hide();
+				resolve(Notification.permission);
+			});
+			doc.getElementById("Npb3").addEventListener("click",function(){
+				Notification.changePermission(2);
+				window_board.hide();
+				resolve(Notification.permission);
+			});
+			window_board.display(doc,"请求通知权限",true);
+		});
 	};
-	eval("console.info(\"Notification Content:\","+preview.icon+"\"\\ntitle:\",options.title"+preview.body+preview.image+")");
-	if (options.keep!=true) {
-		VM.VM_interface=setTimeout(VM.close,25000);
-		VM.click=function() {
-			clearTimeout(VM.VM_interface);
-			VM.VM_interface=setTimeout(VM.close,25000);
-			console.info("NotificationVM Interface:","click");
-			VM.onclick();
-		}
-	} else VM.click=function() {
-		console.info("NotificationVM Interface:","click");
-		VM.onclick();
-	}
-	if (typeof VM.onshow!="undefined") {try {VM.onshow()} catch(none) {console.log("Notification onshow error!")}};
-	var VM_ID="NotificationVM"+Math.floor(Math.random()*10);
-	window[VM_ID]=VM;
-	console.info("Notification Interface:",VM_ID);
-	return VM;
+	return Promise.resolve(Notification.permission);
 };
-//};
+Notification.maxActions=2;
+Notification.VM=[];
+Notification.VM_count=0;
+
+//cookie 模拟
+(function() {
+	var Local=[
+		["News_log_ID_SabbatOfTheWitch","{\"have_read\":2583978669458}",-1]
+	];
+	function Manager() {
+		for (let i=Local.length-1;i>-1;i--) {
+			if (Local[i][2]!=-1) {if (!((new Date).getTime()<Local[i][2])) Local.splice(i,1)}
+		}
+	};
+	Object.defineProperty(document,"cookie",{
+		"get":function(){
+			Manager();
+			var result=""
+			if (Local.length!=0) {
+				result=Local[0][0]+"="+Local[0][1];
+				for (let i=1,length=Local.length;i<length;i++) {
+					result+="; "+Local[i][0]+"="+Local[i][1];
+				}
+			};
+			return result;
+		},
+		"set":function(value){
+			var temp=value.split(";");
+			var maxAge=false;
+			var expires=false;
+			var data=temp[0].trim().split("=");
+			if (data.length<2) {
+				console.warn("cookie 字符串无效",value);
+				return value;
+			};
+			var name=data[0];
+			for (let i=Local.length-1;i>-1;i--) {
+				if (Local[i][0]==name) Local.splice(i,1)
+			};
+			var cookie_value="";
+			for (let i=1;i<data.length;i++) {
+				switch (i) {
+					case 1:
+						var cookie_value=data[1];
+						break;
+					default:
+						cookie_value+="="+data[i];
+				};
+			};
+			for (let i=1;i<temp.length;i++) {
+				let temp2=temp[i].split("=");
+				switch (temp2[0]) {
+					case "max-age":
+						maxAge=temp2[1];
+						break;
+					case "expires":
+						expires=temp2[1];
+					default:
+						break;
+				}
+			}
+			if (expires) {
+				try {
+					if (typeof JSON.parse(expires)=="number") var temp3=false;
+				} catch(no) {var temp3=true};
+				if (temp3) {
+					expires=new Data(expires).getTime();
+					if (!(expires.getTime()>-1)) expires=-1;
+				} else expires=-1;
+			} else expires=-1;
+			if (maxAge) {
+				try {
+					if (typeof JSON.parse(maxAge)=="number") var temp3=true;
+				} catch(no) {var temp3=false};
+				if (temp3) {
+					maxAge=new Data(maxAge*1000).getTime();
+					if (!(maxAge>-1)) maxAge=-1;
+				} else maxAge=-1;
+			} else maxAge=-1;
+			if (maxAge>expires) expires=maxAge;
+			Local.push([name,cookie_value,expires])
+			Manager();
+			return value;
+		},
+		"enumerable":true
+	});
+})();

@@ -149,7 +149,7 @@ var editor=(function(){
 			target.getElementsByClassName("filter_path_input")[0].addEventListener("input",filter.radio.toInside);
 			target.getElementsByClassName("filter_edit")[0].addEventListener("radio",filter.radio.listener);
 			target.getElementsByClassName("filter_edit")[0].addEventListener("input",editor.edit);
-			target.getElementsByClassName("filter_delete")[0].addEventListener("click",filter,remove);
+			target.getElementsByClassName("filter_delete")[0].addEventListener("click",filter.remove);
 			target.getElementsByClassName("filter_edit")[0].dispatchEvent(new Event("radio"));
 			document.getElementById("filter_list_frame").appendChild(Filter);
 		};
@@ -260,10 +260,10 @@ var editor=(function(){
 		"filter":filter
 	};
 	Object.defineProperty(editor,"file",{
-		get:function(){return file.json},
-		set:function(){console.error("Cannot assign to this property!")},
-		configrable:false,
-		enumerable:true,
+		"get":function(){return file.json},
+		"set":function(){console.error("Cannot assign to this property!")},
+		"configrable":false,
+		"enumerable":true
 	});
 	return editor;
 })();
