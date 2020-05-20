@@ -345,8 +345,7 @@ var FileAPI={
 		if (typeof saveName=="undefined") {
 			address.download="";
 		} else address.download=saveName;
-		var VM_Click=new MouseEvent("click",{"button":0});
-		address.dispatchEvent(VM_Click);
+		address.dispatchEvent(new MouseEvent("click",{"button":0}));
 		URL.revokeObjectURL(obj_URL);
 	}
 };

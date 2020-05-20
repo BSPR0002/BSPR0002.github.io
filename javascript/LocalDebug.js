@@ -1,3 +1,6 @@
+//本地模拟支持
+if (window.location.origin!="file://") throw "Not in local environment!";
+
 //XMLHttpRequest 模拟
 var XHR_Local={
 	"/json/resource.json":[
@@ -61,51 +64,49 @@ var XHR_Local={
 };
 for (let i in XHR_Local) {
 	if (typeof XHR_Local[i]=="object") XHR_Local[i]=JSON.stringify(XHR_Local[i])
-}
-
-function XHR_request(url) {
-	return new Promise(function(resolve,reject){
-		if (window_board) {
-			var doc=HtmlArray.decoder([
-				"您的脚本正在通过 XmlHttpRequest 请求网络资源。",["br"],
-				"请求的资源：",["br"],
-				url,["br"],
-				"XmlHttpRequest 本地模拟功能在脚本的预设库中找不到此资源，请您选择一个文件作为此资源的响应，或指定此次请求失败。",["br"],
-				["input",null,{"type":"file"}],["br"],
-				["button","指定此次请求失败",{
-					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s",
-					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
-					"onmouseout":"javascript:this.style.backgroundColor=null"
-				}]
-			],"XHR Local");
-			doc.querySelector("input").addEventListener("change",function(){
-				window_board.hide();
-				FileAPI.read(this.files[0],4,function(text){
-					resolve([true,text]);
-				});
-			});
-			doc.querySelector("button").addEventListener("click",function(){
-				window_board.hide();
-				resolve([false]);
-			});
-			window_board.display(doc,"请求文件",true)
-		} else resolve([false]);
-	});
 };
 
-class XMLHttpRequestUpload {
-	constructor() {
-		this.onabort=null;
-		this.onerror=null;
-		this.onload=null;
-		this.onloadend=null;
-		this.onloadstart=null;
-		this.onprogress=null;
-		this.ontimeout=null;
-	}
-}
+var XHR_request=function(XHR_VM) {
+	var url=XHR_VM.url;
+	var ID=XHR_request.VM_count++;
+	console.log("新的待指定 xhr 请求：",url,"\n交互编号：",ID,"\n快速通道：XHR_request.VM["+ID+"].select()");
+	return new Promise(function(resolve,reject){
+		XHR_request.VM[ID]={
+			"url":url,
+			"select":function(){
+				var VM=document.createElement("input");
+				VM.type="file";
+				VM.addEventListener("change",function(){
+					var file=this.files[0];
+					XHR_request.VM[ID]=void 0;
+					var reader=new FileReader;
+					reader.onload=function(){resolve([true,this.result])};
+					reader.readAsText(file);
+				});
+				VM.dispatchEvent(new MouseEvent("click",{"button":0}));
+				return url;
+			},
+			"fail":function(){
+				XHR_request.VM[ID]=void 0;
+				resolve([false])
+			}
+		};
+		XHR_VM.stop_request=XHR_request.VM[ID].fail;
+	});
+};
+XHR_request.VM=[];
+XHR_request.VM_count=0;
+XHR_request.responseLast=function(){
+	var i=XHR_request.VM_count-1;
+	if (i==-1) return "无请求";
+	if (XHR_request.VM[i]) {
+		return XHR_request.VM[i].select();
+	} else {
+		return "上个 XHR 已失效，请手动查找。";
+	};
+};
 
-class XMLHttpRequest {
+XMLHttpRequest=class {
 	constructor(){
 		this.VM={
 			"value":{
@@ -127,6 +128,7 @@ class XMLHttpRequest {
 			"abort":false,
 			"timeout":false,
 			"progressID":null,
+			"stop_request":null
 		};
 		var self=this;
 		Object.defineProperty(this.VM.port,"readyState",{
@@ -144,6 +146,17 @@ class XMLHttpRequest {
 		this.onprogress=null;
 		this.onreadystatechange=null;
 		this.ontimeout=null;
+		class XMLHttpRequestUpload {
+			constructor() {
+				this.onabort=null;
+				this.onerror=null;
+				this.onload=null;
+				this.onloadend=null;
+				this.onloadstart=null;
+				this.onprogress=null;
+				this.ontimeout=null;
+			}
+		};
 		this.upload=new XMLHttpRequestUpload;
 		this.withCredentials=false;
 		Object.defineProperties(this,{
@@ -205,6 +218,7 @@ class XMLHttpRequest {
 		});
 	}
 	open(method,url,async=true,username=null,password=null) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 		if (typeof method=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 0 present.");
 		if (typeof url=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 1 present.");
 		switch (async) {
@@ -251,6 +265,7 @@ class XMLHttpRequest {
 		this.VM.port.readyState=1;
 	}
 	send(body) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 		if (this.VM.OPENED!=true) throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.");
 		var inerror=XMLHttpRequest.NetworkError;
 		var self=this;
@@ -260,6 +275,7 @@ class XMLHttpRequest {
 			setTimeout(function(){
 				this.VM.port.readyState=4;
 				this.VM.timeout=true;
+				if (typeof this.VM.stop_request=="function") this.VM.stop_request();
 			},this.timeout)
 		};
 		if (this.VM.async) {
@@ -306,7 +322,7 @@ class XMLHttpRequest {
 				if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) {
 					self.VM.value.responseURL=self.VM.url;
 					if (typeof XHR_Local[self.VM.url]=="undefined") {
-						var temp=await XHR_request(self.VM.url);
+						var temp=await XHR_request(self.VM);
 					} else {
 						var temp=[true,XHR_Local[self.VM.url]];
 					};
@@ -422,27 +438,35 @@ class XMLHttpRequest {
 		};
 	}
 	abort() {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 		if (this.readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
 		if (this.readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
 		this.VM.port.readyState=4;
 		this.VM.abort=true;
+		if (typeof this.VM.stop_request=="function") this.VM.stop_request();
 	}
 	setRequestHeader(name,value) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 		if (this.VM.OPENED!=true) throw new DOMException("Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.");
 		this.VM.value.RequestHeader[name]=value;
 	}
-	getResponseHeader(name){}
-	getAllResponseHeaders(){}
+	getResponseHeader(name){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+	}
+	getAllResponseHeaders(){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+	}
 	overrideMimeType(mime){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 		if (typeof mime=="undefined") throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
 		this.VM.MimeType=mime;
 		this.VM.value.RequestHeader.accept=mime;
 	}
-}
+};
 XMLHttpRequest.NetworkError=false;
 
 //Notification 模拟
-class Notification {
+Notification=class {
 	constructor(title,options) {
 		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
 		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":(new Date).getTime(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
@@ -504,6 +528,7 @@ class Notification {
 		});
 	}
 	close(){
+		if (!(this instanceof Notification)) throw new TypeError("Illegal invocation");
 		if (this.VM.CLOSED!==true) {
 			this.VM.CLOSED=true;
 			clearTimeout(this.VM.autoClose.timeoutID);
@@ -511,7 +536,7 @@ class Notification {
 			if (typeof this.onclose=="function") try {this.onclose()} catch(error) {console.error(error)};
 		} else console.warn("此通知已经被关闭！");
 	}
-}
+};
 Notification.changePermission=(function(){
 	if (window_board) {var permission="default"} else {var permission="granted"};
 	Object.defineProperty(Notification,"permission",{
@@ -664,3 +689,15 @@ Notification.VM_count=0;
 		"enumerable":true
 	});
 })();
+
+//简易版load
+Load=function(url,TargetElement,AllowCache) {
+	var AJAXModel={"url":url};
+	if (AllowCache===false) AJAXModel.cache=false;
+	AJAXModel.success=function(response) {
+		var Operator=document.createRange().createContextualFragment(response);
+		EmptyElement(TargetElement);
+		TargetElement.appendChild(Operator);
+	};
+	return AJAX(AJAXModel);
+};

@@ -61,9 +61,14 @@ var window_board={
 		switch (typeof content) {
 			case "string":
 				board_content.innerText=content;
-			break;
+				break;
 			case "object":
-				board_content.appendChild(content);
+				if (content instanceof Node) {
+					board_content.appendChild(content);
+					break;
+				};
+			default:
+				throw TypeError("传入的内容不为字符串或 HTML 节点。");
 		};
 		board.removeAttribute("style");
 		if (typeof size.width!="undefined") board.style.width=size.width;
