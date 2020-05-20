@@ -352,7 +352,7 @@ var FileAPI={
 
 var Base64={
 	"encode":function(data) {
-		if (!(typeof data=="object"&&data instanceof ArrayBuffer)) throw new Error("Base64 encoder accepts only ArrayBuffer objects.");
+		if (!(typeof data=="object"&&data instanceof ArrayBuffer)) throw new TypeError("Base64 encoder accepts only ArrayBuffer objects.");
 		var table=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"];
 		var operator=new Uint8Array(data);
 		var result="",padding="",bits="";
@@ -371,20 +371,20 @@ var Base64={
 		return result+padding;
 	},
 	"decode":function(Base64String) {
-		if (typeof Base64String!="string") throw new Error("Base64 decoder accepts only strings.");
+		if (typeof Base64String!="string") throw new TypeError("Base64 decoder accepts only strings.");
 		var length=Base64String.length;
-		if (length%4!=0) throw new Error("Invalid string, string length is not a multiple of 4.");
+		if (length%4!=0) throw new SyntaxError("Invalid string, string length is not a multiple of 4.");
 		var table={"A":"000000","B":"000001","C":"000010","D":"000011","E":"000100","F":"000101","G":"000110","H":"000111","I":"001000","J":"001001","K":"001010","L":"001011","M":"001100","N":"001101","O":"001110","P":"001111","Q":"010000","R":"010001","S":"010010","T":"010011","U":"010100","V":"010101","W":"010110","X":"010111","Y":"011000","Z":"011001","a":"011010","b":"011011","c":"011100","d":"011101","e":"011110","f":"011111","g":"100000","h":"100001","i":"100010","j":"100011","k":"100100","l":"100101","m":"100110","n":"100111","o":"101000","p":"101001","q":"101010","r":"101011","s":"101100","t":"101101","u":"101110","v":"101111","w":"110000","x":"110001","y":"110010","z":"110011","0":"110100","1":"110101","2":"110110","3":"110111","4":"111000","5":"111001","6":"111010","7":"111011","8":"111100","9":"111101","+":"111110","/":"111111"};
 		var padding=0;
 		for (let i=1;i<4;i++) {
 			if (Base64String[length-i]!="=") break;
-			if (i>2) throw new Error("Invalid string with more than 2 complements(=).");
+			if (i>2) throw new SyntaxError("Invalid string with more than 2 complements(=).");
 			padding++;
 		};
 		length-=padding;
 		var bits="";
 		for (let i=0;i<length;i++) {
-			if (typeof table[Base64String[i]]=="undefined") throw new Error("Invalid string with invalid character \""+Base64String[i]+"\" at ["+i+"].");
+			if (typeof table[Base64String[i]]=="undefined") throw new SyntaxError("Invalid string with invalid character \""+Base64String[i]+"\" at ["+i+"].");
 			bits+=table[Base64String[i]];
 		};
 		var bytes=(bits.length-padding*2)/8;
