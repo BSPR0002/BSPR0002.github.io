@@ -1,8 +1,8 @@
 //本地模拟支持
-if (window.location.origin!="file://") throw "Not in local environment!";
+if (window.location.origin!="file://") throw new TypeError("Not in local environment!");
 
 //XMLHttpRequest 模拟
-var XHR_Local={
+var XHR_Local={ //JSON 预设库
 	"/json/resource.json":[
 			{
 			"ID":1,

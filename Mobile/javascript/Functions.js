@@ -54,7 +54,7 @@ var window_board={
 					break;
 				};
 			default:
-				throw TypeError("传入的内容不为字符串或 HTML 节点。");
+				throw new TypeError("传入的内容不为字符串或 HTML 节点。");
 		};
 		board.removeAttribute("style");
 		if (typeof size.width!="undefined") board.style.width=size.width;
