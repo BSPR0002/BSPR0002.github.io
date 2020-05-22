@@ -3,62 +3,17 @@ if (window.location.origin!="file://") throw new Error("Not in local environment
 
 //XMLHttpRequest 模拟
 var XHR_Local={ //JSON 预设库
-	"/json/resource.json":[
-			{
-			"ID":1,
-			"display":"ネコぱら",
-			"name":["Nekopara","猫娘乐园","巧克力与香子兰"],
-			"icon":"/Images/resource_icon/ID00000001.png",
-			"type":"allinone",
-			"AllInOne":["PC版游戏","手机版游戏","Steam R18 DLC","解包","动画","周边"],
-			"resource":{
-				"BDND":{
-					"link":"https://pan.baidu.com/s/1kId1GKYVgqD66AMtRrcTwA",
-					"password":"e1s7",
-					"detail":{
-						"content":["资源内的压缩包如果有密码，全部为“NKPR”。"]
-					}
-				}
-			}
-		},
+	"/json/News.json":[
 		{
-			"ID":2,
-			"display":"サノバウィッチ",
-			"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWicChi"],
-			"icon":"/Images/resource_icon/ID00000002.png",
-			"type":"PC game",
-			"resource":{
-				"BDND":{
-					"link":"https://pan.baidu.com/s/133cnugefJqWhqg9TqMJz-g",
-					"password":"2z48",
-					"detail":{
-						"tips":"请点击“详细信息”查看密码等说明。",
-						"content":[
-							"压缩包的密码写在压缩包文件名末尾的中括号内。",["br"],
-							"暂不提供解包、CD等资源。"
-						]
-					}
-				},
-				"Torrent":"magnet:?xt=urn:btih:7RYT3XTCUKF3YBR3C5KUM7UOF2BPLSND&dn=[150227] [ゆずソフト] サノバウィッチ ‐SABBAT OF THE WITCH‐ + Drama CD + Character Songs + Bonus + Manual + Update 1.1"
-			}
-		},
-		{
-			"ID":3,
-			"display":"LOVESICK PUPPIES -僕らは恋するために生まれてきた-",
-			"name":[],
-			"icon":"/Images/resource_icon/ID00000003.png",
-			"type":"game",
-			"resource":{
-				"BDND":{
-					"link":"https://pan.baidu.com/s/17xe4XMleMHVcpRlFN4tYmg",
-					"password":"0tuk",
-					"detail":{
-						"content":[
-							"解包与手机版将在5月12日后更新。"
-						]
-					}
-				}
-			}
+			"ID":"Example",
+			"name":"示例",
+			"title":"标题",
+			"preview":{
+				"message":"简短预览内容",
+				"image":"预览小图片"
+			},
+			"board":["HtmlArray","详细内容"],
+			"force":false
 		}
 	]
 };
@@ -106,10 +61,49 @@ XHR_request.responseLast=function(){
 	};
 };
 
-XMLHttpRequest=class {
+XMLHttpRequestEventTarget=class extends EventTarget {
+	constructor(check){
+		if (check!=XMLHttpRequestEventTarget.check) throw new TypeError("Illegal constructor");
+		super();
+		var VM={
+			"onabort":null,
+			"onerror":null,
+			"onload":null,
+			"onloadend":null,
+			"onloadstart":null,
+			"onprogress":null,
+			"ontimeout":null
+		};
+		for (let item in VM) {
+			Object.defineProperty(this,item,{
+				"get":function(){return VM[item]},
+				"set":function(value){if (typeof value=="function"||value===null) VM[item]=value},
+				"configurable":true,
+				"enumerable":true
+			});
+			let EventName="";
+			for (let i=2,length=item.length;i<length;i++) EventName+=item[i];
+			this.addEventListener(EventName,function(event){if (this[item]) this[item](event)})
+		}
+	};
+	static check=Symbol("XMLHttpRequestEventTarget");
+};
+
+XMLHttpRequestUpload=class extends XMLHttpRequestEventTarget {
+	constructor(check){
+		if (check!=XMLHttpRequestUpload.check) throw new TypeError("Illegal constructor");
+		super(XMLHttpRequestEventTarget.check);
+	};
+	static check=Symbol("XMLHttpRequestUpload");
+};
+
+XMLHttpRequest=class extends XMLHttpRequestEventTarget {
 	constructor(){
-		this.VM={
+		super(XMLHttpRequestEventTarget.check);
+		var self=this;
+		var VM={
 			"value":{
+				"onreadystatechange":null,
 				"readyState":0,
 				"response":"",
 				"responseText":"",
@@ -119,6 +113,7 @@ XMLHttpRequest=class {
 				"status":0,
 				"statusText":"",
 				"timeout":0,
+				"withCredentials":false,
 				"RequestHeader":{}
 			},
 			"port":{},
@@ -130,347 +125,294 @@ XMLHttpRequest=class {
 			"progressID":null,
 			"stop_request":null
 		};
-		var self=this;
-		Object.defineProperty(this.VM.port,"readyState",{
-			"get":function(){return this.VM.value.readyState},
-			"set":function(value) {
-				self.VM.value.readyState=value;
-				if (typeof self.onreadystatechange=="function") try {self.onreadystatechange(new Event("readystatechange",{"currentTarget":self,"srcElement":self,"target":self}))} catch(error) {console.error(error)};
-			}
-		});
-		this.onabort=null;
-		this.onerror=null;
-		this.onload=null;
-		this.onloadend=null;
-		this.onloadstart=null;
-		this.onprogress=null;
-		this.onreadystatechange=null;
-		this.ontimeout=null;
-		class XMLHttpRequestUpload {
-			constructor() {
-				this.onabort=null;
-				this.onerror=null;
-				this.onload=null;
-				this.onloadend=null;
-				this.onloadstart=null;
-				this.onprogress=null;
-				this.ontimeout=null;
-			}
+		for (let item of ["readyState","response","responseText","responseURL","responseXML","status","statusText"]) {
+			Object.defineProperty(this,item,{
+				"get":function(){return VM.value[item]},
+				"set":function(){console.warn("只读")},
+				"configurable":true,
+				"enumerable":true
+			});
 		};
-		this.upload=new XMLHttpRequestUpload;
-		this.withCredentials=false;
 		Object.defineProperties(this,{
-			"readyState":{
-				"get":function(){return this.VM.value.readyState},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
-			"response":{
-				"get":function(){return this.VM.value.response},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
-			"responseText":{
-				"get":function(){return this.VM.value.responseText},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
 			"responseType":{
-				"get":function(){return this.VM.value.responseType},
+				"get":function(){return VM.value.responseType},
 				"set":function(value){
-					if (self.VM.async==false&&value!=="") throw new DOMException("Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be changed for synchronous requests made from a document.");
-					self.VM.value.responseType=value;
+					if (VM.async==false&&value!=="") throw new DOMException("Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be changed for synchronous requests made from a document.");
+					if (["","arraybuffer","blob","document","json","text"].indexOf(value)==-1) {
+						console.warn("The provided value '"+value+"' is not a valid enum value of type XMLHttpRequestResponseType.")
+					} else VM.value.responseType=value;
 					return value;
 				},
-				"enumerable":true
-			},
-			"responseURL":{
-				"get":function(){return this.VM.value.responseURL},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
-			"responseXML":{
-				"get":function(){return this.VM.value.responseXML},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
-			"status":{
-				"get":function(){return this.VM.value.status},
-				"set":function(){console.warn("只读")},
-				"enumerable":true
-			},
-			"statusText":{
-				"get":function(){return this.VM.value.statusText},
-				"set":function(){console.warn("只读")},
+				"configurable":true,
 				"enumerable":true
 			},
 			"timeout":{
-				"get":function(){return this.VM.value.timeout},
+				"get":function(){return VM.value.timeout},
 				"set":function(value){
-					if (self.VM.async==false&&value!==0) throw new DOMException("Failed to set the 'timeout' property on 'XMLHttpRequest': Timeouts cannot be set for synchronous requests made from a document.");
-					if (typeof value=="number") {
-						self.VM.value.timeout=value;
-						return value;
-					} else {console.warn("输入值不为数字！")};
+					if (VM.async==false&&value!==0) throw new DOMException("Failed to set the 'timeout' property on 'XMLHttpRequest': Timeouts cannot be set for synchronous requests made from a document.");
+					if (typeof value=="number") {VM.value.timeout=value} else console.warn("输入值不为数字！");
+					return value;
 				},
+				"configurable":true,
+				"enumerable":true
+			},
+			"withCredentials":{
+				"get":function(){return VM.value.withCredentials},
+				"set":function(value){VM.value.withCredentials=value?true:false},
+				"configurable":true,
+				"enumerable":true
+			},
+			"onreadystatechange":{
+				"get":function(){return VM.value.onreadystatechange},
+				"set":function(value){if (typeof value=="function"||value===null) VM.value.onreadystatechange=value},
+				"configurable":true,
 				"enumerable":true
 			}
 		});
-	}
-	open(method,url,async=true,username=null,password=null) {
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (typeof method=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 0 present.");
-		if (typeof url=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 1 present.");
-		switch (async) {
-			case false:
-				if (this.responseType!=="") throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests from a document must not set a response type.");
-				if (this.timeout!==0) throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests must not set a timeout.");
-				console.warn("[Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.");
-				break;
-			default:
-				console.warn("参数错误：async");
-				async=true;
-			case true:
-		}
-		this.VM.stop=true;
-		this.VM.abort=false;
-		this.VM.timeout=false;
-		this.VM.RequestHeader={
-			":authority":location.host,
-			":method":method.toUpperCase(),
-			":path":url,
-			":scheme":location.protocol,
-			"accept":"*/*",
-			"accept-encoding":"gzip, deflate, br",
-			"accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
-			"dnt":"1",
-			"referer":location.href,
-			"sec-fetch-mode":"cors",
-			"sec-fetch-site":"same-origin",
-			"user-agent":navigator.userAgent,
-			"username":username,
-			"password":password
+		this.addEventListener("readystatechange",function(event){if (this.onreadystatechange) this.onreadystatechange(event)})
+		Object.defineProperty(VM.port,"readyState",{
+			"get":function(){return VM.value.readyState},
+			"set":function(value) {
+				VM.value.readyState=value;
+				self.dispatchEvent(new Event("readystatechange",{"currentTarget":self,"srcElement":self,"target":self}));
+			},
+			"configurable":true,
+			"enumerable":true
+		});
+		this.open=function(method,url,async=true,username=null,password=null) {
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+			if (typeof method=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 0 present.");
+			if (typeof url=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 1 present.");
+			switch (async) {
+				case false:
+					if (this.responseType!=="") throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests from a document must not set a response type.");
+					if (this.timeout!==0) throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests must not set a timeout.");
+					console.warn("[Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.");
+					break;
+				default:
+					console.warn("参数错误：async");
+					async=true;
+				case true:
+			}
+			VM.stop=true;
+			VM.abort=false;
+			VM.timeout=false;
+			VM.RequestHeader={
+				":authority":location.host,
+				":method":method.toUpperCase(),
+				":path":url,
+				":scheme":location.protocol,
+				"accept":"*/*",
+				"accept-encoding":"gzip, deflate, br",
+				"accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+				"dnt":"1",
+				"referer":location.href,
+				"sec-fetch-mode":"cors",
+				"sec-fetch-site":"same-origin",
+				"user-agent":navigator.userAgent,
+				"username":username,
+				"password":password
+			};
+			VM.async=async;
+			VM.method=method.toLowerCase();
+			VM.url=url;
+			VM.OPENED=true;
+			VM.value.response="";
+			VM.value.responseText="";
+			VM.value.responseType="";
+			VM.value.responseURL="";
+			VM.value.responseXML=null,
+			VM.value.status=0;
+			VM.value.statusText="";
+			VM.port.readyState=1;
 		};
-		this.VM.async=async;
-		this.VM.method=method.toLowerCase();
-		this.VM.url=url;
-		this.VM.OPENED=true;
-		this.VM.value.response="";
-		this.VM.value.responseText="";
-		this.VM.value.responseType="";
-		this.VM.value.responseURL="";
-		this.VM.value.responseXML=null,
-		this.VM.value.status=0;
-		this.VM.value.statusText="";
-		this.VM.port.readyState=1;
-	}
-	send(body) {
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (this.VM.OPENED!=true) throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.");
-		var inerror=XMLHttpRequest.NetworkError;
-		var self=this;
-		this.VM.OPENED=false;
-		this.VM.stop=false;
-		if (this.timeout>0) {
-			setTimeout(function(){
-				this.VM.port.readyState=4;
-				this.VM.timeout=true;
-				if (typeof this.VM.stop_request=="function") this.VM.stop_request();
-			},this.timeout)
-		};
-		if (this.VM.async) {
-			(async function() {
-				if (!self.VM.stop&&typeof self.onloadstart=="function") await (async function(){
-					try {self.onloadstart(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":0}))} catch(error) {console.error(error)};
-				})();
-				if (self.VM.method=="post") {
-					if (!self.VM.stop&&typeof self.upload.onloadstart=="function") await (async function(){
-						try {self.upload.onloadstart(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-					})();
-					if (!self.VM.stop&&!inerror&&typeof self.upload.onprogress=="function") await (async function(){
-						try {self.upload.onprogress(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-					})
-					if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) console.log("发送数据",body);
-					if (!self.VM.stop&&!inerror&&typeof self.upload.onload=="function") await (async function(){
-						try {self.upload.onload(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-					})();
-					if (!self.VM.stop) {
+		this.send=function(body) {
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+			if (VM.OPENED!=true) throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.");
+			var inerror=XMLHttpRequest.NetworkError;
+			VM.OPENED=false;
+			VM.stop=false;
+			if (this.timeout>0) {
+				setTimeout(function(){
+					VM.port.readyState=4;
+					VM.timeout=true;
+					if (typeof VM.stop_request=="function") VM.stop_request();
+				},this.timeout)
+			};
+			if (VM.async) {
+				(async function() {
+					if (!VM.stop) await (async function(){self.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":0}))})();
+					if (VM.method=="post") {
+						if (!VM.stop) await (async function(){self.upload.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})();
+						if (!VM.stop&&!inerror) await (async function(){self.upload.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})
+						if (!(VM.stop||VM.abort||VM.timeout||inerror)) console.log("发送数据",body);
+						if (!VM.stop&&!inerror) await (async function(){self.upload.dispatchEvent(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
+						if (!VM.stop) {
+							switch (true) {
+								case inerror:
+									self.upload.dispatchEvent(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+									break;
+								case VM.timeout:
+									self.upload.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+									break;
+								case VM.abort:
+									self.upload.dispatchEvent(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+								default:
+							}
+						};
+						if (!VM.stop) await (async function(){self.upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
+					};
+					if (!(VM.stop||VM.abort||VM.timeout||inerror)) VM.port.readyState=2;
+					if (!(VM.stop||VM.abort||VM.timeout||inerror)) VM.port.readyState=3;
+					if (!VM.stop&&!inerror) await (async function(){self.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})();
+					if (!VM.stop&&!inerror) VM.progressID=setInterval(function(){if (!(VM.stop||VM.abort||VM.timeout||inerror)) self.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))},50);
+					if (!(VM.stop||VM.abort||VM.timeout||inerror)) {
+						VM.value.responseURL=VM.url;
+						if (typeof XHR_Local[VM.url]=="undefined") {
+							var temp=await XHR_request(VM);
+						} else {
+							var temp=[true,XHR_Local[VM.url]];
+						};
+						if (temp[0]) {
+							VM.value.status=200;
+							VM.value.statusText="OK";
+							VM.value.responseText=temp[1];
+							switch (self.responseType.toLowerCase()) {
+								case "json":
+									VM.value.response=JSON.parse(VM.value.responseText);
+									break;
+								/*
+								case "document":
+									VM.value.response=JSON.parse(VM.value.responseText);
+									break;
+								*/
+								default:
+									VM.value.response=VM.value.responseText;
+							};
+						} else {
+							VM.value.status=404;
+							VM.value.statusText="Not Found";
+						};
+					};
+					clearInterval(VM.progressID);
+					if (!(VM.stop||VM.abort||VM.timeout)) VM.port.readyState=4;
+					if (!VM.stop&&!inerror) await (async function(){self.dispatchEvent(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
+					if (!VM.stop) {
 						switch (true) {
 							case inerror:
-								if (typeof self.upload.onerror=="function") try {self.upload.onerror(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
+								console.error(VM.method.toUpperCase(),VM.url,"net::ERR_VM_NETWORK_ERROR");
+								self.dispatchEvent(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
 								break;
-							case self.VM.timeout:
-								if (typeof self.upload.ontimeout=="function") try {self.upload.ontimeout(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
+							case VM.timeout:
+								self.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
 								break;
-							case self.VM.abort:
-								if (typeof self.upload.onabort=="function") try {self.upload.onabort(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
+							case VM.abort:
+								self.dispatchEvent(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
 							default:
 						}
 					};
-					if (!self.VM.stop&&typeof self.upload.onloadend=="function") await (async function(){
-						try {self.upload.onloadend(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-					})();
-				};
-				if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) self.VM.port.readyState=2;
-				if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) self.VM.port.readyState=3;
-				if (!self.VM.stop&&!inerror&&typeof self.onprogress=="function") await (async function(){
-					try {self.onprogress(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
+					if (!VM.stop) await (async function(){self.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
+					VM.stop=true;
 				})();
-				if (!self.VM.stop&&!inerror&&typeof self.onprogress=="function") self.VM.progressID=setInterval(function(){
-					if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) try {self.onprogress(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-				},50);
-				if (!(self.VM.stop||self.VM.abort||self.VM.timeout||inerror)) {
-					self.VM.value.responseURL=self.VM.url;
-					if (typeof XHR_Local[self.VM.url]=="undefined") {
-						var temp=await XHR_request(self.VM);
+			} else {
+				if (!VM.stop) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+				if (VM.method=="post") {
+					if (!VM.stop) this.upload.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
+					if (!VM.stop&&!inerror) this.upload.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
+					if (!VM.stop&&!inerror) console.log("发送数据",body);
+					if (!VM.stop&&!inerror) this.upload.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
+					if (!VM.stop&&inerror) this.upload.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
+					if (!VM.stop) this.upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
+				};
+				if (!VM.stop&&!inerror) VM.port.readyState=2;
+				if (!VM.stop&&!inerror) VM.port.readyState=3;
+				if (!VM.stop&&!inerror) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
+				if (!VM.stop&&!inerror) {
+					if (typeof XHR_Local[VM.url]=="undefined") {
+						console.warn("未在预设库中找到请求的资源，在同步模式下禁止实时配置，请求失败。");
+						VM.value.status=404;
+						VM.value.statusText="Not Found";
+						VM.value.responseURL=VM.url;
 					} else {
-						var temp=[true,XHR_Local[self.VM.url]];
-					};
-					if (temp[0]) {
-						self.VM.value.status=200;
-						self.VM.value.statusText="OK";
-						self.VM.value.responseText=temp[1];
-						switch (self.responseType.toLowerCase()) {
-							case "json":
-								self.VM.value.response=JSON.parse(self.VM.value.responseText);
-								break;
-							/*
-							case "document":
-								self.VM.value.response=JSON.parse(self.VM.value.responseText);
-								break;
-							*/
-							default:
-								self.VM.value.response=self.VM.value.responseText;
-						};
-					} else {
-						self.VM.value.status=404;
-						self.VM.value.statusText="Not Found";
+						VM.value.status=200;
+						VM.value.statusText="OK";
+						VM.value.responseURL=VM.url;
+						VM.value.responseText=XHR_Local[VM.url];
+						VM.value.response=VM.value.responseText;
 					};
 				};
-				clearInterval(self.VM.progressID);
-				if (!(self.VM.stop||self.VM.abort||self.VM.timeout)) self.VM.port.readyState=4;
-				if (!self.VM.stop&&!inerror&&typeof self.onload=="function") await (async function(){
-					try {self.onload(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-				})();
-				if (!self.VM.stop) {
-					switch (true) {
-						case inerror:
-							console.error(self.VM.method.toUpperCase(),self.VM.url,"net::ERR_VM_NETWORK_ERROR");
-							if (typeof self.onerror=="function") try {self.onerror(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-							break;
-						case self.VM.timeout:
-							if (typeof self.ontimeout=="function") try {self.ontimeout(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-							break;
-						case self.VM.abort:
-							if (typeof self.onabort=="function") try {self.onabort(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-						default:
-					}
+				if (!VM.stop) VM.port.readyState=4;
+				if (!VM.stop&&!inerror) this.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
+				if (!VM.stop&&inerror){
+					console.error(VM.method.toUpperCase(),VM.url,"net::ERR_VM_NETWORK_ERROR");
+					this.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
 				};
-				if (!self.VM.stop&&typeof self.onloadend=="function") await (async function(){
-					try {self.onloadend(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-				})();
-				self.VM.stop=true;
-			})();
-		} else {
-			if (!this.VM.stop&&typeof this.onloadstart=="function") {
-				try {this.onloadstart(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}))} catch(error) {console.error(error)};
+				if (!VM.stop) this.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
+				VM.stop=true;
 			};
-			if (this.VM.method=="post") {
-				if (!this.VM.stop&&typeof this.upload.onloadstart=="function") {
-					try {this.upload.onloadstart(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-				};
-				if (!this.VM.stop&&!inerror&&typeof this.upload.onprogress=="function") {
-					try {this.upload.onprogress(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-				};
-				if (!this.VM.stop&&!inerror) console.log("发送数据",body);
-				if (!this.VM.stop&&!inerror&&typeof this.upload.onload=="function") {
-					try {this.upload.onload(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-				};
-				if (!this.VM.stop&&inerror){
-					if (typeof this.upload.onerror=="function") try {this.upload.onerror(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-				};
-				if (!this.VM.stop&&typeof this.upload.onloadend=="function") {
-					try {this.upload.onloadend(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-				};
-			};
-			if (!this.VM.stop&&!inerror) this.VM.port.readyState=2;
-			if (!this.VM.stop&&!inerror) this.VM.port.readyState=3;
-			if (!this.VM.stop&&!inerror&&typeof this.onprogress=="function") {
-				try {this.onprogress(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-			};
-			if (!this.VM.stop&&!inerror) {
-				if (typeof XHR_Local[this.VM.url]=="undefined") {
-					console.warn("未在预设库中找到请求的资源，在同步模式下禁止实时配置，请求失败。");
-					this.VM.value.status=404;
-					this.VM.value.statusText="Not Found";
-					this.VM.value.responseURL=this.VM.url;
-				} else {
-					this.VM.value.status=200;
-					this.VM.value.statusText="OK";
-					this.VM.value.responseURL=this.VM.url;
-					this.VM.value.responseText=XHR_Local[this.VM.url];
-					switch (this.responseType.toLowerCase()) {
-						case "json":
-							this.VM.value.response=JSON.parse(this.VM.value.responseText);
-							break;
-						/*
-						case "document":
-							this.VM.value.response=JSON.parse(this.VM.value.responseText);
-							break;
-						*/
-						default:
-							this.VM.value.response=this.VM.value.responseText;
-					};
-				};
-			};
-			if (!this.VM.stop) this.VM.port.readyState=4;
-			if (!this.VM.stop&&!inerror&&typeof this.onload=="function") {
-				try {this.onload(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-			};
-			if (!this.VM.stop&&inerror){
-				console.error(this.VM.method.toUpperCase(),this.VM.url,"net::ERR_VM_NETWORK_ERROR");
-				if (typeof this.onerror=="function") try {this.onerror(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}))} catch(error) {console.error(error)};
-			};
-			if (!this.VM.stop&&typeof this.onloadend=="function") {
-				try {this.onloadend(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}))} catch(error) {console.error(error)};
-			};
-			this.VM.stop=true;
 		};
-	}
-	abort() {
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (this.readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
-		if (this.readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
-		this.VM.port.readyState=4;
-		this.VM.abort=true;
-		if (typeof this.VM.stop_request=="function") this.VM.stop_request();
-	}
-	setRequestHeader(name,value) {
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (this.VM.OPENED!=true) throw new DOMException("Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.");
-		this.VM.value.RequestHeader[name]=value;
-	}
-	getResponseHeader(name){
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-	}
-	getAllResponseHeaders(){
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-	}
-	overrideMimeType(mime){
-		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (typeof mime=="undefined") throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
-		this.VM.MimeType=mime;
-		this.VM.value.RequestHeader.accept=mime;
-	}
-};
-XMLHttpRequest.NetworkError=false;
+		this.abort=function() {
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+			if (this.readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
+			if (this.readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
+			VM.port.readyState=4;
+			VM.abort=true;
+			if (typeof VM.stop_request=="function") VM.stop_request();
+		};
+		this.setRequestHeader=function(name,value) {
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+			if (VM.OPENED!=true) throw new DOMException("Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.");
+			VM.value.RequestHeader[name]=value;
+		};
+		this.getResponseHeader=function(name){
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		};
+		this.getAllResponseHeaders=function(){
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		};
+		this.overrideMimeType=function(mime){
+			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+			if (typeof mime=="undefined") throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
+			this.VM.MimeType=mime;
+			this.VM.value.RequestHeader.accept=mime;
+		};
+	};
+	DONE=4;
+	HEADERS_RECEIVED=2;
+	LOADING=3;
+	OPENED=1;
+	UNSENT=0;
+	upload=new XMLHttpRequestUpload(XMLHttpRequestUpload.check);
+	static NetworkError=false;
+}
 
 //Notification 模拟
-Notification=class {
+Notification=class extends EventTarget{
 	constructor(title,options) {
 		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
+		super();
+		var self=this;
 		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":(new Date).getTime(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
 		Object.assign(model,options);
+		var VM={
+			"onclick":null,
+			"onclose":null,
+			"onerror":null,
+			"onshow":null,
+			"autoClose":{"auto":false,"timeoutID":null},
+			"CLOSED":false
+		};
+		for (let item of ["onclick","onclose","onerror","onshow"]) {
+			Object.defineProperty(this,item,{
+				"get":function(){return VM[item]},
+				"set":function(value){if (typeof value=="function"||value===null) VM[item]=value},
+				"configurable":true,
+				"enumerable":true
+			});
+			let EventName="";
+			for (let i=2,length=item.length;i<length;i++) EventName+=item[i];
+			this.addEventListener(EventName,function(event){if (this[item]) this[item](event)})
+		};
 		this.actions=[];
 		this.badge=model.badge;
 		this.body=model.body;
@@ -479,10 +421,6 @@ Notification=class {
 		this.icon=model.icon;
 		this.image=model.image;
 		this.lang=model.lang;
-		this.onclick=null;
-		this.onclose=null;
-		this.onerror=null;
-		this.onshow=null;
 		this.renotify=model.renotify;
 		this.requireInteraction=model.requireInteraction;
 		this.silent=model.silent;
@@ -490,24 +428,28 @@ Notification=class {
 		this.timestamp=model.timestamp;
 		this.title=model.title;
 		this.vibrate=model.vibrate;
-		this.VM={
-			"autoClose":{"auto":false,"timeoutID":null},
-			"CLOSED":false
+		this.close=function(){
+			if (!(this instanceof Notification)) throw new TypeError("Illegal invocation");
+			if (VM.CLOSED!=true) {
+				VM.CLOSED=true;
+				clearTimeout(VM.autoClose.timeoutID);
+				console.log("通知关闭",this);
+				this.dispatchEvent(new Event("close",{"currentTarget":this,"srcElement":this,"target":this}));
+			} else console.warn("此通知已经被关闭！");
 		};
-		var self=this;
 		new Promise(function(done){
 			setTimeout(function(){
 				if (Notification.permission=="granted") {
 					Notification.VM[Notification.VM_count]={
-						"close":function(){self.close},
+						"close":function(){self.close()},
 						"click":function() {
-							if (self.VM.CLOSED!==true) {
+							if (VM.CLOSED!=true) {
 								console.log("点击通知",self);
-								if (self.VM.autoClose.auto) {
-									clearTimeout(self.VM.autoClose.timeoutID);
-									self.VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
+								if (VM.autoClose.auto) {
+									clearTimeout(VM.autoClose.timeoutID);
+									VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
 								};
-								if (typeof self.onclick=="function") try {self.onclick()} catch(error) {console.error(error)};
+								self.dispatchEvent(new Event("click",{"currentTarget":this,"srcElement":this,"target":this}));
 							} else console.warn("此通知已经被关闭！");
 						}
 					};
@@ -518,27 +460,22 @@ Notification=class {
 					if (model.image!=="") preview.image=",\"\\nicon:\",model.image";
 					eval("console.log(\"Notification Content:\","+preview.icon+"\"\\ntitle:\",model.title"+preview.body+preview.image+")");
 					if (model.requireInteraction!==true) {
-						self.VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
-						self.VM.autoClose.auto=true;
+						VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
+						VM.autoClose.auto=true;
 					};
-					if (typeof self.onshow=="function") try {self.onshow()} catch(error) {console.error(error)};
+					self.dispatchEvent(new Event("show",{"currentTarget":this,"srcElement":this,"target":this}));
 				} else console.warn("未获得通知权限",Notification.permission);
 				done();
-			},50)
+			},50);
 		});
-	}
-	close(){
-		if (!(this instanceof Notification)) throw new TypeError("Illegal invocation");
-		if (this.VM.CLOSED!==true) {
-			this.VM.CLOSED=true;
-			clearTimeout(this.VM.autoClose.timeoutID);
-			console.log("通知关闭",this);
-			if (typeof this.onclose=="function") try {this.onclose()} catch(error) {console.error(error)};
-		} else console.warn("此通知已经被关闭！");
-	}
+	};
+	static maxActions=2;
+	static VM=[];
+	static VM_count=0;
+	static GRANTED=false;
 };
-Notification.changePermission=(function(){
-	if (window_board) {var permission="default"} else {var permission="granted"};
+Notification.changePermission=(function() {
+	if (Notification.GRANTED) {var permission="granted"} else {var permission="default"};
 	Object.defineProperty(Notification,"permission",{
 		"get":function(){return permission},
 		"set":function(){return false},
@@ -557,59 +494,32 @@ Notification.changePermission=(function(){
 		}
 	}
 })();
-Notification.requestPermission=function(){
+Notification.requestPermission=function() {
 	if (Notification.permission=="default") {
-		return new Promise(function(resolve,reject){
-			var doc=HtmlArray.decoder([
-				"您的脚本正在请求通知权限，请指定响应结果。",["br"],
-				["br"],
-				["button","允许",{
-					"id":"Npb1",
-					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;margin-right:10px;float:left",
-					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
-					"onmouseout":"javascript:this.style.backgroundColor=null"
-				}],
-				["button","禁止",{
-					"id":"Npb2",
-					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;margin-right:10px;float:left",
-					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
-					"onmouseout":"javascript:this.style.backgroundColor=null"
-				}],
-				["button","忽略",{
-					"id":"Npb3",
-					"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s;float:left",
-					"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
-					"onmouseout":"javascript:this.style.backgroundColor=null"
-				}]
-			],"Notification Local");
-			doc.getElementById("Npb1").addEventListener("click",function(){
-				Notification.changePermission(1);
-				window_board.hide();
-				resolve(Notification.permission);
+		if (Notification.requestPermission.trys<3) {
+			Notification.requestPermission.trys++;
+			return new Promise(function(resolve,reject){
+				Notification.requestPermission.set=function(permission) {
+					delete Notification.requestPermission.set;
+					Notification.changePermission(permission);
+					resolve(Notification.permission);
+				};
+				console.log("您的脚本正在请求通知权限，请指定响应结果。\n通道：Notification.requestPermission.set()\n参数：0:禁止，1:允许，2:忽略");
 			});
-			doc.getElementById("Npb2").addEventListener("click",function(){
-				Notification.changePermission(0);
-				window_board.hide();
-				resolve(Notification.permission);
-			});
-			doc.getElementById("Npb3").addEventListener("click",function(){
-				Notification.changePermission(2);
-				window_board.hide();
-				resolve(Notification.permission);
-			});
-			window_board.display(doc,"请求通知权限",true);
-		});
+		} else {
+			Notification.changePermission(0);
+			console.warn("Notifications permission has been blocked as the user has dismissed the permission prompt several times. This can be reset in Page Info which can be accessed by clicking the lock icon next to the URL. See https://www.chromestatus.com/features/6443143280984064 for more information.");
+			return Promise.resolve(Notification.permission);
+		};
 	};
 	return Promise.resolve(Notification.permission);
 };
-Notification.maxActions=2;
-Notification.VM=[];
-Notification.VM_count=0;
+Notification.requestPermission.trys=0;
 
 //cookie 模拟
 (function() {
 	var Local=[
-		["News_log_ID_SabbatOfTheWitch","{\"have_read\":2583978669458}",-1]
+		//["cookie name","cookie value",-1(expires)]
 	];
 	function Manager() {
 		for (let i=Local.length-1;i>-1;i--) {

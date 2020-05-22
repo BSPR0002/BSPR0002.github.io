@@ -123,11 +123,11 @@ function EmptyElement(TargetElement) {
 	Operator.deleteContents();
 }
 
-function getNotificationPermission(){
+function getNotificationPermission(callback){
 	if (!Notification) return 0;
 	switch (Notification.permission) {
 		case "default":
-			Notification.requestPermission();
+			Notification.requestPermission().then(callback);
 			return 2;
 		case "granted":
 			return 1;
