@@ -5,7 +5,7 @@ function ShowLinkInfo(Node) {
 	var CardName=Node.parentNode.parentNode.getElementsByClassName("card_name")[0].title;
 	var BoardLink="";
 	if (typeof Node.Board.Title=="string") BoardLink=Node.Board.Title;
-	var BoardContent=HtmlArray.decoder([BoardLink,["br"]]);
+	var BoardContent=HtmlArray.decode([BoardLink,["br"]]);
 	BoardContent.appendChild(Node.Board.Content.cloneNode(true));
 	window_board.display(BoardContent,CardName);
 }
@@ -97,7 +97,7 @@ var ResourceLibrary=(function(){
 						CardBoardDetailTips.className="CardBoardDetailTips";
 						CardLinkBDNDBoardContentNode.appendChild(CardBoardDetailTips);
 					};
-					if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(HtmlArray.decoder(obj.resource.BDND.detail.content,"ID"+obj.ID));
+					if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(HtmlArray.decode(obj.resource.BDND.detail.content,"ID"+obj.ID));
 					CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 				};
 				CardLinkBDND.Board={

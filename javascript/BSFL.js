@@ -177,7 +177,7 @@ class MultiThread {
 }
 
 var HtmlArray={
-	"decoder":function(HtmlArray,unit) {
+	"decode":function(HtmlArray,unit) {
 		if (typeof unit=="undefined") unit="未知";
 		var HtmlDoc=document.createDocumentFragment();
 		function Operator(data,outer) {
@@ -226,7 +226,7 @@ var HtmlArray={
 		Operator(HtmlArray,HtmlDoc);
 		return HtmlDoc;
 	},
-	"encoder":function HAEncoder(Node,IncludeOuter) {
+	"encode":function(Node,IncludeOuter) {
 		var HtmlArray=new Array;
 		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {

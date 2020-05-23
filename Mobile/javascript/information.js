@@ -7,7 +7,7 @@
 	function Initial_AboutUs(self) {
 		if (document.getElementById("about_us")) {
 			document.getElementById("about_us").addEventListener("click",(function() {
-				var doc=HtmlArray.decoder([
+				var doc=HtmlArray.decode([
 					"Blue Sky Information Factory",["br"],
 					["br"],
 					"志向于分享与搬运二次元内容，并提供民间本土化服务（试行）。",["br"],
