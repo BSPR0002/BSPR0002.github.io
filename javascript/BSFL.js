@@ -176,8 +176,8 @@ class MultiThread {
 	shut(){this.core.terminate()}
 }
 
-var HtmlArray={
-	"decode":function(HtmlArray,unit) {
+var ArrayHtml={
+	"decode":function(ArrayHtml,unit) {
 		if (typeof unit=="undefined") unit="未知";
 		var HtmlDoc=document.createDocumentFragment();
 		function Operator(data,outer) {
@@ -223,11 +223,11 @@ var HtmlArray={
 				HtmlDoc=false;
 			};
 		};
-		Operator(HtmlArray,HtmlDoc);
+		Operator(ArrayHtml,HtmlDoc);
 		return HtmlDoc;
 	},
 	"encode":function(Node,IncludeOuter) {
-		var HtmlArray=new Array;
+		var ArrayHtml=[];
 		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {
 				outer.push(Node.textContent);
@@ -246,12 +246,12 @@ var HtmlArray={
 				default:
 					let child=[Node.nodeName];
 					if (Node.hasChildNodes()==true) {
-						child[1]=new Array;
+						child[1]=[];
 						Transporter(Node,child[1]);
 					};
 					try {
 						if (Node.hasAttributes()==true) {
-							child[2]=new Object;
+							child[2]={};
 							for (let attribute of Node.attributes) {
 								child[2][attribute.name]=attribute.value;
 							};
@@ -262,12 +262,12 @@ var HtmlArray={
 		};
 		try {
 			Node=Node.cloneNode(true);
-			if (IncludeOuter===true) {Operator(Node,HtmlArray)} else {Transporter(Node,HtmlArray)};
+			if (IncludeOuter===true) {Operator(Node,ArrayHtml)} else {Transporter(Node,ArrayHtml)};
 		} catch(error) {
 			console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
-			HtmlArray=false;
-		}
-		return HtmlArray;
+			ArrayHtml=false;
+		};
+		return ArrayHtml;
 	}
 };
 
@@ -291,7 +291,7 @@ var Cookies={
 		for (var cookie in box) {Cookies.delete(cookie)};
 	},
 	"toObject":function() {
-		var Fodder_Box=new Object;
+		var Fodder_Box={};
 		if (document.cookie!="") {
 			var Cookies_Box=document.cookie.split("; ");
 			for (var cookie in Cookies_Box) {

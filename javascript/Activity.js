@@ -1,6 +1,6 @@
 var Activity={
 	"ReleaseAgreement":function() {
-		window_board.display(HtmlArray.decode([
+		window_board.display(ArrayHtml.decode([
 			"您好，欢迎访问蓝天信息工厂！",["BR"],
 			"欢迎您在我们网站的资源库中发布与投放内容。",["BR"],
 			"发布与投放内容需要注意如下事项：",
@@ -29,7 +29,7 @@ var Activity={
 					window.location.href="/Mobile";
 					break;
 				default:
-					window_board.display(HtmlArray.decode(Activity.mobile_survey.HA,"Activity.mobile_survey"),"调查")
+					window_board.display(ArrayHtml.decode(Activity.mobile_survey.HA,"Activity.mobile_survey"),"调查")
 			};
 		},
 		"operate":function(result) {
@@ -97,7 +97,7 @@ var News=(function(){
 				if (data.preview.image) model.image=data.preview.image;
 				if (data.board) model.click=function(){
 					window.focus();
-					window_board.display(HtmlArray.decode(data.board,"News_"+data.ID),data.title)
+					window_board.display(ArrayHtml.decode(data.board,"News_"+data.ID),data.title)
 					this.close();
 				};
 				NotificationCreater(model);

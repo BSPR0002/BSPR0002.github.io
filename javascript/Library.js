@@ -111,7 +111,7 @@ var ResourceLibrary=(function(){
 						CardBoardDetailTips.className="CardBoardDetailTips";
 						CardLinkBDNDBoardContentNode.appendChild(CardBoardDetailTips);
 					};
-					if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(HtmlArray.decode(obj.resource.BDND.detail.content,"ID"+obj.ID));
+					if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(ArrayHtml.decode(obj.resource.BDND.detail.content,"ID"+obj.ID));
 					CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
 				};
 				CardLinkBDND.Board={
@@ -197,11 +197,11 @@ var ResourceLibrary=(function(){
 				ShowState.clientTop;
 				var Data=libraryData.slice();
 				keyword=input.trim();
-				var match_word=new Array;
+				var match_word=[];
 				match_word.push(RegExp(keyword,"i"));
 				var break_word=keyword.split(" ");
 				if (break_word.length!=1) {
-					let duplicate_removal=new Array;
+					let duplicate_removal=[];
 					for (let word of break_word) {
 						if (duplicate_removal.indexOf(word)==-1&&word!="") {
 							duplicate_removal.push(word);
@@ -209,9 +209,9 @@ var ResourceLibrary=(function(){
 						};
 					};
 				};
-				var result=new Array;
+				var result=[];
 				for (let word of match_word) {
-					let resultc=new Array;
+					let resultc=[];
 					for (let i=Data.length-1;i>-1;i--) {
 						let name_match=false;
 						for (let name of Data[i].name) {

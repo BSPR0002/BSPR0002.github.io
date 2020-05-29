@@ -12,7 +12,7 @@ var XHR_Local={ //JSON 预设库
 				"message":"简短预览内容",
 				"image":"预览小图片"
 			},
-			"board":["HtmlArray","详细内容"],
+			"board":["ArrayHtml","详细内容"],
 			"force":false
 		}
 	]

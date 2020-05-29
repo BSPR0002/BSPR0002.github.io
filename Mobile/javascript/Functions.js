@@ -30,13 +30,17 @@ var window_board={
 		},{"once":true});
 		board.style.opacity="0";
 	},
-	"display":function(content,title,NoManualClose,boardSize) {
-		var size={};
-		try {Object.assign(size,boardSize)} catch(error) {console.warn("无法接收参数 boardSize ！\n",boardSize)};
+	"display":function(content,title,NoManualClose,boardSize={}) {
+		if (typeof boardSize!="object") {
+			console.warn("无法接收参数 boardSize ！\n",boardSize);
+			boardSize={};
+		};
 		var board=document.getElementById("window_board");
 		var board_title=document.getElementById("window_board_title");
 		var board_close=document.getElementById("window_board_close");
 		var board_content=document.getElementById("window_board_content");
+		board.style.width=boardSize.width?boardSize.width:null;
+		board.style.height=boardSize.height?boardSize.height:null;
 		if (NoManualClose===true) {board_close.style.display="none"} else {board_close.style.display="block"};
 		if (typeof title=="string") {
 			board_title.innerText=title;
@@ -56,9 +60,6 @@ var window_board={
 			default:
 				throw new TypeError("传入的内容不为字符串或 HTML 节点。");
 		};
-		board.removeAttribute("style");
-		if (typeof size.width!="undefined") board.style.width=size.width;
-		if (typeof size.height!="undefined") board.style.width=size.height;
 		window_board.show();
 	}
 }
