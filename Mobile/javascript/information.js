@@ -46,7 +46,7 @@
 		},11000)
 		changeShow();
 	};
-	async function Initial_AboutUs(self) {
+	async function Initial_AboutUs() {
 		await new Promise(function(resolve) {
 			var wait=setInterval(function() {
 				if (document.getElementById("about_us")) {

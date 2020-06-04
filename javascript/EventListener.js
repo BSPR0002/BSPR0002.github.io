@@ -12,6 +12,5 @@ document.getElementById("window_board_close").addEventListener("click",window_bo
 ChangePage(1); //加载主页
 
 window.addEventListener("load",function() {
-	Activity.mobile_survey.interface();
 	News.request();
 },{"once":true});

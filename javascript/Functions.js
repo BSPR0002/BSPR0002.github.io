@@ -1,4 +1,4 @@
-//if (DetectUA().Mobile) window.location.href="/Mobile/";
+if (DetectUA().Mobile) window.location.href="/Mobile/";
 
 function WakeHoverPointer() {
 	document.getElementById("nav_hover_pointer").style.height="10px";
