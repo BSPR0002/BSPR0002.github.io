@@ -95,9 +95,9 @@ var News=(function(){
 					"close":operator
 				};
 				if (data.preview.image) model.image=data.preview.image;
-				if (data.board) model.click=function(){
+				if (data.content) model.click=function(){
 					window.focus();
-					window_board.display(ArrayHtml.decode(data.board,"News_"+data.ID),data.title)
+					window_board.display(ArrayHtml.decode(data.content,"News_"+data.ID),data.title)
 					this.close();
 				};
 				NotificationCreater(model);

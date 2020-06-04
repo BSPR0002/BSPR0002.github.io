@@ -19,17 +19,15 @@ function AJAX(options) {
 }
 
 function getJSON(url,callback,AllowCache) {
-	var AJAXModel={"url":url,"type":"json","success":function(response) {
-		callback(response);
-	}};
+	var AJAXModel={"url":url,"type":"json"};
+	if (typeof callback=="function") AJAXModel.success=callback;
 	if (AllowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
 function getXML(url,callback,AllowCache) {
-	var AJAXModel={"url":url,"type":"document","success":function(response) {
-		callback(response);
-	}};
+	var AJAXModel={"url":url,"type":"document"};
+	if (typeof callback=="function") AJAXModel.success=callback;
 	if (AllowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }

@@ -251,18 +251,30 @@ var ResourceLibrary=(function(){
 })();
 
 (function() {//Beginning
-	function Initial_view(self) {
-		if (document.getElementById("show_box")) {
-			ResourceLibrary.overview();
-		} else setTimeout(function(){self(self)},100);
+	async function Initial_view() {
+		await new Promise(function(resolve) {
+			var wait=setInterval(function() {
+				if (document.getElementById("show_box")) {
+					clearInterval(wait);
+					resolve();
+				}
+			},100)
+		});
+		ResourceLibrary.overview();
 	};
-	function Search_Initialize(self) {
-		if (document.getElementById("library_search_bar")) {
-			document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-			document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
-			document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
-		} else setTimeout(function(){self(self)},100);
+	async function Search_Initialize() {
+		await new Promise(function(resolve) {
+			var wait=setInterval(function() {
+				if (document.getElementById("library_search_bar")) {
+					clearInterval(wait);
+					resolve();
+				}
+			},100)
+		});
+		document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
+		document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
+		document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
 	};
-	Initial_view(Initial_view);
-	Search_Initialize(Search_Initialize);
+	Initial_view();
+	Search_Initialize();
 })();

@@ -96,6 +96,8 @@
 	box-sizing:border-box;
 	background-size:100%;
 	background-image:url("/Images/cloud.png");
+	opacity:1;
+	transition:opacity 0.5s;
 }
 
 #News_icon.normal {
@@ -108,10 +110,13 @@
 	grid-area:text;
 	width:100%;
 	text-align:left;
+	font-size:0.9rem;
 	white-space:nowrap;
 	place-self:center;
 	overflow:hidden;
 	text-overflow:ellipsis;
+	opacity:1;
+	transition:opacity 0.5s;
 }
 
 #about_us {

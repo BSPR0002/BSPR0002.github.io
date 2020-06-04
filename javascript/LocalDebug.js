@@ -13,7 +13,8 @@ var XHR_Local={ //JSON 预设库
 				"image":"预览小图片"
 			},
 			"board":["ArrayHtml","详细内容"],
-			"force":false
+			"force":false,
+			"unshow":true
 		}
 	]
 };
