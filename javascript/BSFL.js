@@ -67,6 +67,7 @@ function Load(url,TargetElement,AllowCache,fully) {
 							temp.appendChild(document.createTextNode(response));
 							if (item.hasAttributes()==true) {
 								for (let attribute of item.attributes) {
+									if (attribute.name=="src") continue;
 									temp.setAttribute(attribute.name,attribute.value)
 								}
 							};
