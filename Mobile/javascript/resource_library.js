@@ -209,7 +209,7 @@ var ResourceLibrary=(function(){
 	}
 })();
 
-(function() {//Beginning
+(function() { //Beginning
 	async function Initial_view() {
 		await new Promise(function(resolve) {
 			var wait=setInterval(function() {

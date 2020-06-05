@@ -65,6 +65,11 @@ function Load(url,TargetElement,AllowCache,fully) {
 						"success":function(response){
 							var temp=document.createElement("script");
 							temp.appendChild(document.createTextNode(response));
+							if (item.hasAttributes()==true) {
+								for (let attribute of item.attributes) {
+									temp.setAttribute(attribute.name,attribute.value)
+								}
+							};
 							item.parentNode.replaceChild(temp,item);
 							requests.number--
 						},
