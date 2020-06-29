@@ -374,7 +374,7 @@ XMLHttpRequest=class extends XMLHttpRequestEventTarget {
 		this.overrideMimeType=function(mime){
 			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
 			if (typeof mime=="undefined") throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
-			this.VM.MimeType=mime;
+			this.VM.mimeType=mime;
 			this.VM.value.RequestHeader.accept=mime;
 		};
 	};
@@ -393,7 +393,7 @@ Notification=class extends EventTarget{
 		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
 		super();
 		var self=this;
-		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":(new Date).getTime(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
+		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":Date.now(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
 		Object.assign(model,options);
 		var VM={
 			"onclick":null,
@@ -524,7 +524,7 @@ Notification.requestPermission.trys=0;
 	];
 	function Manager() {
 		for (let i=Local.length-1;i>-1;i--) {
-			if (Local[i][2]!=-1) {if (!((new Date).getTime()<Local[i][2])) Local.splice(i,1)}
+			if (Local[i][2]!=-1) {if (!(Date.now()<Local[i][2])) Local.splice(i,1)}
 		}
 	};
 	Object.defineProperty(document,"cookie",{
@@ -588,7 +588,7 @@ Notification.requestPermission.trys=0;
 					if (typeof JSON.parse(maxAge)=="number") var temp3=true;
 				} catch(no) {var temp3=false};
 				if (temp3) {
-					maxAge=new Date((new Date).getTime()+maxAge*1000).getTime();
+					maxAge=new Date(Date.now()+maxAge*1000).getTime();
 					if (!(maxAge>-1)) maxAge=-1;
 				} else maxAge=-1;
 			} else maxAge=-1;

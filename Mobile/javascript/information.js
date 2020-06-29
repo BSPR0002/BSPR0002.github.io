@@ -35,16 +35,16 @@
 			document.getElementById("News_icon").style.opacity=0;
 			document.getElementById("News_text").style.opacity=0;
 		};
+		changeShow();
 		var loopShow=setInterval(function(){
-			LastShow=currentShow++;
+			lastShow=currentShow++;
 			if (currentShow==allData) currentShow=0;
-			if (!(document.getElementById("News"))||LastShow==currentShow) {
+			if (!(document.getElementById("News"))||lastShow==currentShow) {
 				clearInterval(loopShow);
 				return;
 			};
 			changeShow();
 		},11000)
-		changeShow();
 	};
 	async function Initial_AboutUs() {
 		await new Promise(function(resolve) {
@@ -64,14 +64,13 @@
 				"如果您有本土化工程需求或正在寻求工程协助，您可以向我们咨询。",["br"],
 				"如果您有想要分享或发布的内容，您可以放到我们的资源库中。",["br"],
 				["br"],
-				"如果你懂得汉化工作，浏览器前端开发，日语翻译，软件编程，并且有用爱发电的热情，那么我诚恳地邀请您成为 BSIF 的一员!",["br"],
+				"如果你懂得汉化工作，网页前端开发，日语翻译，软件编程，并且有用爱发电的热情，那么我诚恳地邀请您成为 BSIF 的一员!",["br"],
 				["br"],
 				"联系方式：",["br"],
 				"百度贴吧：",["a","BSPR0002",{"href":"http://tieba.baidu.com/home/main?un=BSPR0002&from=tieba"}],["br"],
 				"QQ群：",["a","BSIF",{"href":"https://jq.qq.com/?_wv=1027&k=5Ad5ek3"}]
 			]);
-			function show(){window_board.display(doc.cloneNode(true),"关于我们")};
-			return show;
+			return function(){window_board.display(doc.cloneNode(true),"关于我们")};
 		})());
 	};
 	Initial_News();

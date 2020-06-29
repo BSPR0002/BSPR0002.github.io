@@ -286,19 +286,17 @@ var Cookies={
 		return Cookies.toObject()[cookieName];
 	},
 	"set":function(name,value,expiresDate,path,domain) {
-		if (expiresDate) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
+		if (expiresDate instanceof Date) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
 		if (typeof path=="string") {path=";Path="+path} else path="";
 		if (typeof domain=="string") {domain=";domain="+domain} else domain="";
 		document.cookie=name+"="+value+expiresDate+path+domain;
 	},
 	"delete":function(cookieName,cookiePath,cookieDomain) {
-		var expires=new Date;
-		expires.setTime(0);
+		var expires=new Date(0);
 		Cookies.set(cookieName,"",expires,cookiePath,cookieDomain);
 	},
 	"empty":function() {
-		var box=Cookies.toObject();
-		for (var cookie in box) {Cookies.delete(cookie)};
+		for (var cookie in Cookies.toObject()) {Cookies.delete(cookie)};
 	},
 	"toObject":function() {
 		var Fodder_Box={};

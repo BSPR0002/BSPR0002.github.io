@@ -66,7 +66,7 @@ var News=(function(){
 			try {
 				var log=JSON.parse(data);
 				if (typeof log!="object"||typeof log.have_read!="number"||typeof log.name!="string") throw "推送记录损坏";
-				var pass=(new Date).getTime()-log.have_read;
+				var pass=Date.now()-log.have_read;
 				if (NewsName!=log.name||pass>259200000||pass<=0) {
 					localStorage.removeItem("News_log_ID_"+NewsID);
 					throw "推送记录过期";
@@ -78,7 +78,7 @@ var News=(function(){
 	};
 	function LogRecorder(NewsID,NewsName) {
 		if (typeof NewsName!="string") NewsName="";
-		var log={"name":NewsName,"have_read":(new Date).getTime()};
+		var log={"name":NewsName,"have_read":Date.now()};
 		localStorage.setItem("News_log_ID_"+NewsID,JSON.stringify(log));
 	};
 	return {
