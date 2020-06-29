@@ -1,13 +1,12 @@
-var ap,ac;
+var ap=new AudioPlayer,ac,canvas,canvas2,context,context2,busy=false;
 
-async function test() {
-	var canvas=document.getElementById("canvas");
-	var context=canvas.getContext("2d");
-	var canvas2=document.getElementById("canvas2");
-	var context2=canvas2.getContext("2d");
+window.onload=function() {
+	canvas=document.getElementById("canvas");
+	context=canvas.getContext("2d");
+	canvas2=document.getElementById("canvas2");
+	context2=canvas2.getContext("2d");
 	context.strokeStyle="rgba(255,0,0,1)";
-	ap=new AudioPlayer;
-	ac=await ap.playFile(document.getElementById("input_file").files[0],true,34,180);
+	context2.strokeStyle="rgba(255,0,0,1)";
 	var data=new Uint8Array(1024);
 	function draw() {
 		ap.analyser.getByteFrequencyData(data);
@@ -18,7 +17,6 @@ async function test() {
 		context.stroke();
 	}
 	setInterval(draw,10);
-	context2.strokeStyle="rgba(255,0,0,1)";
 	var data2=new Uint8Array(2048);
 	function draw2() {
 		ap.analyser.getByteTimeDomainData(data2);
@@ -29,4 +27,16 @@ async function test() {
 		context2.stroke();
 	}
 	setInterval(draw2,10);
+}
+
+async function test() {
+	if (busy) return alert("尚在加载其他音频，请稍后！");
+	try {ac.stop()} catch(none) {};
+	busy=true;
+	try {
+		ac=await ap.playFile(document.getElementById("input_file").files[0],true);
+	} catch(e) {
+		alert("发生了错误，您可能没有选择正确的音频文件。");
+	};
+	busy=false;
 }

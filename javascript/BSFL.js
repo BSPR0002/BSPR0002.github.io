@@ -444,7 +444,7 @@ class AudioPlayer {
 			audio.loop=true;
 			audio.loopStart=typeof loopStart=="number"?loopStart:0;
 			audio.loopEnd=typeof loopEnd=="number"?loopEnd:0;
-			if (audio.loopStart!=0&&audio.loopEnd==0) console.warn("设置的循环结束时间为 0，音频循环可能不会符合预期效果。");
+			if (audio.loopStart!=0&&audio.loopEnd<=audio.loopStart) console.warn("设置的循环结束点不晚于循环开始点，音频循环可能会不符合预期效果。");
 		};
 		audio.start();
 		return audio
