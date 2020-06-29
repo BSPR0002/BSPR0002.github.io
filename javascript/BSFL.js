@@ -57,32 +57,6 @@ function Load(url,TargetElement,AllowCache,fully) {
 				"configrable":true,
 				"enumerable":true,
 			});
-			for (let item of Operator.querySelectorAll("script")) {
-				if (item.src!="") {
-					requests.list.push(AJAX({
-						"url":item.src,
-						"cache":AllowCache,
-						"success":function(response){
-							/*
-							var temp=document.createElement("script");
-							temp.appendChild(document.createTextNode(response));
-							if (item.hasAttributes()==true) {
-								for (let attribute of item.attributes) {
-									if (attribute.name=="src") continue;
-									temp.setAttribute(attribute.name,attribute.value)
-								}
-							};
-							item.parentNode.replaceChild(temp,item);
-							*/
-							requests.number--
-						},
-						"fail":function(){
-							console.warn("The resource \""+item.src+"\" of FullLoad \""+url+"\" request failed.");
-							requests.number--
-						}
-					}))
-				}
-			};
 			for (let item of Operator.querySelectorAll("link")) {
 				if (item.getAttribute("rel")=="stylesheet") {
 					requests.list.push(AJAX({
