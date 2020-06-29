@@ -224,15 +224,15 @@ var ResourceLibrary=(function(){
 	async function Search_Initialize() {
 		await new Promise(function(resolve) {
 			var wait=setInterval(function() {
-				if (document.getElementById("library_search_bar")) {
+				if (document.getElementById("search")) {
 					clearInterval(wait);
 					resolve();
 				}
 			},100)
 		});
-		document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-		document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
-		document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
+		document.getElementById("search_input").addEventListener("input",ResourceLibrary.Search.auto);
+		document.getElementById("search_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
+		document.getElementById("search_button").addEventListener("click",ResourceLibrary.Search.manual);
 	};
 	Initial_view();
 	Search_Initialize();
