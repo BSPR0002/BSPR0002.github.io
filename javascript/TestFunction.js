@@ -15,37 +15,48 @@ class AudioPlayer {
 			"enumerable":true
 		});
 	}
-	linkAudio(AudioBuffer) {
-		var source=this.audioContext.createBufferSource();
-		source.buffer=AudioBuffer;
-		source.connect(this.analyser);
-		source.connect(this.gainNode);
+	linkAudio(AudioNode) {
+		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new Error("输入参数不是音频源节点！")
+		AudioNode.connect(this.analyser);
+		AudioNode.connect(this.gainNode);
 		var controller={
-			"start":function(){source.start()},
-			"stop":function(){source.stop()}
+			"audioNode":AudioNode,
+			"start":function(){AudioNode.start()},
+			"stop":function(){AudioNode.stop()}
 		};
-		for (let item of ["loop","loopStart","loopEnd","onended"]) {
-			Object.defineProperty(controller,item,{
-				"get":function(){return source[item]},
-				"set":function(value){source[item]=value},
-				"enumerable":true
-			});
-		};
-		for (let item of [["detune","detune"],["speed","playbackRate"]]) {
-			Object.defineProperty(controller,item[0],{
-				"get":function(){return source[item[1]].value},
-				"set":function(value){source[item[1]].value=value},
-				"enumerable":true
-			});
-		};
-		for (let item of [["pause",0],["resume",1]]) controller[item[0]]=function(){source.playbackRate.value=item[1]};
+		Object.defineProperty(controller,"onended",{
+			"get":function(){return AudioNode.onended},
+			"set":function(value){AudioNode.onended=value},
+			"enumerable":true
+		});
+		Object.defineProperty(controller,"detune",{
+			"get":function(){return AudioNode.detune.value},
+			"set":function(value){AudioNode.detune.value=value},
+			"enumerable":true
+		});
 		return controller
 	}
-	async linkBuffer(ArrayBuffer) {
-		return this.linkAudio(await this.audioContext.decodeAudioData(ArrayBuffer))
+	linkBuffer(AudioBuffer) {
+		var source=this.audioContext.createBufferSource();
+		source.buffer=AudioBuffer;
+		var controller=this.linkAudio(source)
+		for (let item of ["loop","loopStart","loopEnd"]) {
+			Object.defineProperty(controller,item,{
+				"get":function(){return controller.audioNode[item]},
+				"set":function(value){controller.audioNode[item]=value},
+				"enumerable":true
+			});
+		};
+		Object.defineProperty(controller,"speed",{
+			"get":function(){return controller.audioNode.playbackRate.value},
+			"set":function(value){controller.audioNode.playbackRate.value=value},
+			"enumerable":true
+		});
+		for (let item of [["pause",0],["resume",1]]) controller[item[0]]=function(){controller.audioNode.playbackRate.value=item[1]};
+		return controller
 	}
 	play(AudioBuffer,loop=false,loopStart=0,loopEnd=0) {
-		var audio=this.linkAudio(AudioBuffer);
+		var audio=this.linkBuffer(AudioBuffer);
 		if (loop===true) {
 			audio.loop=true;
 			audio.loopStart=typeof loopStart=="number"?loopStart:0;
@@ -61,5 +72,6 @@ class AudioPlayer {
 	}
 	pause(){this.audioContext.suspend()}
 	resume(){this.audioContext.resume()}
+	close(){this.audioContext.close()}
 }
 

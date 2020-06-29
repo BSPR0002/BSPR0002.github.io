@@ -63,6 +63,7 @@ function Load(url,TargetElement,AllowCache,fully) {
 						"url":item.src,
 						"cache":AllowCache,
 						"success":function(response){
+							/*
 							var temp=document.createElement("script");
 							temp.appendChild(document.createTextNode(response));
 							if (item.hasAttributes()==true) {
@@ -72,6 +73,7 @@ function Load(url,TargetElement,AllowCache,fully) {
 								}
 							};
 							item.parentNode.replaceChild(temp,item);
+							*/
 							requests.number--
 						},
 						"fail":function(){
