@@ -3,20 +3,7 @@ if (window.location.origin!="file://") throw new Error("Not in local environment
 
 //XMLHttpRequest 模拟
 var XHR_Local={ //JSON 预设库
-	"/json/News.json":[
-		{
-			"ID":"Example",
-			"name":"示例",
-			"title":"标题",
-			"preview":{
-				"message":"简短预览内容",
-				"image":"预览小图片"
-			},
-			"board":["ArrayHtml","详细内容"],
-			"force":false,
-			"unshow":true
-		}
-	]
+	
 };
 for (let i in XHR_Local) {
 	if (typeof XHR_Local[i]=="object") XHR_Local[i]=JSON.stringify(XHR_Local[i])
@@ -473,7 +460,7 @@ Notification=class extends EventTarget{
 	static maxActions=2;
 	static VM=[];
 	static VM_count=0;
-	static GRANTED=false;
+	static GRANTED=true;
 };
 Notification.changePermission=(function() {
 	if (Notification.GRANTED) {var permission="granted"} else {var permission="default"};

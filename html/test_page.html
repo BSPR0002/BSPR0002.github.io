@@ -10,26 +10,29 @@
 		<script src="/javascript/TestFunction.js"></script>
 	</head>
 	<body>
-		<p>
-			这里是测试用的网页……<br>
-			不要盯着看了啦！很羞羞哒！<br>
-			///﹏///
-		</p><br>
-		<button onclick="test()">播放</button>
-		<input id="input_file" type="file">
-		<div id="targetdiv">循环播放</div>
-		<canvas id="canvas" width="1024" height="256" style="border:1px solid #000000;"></canvas>
-		<canvas id="canvas2" width="1024" height="256" style="border:1px solid #000000;"></canvas>
-		<div id="window_board_layer">
-		<div id="window_board_layer">
-			<div id="window_board">
-				<div id="window_board_top">
-					<p id="window_board_title"></p>
-					<button id="window_board_close" onclick="javascript:window_board.hide()"></button>
-				</div>
-				<hr id="window_board_hr">
-				<div id="window_board_content"></div>
+		<div id="tools_plate" class="off">
+			<button id="tools_plate_switch">
+				<script>
+					document.getElementById("tools_plate_switch").addEventListener("click",(function(){
+						var state=false;
+						return function(){
+							state=!state;
+							if (state) {this.parentNode.className="on"} else {this.parentNode.className="off"};
+						}
+					})())
+				</script>
+				<div id="tools_plate_switch_icon"></div>
+			</button>
+			<div id="tool_select_files" class="test_tools">
+				选择文件
+				<form name="tool_select_files_mode" id="tool_select_files_mode">
+					<script>document.forms.tool_select_files_mode.addEventListener("change",function(){document.getElementById("tool_select_files_select").multiple=Boolean(parseInt(this.elements.multiple.value))})</script>
+					<span><input type="radio" name="multiple" value="0" checked>单选</span>
+					<span><input type="radio" name="multiple" value="1">多选</span>
+				</form>
+				<input type="file" id="tool_select_files_select">
 			</div>
+			<hr style="margin:0 auto">
 		</div>
 	</body>
 </html>

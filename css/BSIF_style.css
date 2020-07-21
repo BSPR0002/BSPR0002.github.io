@@ -16,11 +16,12 @@ hr {
 
 button {
 	color:inherit;
-	cursor:pointer;
 	font:inherit;
 	border-style:solid;
 	outline:none;
 }
+
+button,input[type="radio"] {cursor:pointer}
 
 /* 鼠标样式
 body {

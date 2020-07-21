@@ -1,3 +1,6 @@
+
+
+/* 玩具
 var ap=new AudioPlayer,ac,canvas,canvas2,context,context2,busy=false;
 
 window.onload=function() {
@@ -40,3 +43,9 @@ async function test() {
 	};
 	busy=false;
 }
+
+var robot=new MultiThread("self.onmessage=function(e){self.postMessage(self.eval(e.data))}",function(d){console.log(d)});
+robot.do=function(command){
+	this.send(command);
+}
+*/
