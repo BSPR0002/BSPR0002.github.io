@@ -72,7 +72,7 @@ var News=(function(){
 					throw "推送记录过期";
 				};
 				return false;
-			} catch(error) {console.log("异常的推送记录:"+"ID"+NewsID,error)};
+			} catch(error) {console.log("异常的推送记录:"+"ID-"+NewsID,error)};
 		}
 		return true;
 	};
