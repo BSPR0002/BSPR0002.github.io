@@ -1,381 +1,482 @@
+//require ES2020
 //本地模拟支持
 if (window.location.origin!="file://") throw new Error("Not in local environment!");
 
 //XMLHttpRequest 模拟
+XMLHttpRequestResponser=class XMLHttpRequestResponser {
+	get [Symbol.toStringTag](){return "XMLHttpRequestResponser"}
+	static #VM=[];
+	static get VM(){return this.#VM}
+	static #prepare={};
+	static get prepare(){return this.#prepare}
+	static responseLast(){
+		var i=this.#VM.length-1;
+		if (i==-1) return "无请求";
+		if (this.#VM[i]) return this.#VM[i].select();
+		return "上个 XHR 已失效，请手动查找。"
+	};
+	static responseNext(){
+		for (let i=0,l=this.#VM.length-1;i<l;i++) if (this.#VM[i]) return this.#VM[i].select();
+		return "没有正在等待响应的请求。"
+	};
+	constructor(async){this.#async=Boolean(async)}
+	#stopRequest(){
+		this.#available=false;
+		if (!this.#VMHooked) return;
+		XMLHttpRequestResponser.#VM[this.#VMID]=null;
+		this.#VMHooked=false;
+	}
+	get stopRequest(){return this.#stopRequest}
+	#VMHooked=false;
+	#VMID=-1;
+	#async=null;
+	#available=true;
+	#headersReceived=false;
+	#receivedHeaders=null;
+	#requestMethod="";
+	#requestBody=null;
+	#response={"headers":null,"status":null,"body":null};
+	post(data){
+		if (!this.#available) return [0];
+		switch (data[0]) {
+			default:
+				this.#available=false;
+				return [0];
+			case "request headers":
+				return this.#receiveHeaders(data[1]);
+			case "post body":
+				return this.#responseBody()
+		}
+	}
+	#receiveHeaders(headers){
+		if (this.#headersReceived) {
+			this.#available=false;
+			return [0]
+		}
+		this.#headersReceived=true;
+		this.#receivedHeaders=headers;
+		if (typeof headers=="object"&&headers!=null) {
+			switch (headers[":method"]) {
+				default:
+					this.#setResponse(501,"501 Not Implemented");
+					return this.#responseHeaders();
+				case "GET":
+				//case "POST":
+					this.#requestMethod=headers[":method"];
+			}
+			if (typeof headers[":path"]!="undefined") return this.#processHeaders();
+		}	else {
+			this.#setResponse(400,"400 Bad Request");
+			return this.#responseHeaders()
+		}
+	}
+	#processHeaders(){
+		//if (this.#requestMethod=="POST") return [1,"post body"];
+		return this.#process();
+	}
+	#setResponse(status,body){
+		this.#response.headers={
+			":status":status,
+			"Content-Length":new Blob([this.#response.body]).size,
+			"Content-Type":"*/*;charset=utf-8,",
+			"Date":(new Date).toUTCString()
+		};
+		this.#response.body=body
+	}
+	#process(){
+		var url=this.#receivedHeaders[":path"];
+		if (typeof XMLHttpRequestResponser.#prepare[url]!="undefined") {
+			this.#setResponse(200,XMLHttpRequestResponser.#prepare[url])
+		} else {
+			if (!this.#async) {
+				this.#setResponse(404,"404 Not Found");
+				console.warn("未在预设库中找到请求的资源，在同步模式下禁止实时配置，请求失败。")
+			} else {
+				var self=this;
+				return new Promise(function(resolve,reject){
+					self.#VMHooked=true;
+					var ID=self.#VMID=XMLHttpRequestResponser.#VM.length;
+					XMLHttpRequestResponser.#VM.push({
+						"url":url,
+						"select":function(){
+							var VM=document.createElement("input");
+							VM.type="file";
+							VM.addEventListener("change",function(){
+								var file=this.files[0];
+								self.#stopRequest();
+								var reader=new FileReader;
+								reader.onload=function(){
+									self.#setResponse(200,this.result);
+									resolve(self.#responseHeaders())
+								};
+								reader.readAsText(file);
+							},{"once":true});
+							VM.dispatchEvent(new MouseEvent("click",{"button":0}));
+							return url;
+						},
+						"fail":function(){
+							self.#stopRequest()
+							self.#setResponse(404,"404 Not Found");
+							resolve(self.#responseHeaders())
+						}
+					});
+					console.log("新的待指定 xhr 请求：",url,"\n交互编号：",ID,"\n快速通道：XMLHttpRequestResponser.VM["+ID+"].select()");
+				})
+			}
+		}
+		return this.#responseHeaders()
+	}
+	#responseHeaders(){return [1,"response headers",this.#response.headers]}
+	#responseBody(){
+		this.#available=false;
+		return [2,"response body",this.#response.body]
+	}
+}
+//XMLHttpRequest 模拟
 var XHR_Local={ //JSON 预设库
 	
 };
-for (let i in XHR_Local) {
-	if (typeof XHR_Local[i]=="object") XHR_Local[i]=JSON.stringify(XHR_Local[i])
-};
+for (let i in XHR_Local) if (XHR_Local[i]??typeof XHR_Local[i]=="object") XMLHttpRequestResponser.prepare[i]=JSON.stringify(XHR_Local[i]);
 
-var XHR_request=function(XHR_VM) {
-	var url=XHR_VM.url;
-	var ID=XHR_request.VM_count++;
-	console.log("新的待指定 xhr 请求：",url,"\n交互编号：",ID,"\n快速通道：XHR_request.VM["+ID+"].select()");
-	return new Promise(function(resolve,reject){
-		XHR_request.VM[ID]={
-			"url":url,
-			"select":function(){
-				var VM=document.createElement("input");
-				VM.type="file";
-				VM.addEventListener("change",function(){
-					var file=this.files[0];
-					XHR_request.VM[ID]=void 0;
-					var reader=new FileReader;
-					reader.onload=function(){resolve([true,this.result])};
-					reader.readAsText(file);
-				});
-				VM.dispatchEvent(new MouseEvent("click",{"button":0}));
-				return url;
-			},
-			"fail":function(){
-				XHR_request.VM[ID]=void 0;
-				resolve([false])
-			}
-		};
-		XHR_VM.stop_request=XHR_request.VM[ID].fail;
-	});
-};
-XHR_request.VM=[];
-XHR_request.VM_count=0;
-XHR_request.responseLast=function(){
-	var i=XHR_request.VM_count-1;
-	if (i==-1) return "无请求";
-	if (XHR_request.VM[i]) {
-		return XHR_request.VM[i].select();
-	} else {
-		return "上个 XHR 已失效，请手动查找。";
-	};
-};
-
-XMLHttpRequestEventTarget=class extends EventTarget {
+XMLHttpRequestEventTarget=class XMLHttpRequestEventTarget extends EventTarget {
 	constructor(check){
-		if (check!=XMLHttpRequestEventTarget.check) throw new TypeError("Illegal constructor");
+		if (check!="LocalDebug") throw new TypeError("Illegal constructor");
 		super();
-		var VM={
-			"onabort":null,
-			"onerror":null,
-			"onload":null,
-			"onloadend":null,
-			"onloadstart":null,
-			"onprogress":null,
-			"ontimeout":null
-		};
-		for (let item in VM) {
-			Object.defineProperty(this,item,{
-				"get":function(){return VM[item]},
-				"set":function(value){if (typeof value=="function"||value===null) VM[item]=value},
-				"configurable":true,
-				"enumerable":true
-			});
-			let EventName="";
-			for (let i=2,length=item.length;i<length;i++) EventName+=item[i];
-			this.addEventListener(EventName,function(event){if (this[item]) this[item](event)})
-		}
-	};
-	static check=Symbol("XMLHttpRequestEventTarget");
-};
+		for (let eventName of ["abort","error","load","loadend","loadstart","progress","timeout"]) this.addEventListener(eventName,function(event){if (this["on"+eventName]) this["on"+eventName](event)});
+	}
+	#onabort=null;
+	#onerror=null;
+	#onload=null;
+	#onloadend=null;
+	#onloadstart=null;
+	#onprogress=null;
+	#ontimeout=null;
+	get onabort(){return this.#onabort}
+	get onerror(){return this.#onerror}
+	get onload(){return this.#onload}
+	get onloadend(){return this.#onloadend}
+	get onloadstart(){return this.#onloadstart}
+	get onprogress(){return this.#onprogress}
+	get ontimeout(){return this.#ontimeout}
+	set onabort(value){if (typeof value=="function"||value===null) this.#onabort=value}
+	set onerror(value){if (typeof value=="function"||value===null) this.#onerror=value}
+	set onload(value){if (typeof value=="function"||value===null) this.#onabort=value}
+	set onloadend(value){if (typeof value=="function"||value===null) this.#onload=value}
+	set onloadstart(value){if (typeof value=="function"||value===null) this.#onloadstart=value}
+	set onprogress(value){if (typeof value=="function"||value===null) this.#onprogress=value}
+	set ontimeout(value){if (typeof value=="function"||value===null) this.#ontimeout=value}
+	get [Symbol.toStringTag](){return "XMLHttpRequestEventTarget"}
+}
 
-XMLHttpRequestUpload=class extends XMLHttpRequestEventTarget {
+XMLHttpRequestUpload=class XMLHttpRequestUpload extends XMLHttpRequestEventTarget {
 	constructor(check){
-		if (check!=XMLHttpRequestUpload.check) throw new TypeError("Illegal constructor");
-		super(XMLHttpRequestEventTarget.check);
-	};
-	static check=Symbol("XMLHttpRequestUpload");
-};
+		if (check!="LocalDebug") throw new TypeError("Illegal constructor");
+		super(check);
+	}
+	get [Symbol.toStringTag](){return "XMLHttpRequestUpload"}
+}
 
-XMLHttpRequest=class extends XMLHttpRequestEventTarget {
+XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	constructor(){
-		super(XMLHttpRequestEventTarget.check);
-		var self=this;
-		var VM={
-			"value":{
-				"onreadystatechange":null,
-				"readyState":0,
-				"response":"",
-				"responseText":"",
-				"responseType":"",
-				"responseURL":"",
-				"responseXML":null,
-				"status":0,
-				"statusText":"",
-				"timeout":0,
-				"withCredentials":false,
-				"RequestHeader":{}
-			},
-			"port":{},
-			"async":true,
-			"OPENED":false,
-			"stop":true,
-			"abort":false,
-			"timeout":false,
-			"progressID":null,
-			"stop_request":null
-		};
-		for (let item of ["readyState","response","responseText","responseURL","responseXML","status","statusText"]) {
-			Object.defineProperty(this,item,{
-				"get":function(){return VM.value[item]},
-				"set":function(){console.warn("只读")},
-				"configurable":true,
-				"enumerable":true
-			});
-		};
-		Object.defineProperties(this,{
-			"responseType":{
-				"get":function(){return VM.value.responseType},
-				"set":function(value){
-					if (VM.async==false&&value!=="") throw new DOMException("Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be changed for synchronous requests made from a document.");
-					if (["","arraybuffer","blob","document","json","text"].indexOf(value)==-1) {
-						console.warn("The provided value '"+value+"' is not a valid enum value of type XMLHttpRequestResponseType.")
-					} else VM.value.responseType=value;
-					return value;
-				},
-				"configurable":true,
-				"enumerable":true
-			},
-			"timeout":{
-				"get":function(){return VM.value.timeout},
-				"set":function(value){
-					if (VM.async==false&&value!==0) throw new DOMException("Failed to set the 'timeout' property on 'XMLHttpRequest': Timeouts cannot be set for synchronous requests made from a document.");
-					if (typeof value=="number") {VM.value.timeout=value} else console.warn("输入值不为数字！");
-					return value;
-				},
-				"configurable":true,
-				"enumerable":true
-			},
-			"withCredentials":{
-				"get":function(){return VM.value.withCredentials},
-				"set":function(value){VM.value.withCredentials=value?true:false},
-				"configurable":true,
-				"enumerable":true
-			},
-			"onreadystatechange":{
-				"get":function(){return VM.value.onreadystatechange},
-				"set":function(value){if (typeof value=="function"||value===null) VM.value.onreadystatechange=value},
-				"configurable":true,
-				"enumerable":true
+		super("LocalDebug");
+		this.addEventListener("readystatechange",function(event){if (this.onreadystatechange) this.onreadystatechange(event)});
+	}
+	static get UNSENT(){return 0}
+	static get OPENED(){return 1}
+	static get HEADERS_RECEIVED(){return 2}
+	static get LOADING(){return 3}
+	static get DONE(){return 4}
+	#statusList={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","300":"Multiple Choices","301":"Moved Permanently","302":"Move Temporarily","303":"See Other","304":"Not Modified","305":"Use Proxy","306":"Switch Proxy","307":"Temporary Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Request Entity Too Large","414":"Request-URI Too Long","415":"Unsupported Media Type","416":"Requested Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Too Early","426":"Upgrade Required","449":"Retry With","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","509":"Bandwidth Limit Exceeded","510":"Not Extended","600":"Unparseable Response Headers"};
+	get UNSENT(){return 0}
+	get OPENED(){return 1}
+	get HEADERS_RECEIVED(){return 2}
+	get LOADING(){return 3}
+	get DONE(){return 4}
+	#onreadystatechange=null;
+	get onreadystatechange(){return this.#onreadystatechange}
+	set onreadystatechange(value){if (typeof value=="function"||value===null) this.#onreadystatechange=value}
+	#async=true;
+	#readyState=0;
+	#changeReadyState(value){
+		var temp=this.#readyState;
+		this.#readyState=value;
+		if (temp!=value) this.dispatchEvent(new Event("readystatechange",{"currentTarget":this,"srcElement":this,"target":this}));
+	}
+	get readyState(){return this.#readyState}
+	#response="";
+	#responseText="";
+	#responseURL="";
+	#responseXML=null;
+	#status=0;
+	#statusText="";
+	get response(){return this.#response}
+	get responseText(){return this.#responseText}
+	get responseURL(){return this.#responseURL}
+	get responseXML(){return this.#responseXML}
+	get status(){return this.#status}
+	get statusText(){return this.#statusText}
+	#responseType="";
+	get responseType(){return this.#responseType}
+	set responseType(value){
+		if (this.#async==false&&value!=="") throw new DOMException("Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be changed for synchronous requests made from a document.");
+		if (["","arraybuffer","blob","document","json","text"].indexOf(value)==-1) {
+			console.warn("The provided value '"+value+"' is not a valid enum value of type XMLHttpRequestResponseType.")
+		} else this.#responseType=value;
+		return value;
+	}
+	#timeout=0;
+	get timeout(){return this.#timeout}
+	set timeout(value){
+		if (this.#async==false) throw new DOMException("Failed to set the 'timeout' property on 'XMLHttpRequest': Timeouts cannot be set for synchronous requests made from a document.");
+		if (isNaN(value)) {this.#timeout=0} else this.#timeout=Number(value);
+		return value;
+	}
+	#timeoutID=-1;
+	#withCredentials=false;
+	get withCredentials(){return this.#withCredentials}
+	set withCredentials(value){this.#withCredentials=value?true:false}
+	#RequestHeaders={};
+	#ResponseHeaders={};
+	#mimeType="";
+	#progressID=-1;
+	static NetworkError=false;
+	#Exception={"stop":true,"abort":false,"timeout":false,"error":false};
+	get #inNetworkError(){return Boolean(XMLHttpRequest.NetworkError)}
+	#isStoped(networkError=true,stop=true,exception=true) {
+		networkError=networkError?this.#inNetworkError:false;
+		stop=stop?this.#Exception.stop:false;
+		exception=exception?this.#Exception.abort||this.#Exception.timeout||this.#Exception.error:false;
+		return networkError||stop||exception
+	}
+	#upload=new XMLHttpRequestUpload("LocalDebug");
+	get upload(){return this.#upload}
+	#responser=null;
+	get [Symbol.toStringTag](){return "XMLHttpRequest"}
+	open(method,url,async=true,username=null,password=null) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		if (arguments.length<2) throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only "+arguments.length+" present.");
+		method=String(method);
+		{
+			let hasTypeError=false,hasDOMException=false,validCharacterCodes=[33,35,36,37,38,39,42,43,45,46,48,49,50,51,52,53,54,55,56,57,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,124,126];
+			for (let l=method.length,i=0;i<l;i++) {
+				let temp=method.charCodeAt(i);
+				if (temp>255) throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': Value is not a valid ByteString.");
+				if (!hasDOMException&&validCharacterCodes.indexOf(temp)==-1) hasDOMException=true;
 			}
-		});
-		this.addEventListener("readystatechange",function(event){if (this.onreadystatechange) this.onreadystatechange(event)})
-		Object.defineProperty(VM.port,"readyState",{
-			"get":function(){return VM.value.readyState},
-			"set":function(value) {
-				VM.value.readyState=value;
-				self.dispatchEvent(new Event("readystatechange",{"currentTarget":self,"srcElement":self,"target":self}));
-			},
-			"configurable":true,
-			"enumerable":true
-		});
-		this.open=function(method,url,async=true,username=null,password=null) {
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-			if (typeof method=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 0 present.");
-			if (typeof url=="undefined") throw new TypeError("Failed to execute 'open' on 'XMLHttpRequest': 2 arguments required, but only 1 present.");
-			switch (async) {
-				case false:
-					if (this.responseType!=="") throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests from a document must not set a response type.");
-					if (this.timeout!==0) throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests must not set a timeout.");
-					console.warn("[Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.");
-					break;
-				default:
-					console.warn("参数错误：async");
-					async=true;
-				case true:
-			}
-			VM.stop=true;
-			VM.abort=false;
-			VM.timeout=false;
-			VM.RequestHeader={
-				":authority":location.host,
-				":method":method.toUpperCase(),
-				":path":url,
-				":scheme":location.protocol,
-				"accept":"*/*",
-				"accept-encoding":"gzip, deflate, br",
-				"accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
-				"dnt":"1",
-				"referer":location.href,
-				"sec-fetch-mode":"cors",
-				"sec-fetch-site":"same-origin",
-				"user-agent":navigator.userAgent,
-				"username":username,
-				"password":password
-			};
-			VM.async=async;
-			VM.method=method.toLowerCase();
-			VM.url=url;
-			VM.OPENED=true;
-			VM.value.response="";
-			VM.value.responseText="";
-			VM.value.responseType="";
-			VM.value.responseURL="";
-			VM.value.responseXML=null,
-			VM.value.status=0;
-			VM.value.statusText="";
-			VM.port.readyState=1;
+			if (hasDOMException||method.length==0) throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': '"+method+"' is not a valid HTTP method.");
+		}
+		if (!(async)) {
+			if (this.#responseType!=="") throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests from a document must not set a response type.");
+			if (this.#timeout!==0) throw new DOMException("Failed to execute 'open' on 'XMLHttpRequest': Synchronous requests must not set a timeout.");
+			console.warn("[Deprecation] Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.");
+		}
+		this.#responser?.stopRequest();
+		this.#Exception.stop=true;
+		this.#Exception.abort=false;
+		this.#Exception.timeout=false;
+		this.#Exception.error=false;
+		this.#RequestHeaders={
+			":authority":location.host,
+			":method":method.toUpperCase(),
+			":path":url.trim(),
+			":scheme":location.protocol,
+			"accept":"*/*",
+			"accept-language":"zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
+			"referer":location.href,
+			"sec-fetch-mode":"cors",
+			"user-agent":navigator.userAgent
 		};
-		this.send=function(body) {
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-			if (VM.OPENED!=true) throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.");
-			var inerror=XMLHttpRequest.NetworkError;
-			VM.OPENED=false;
-			VM.stop=false;
-			if (this.timeout>0) {
-				setTimeout(function(){
-					VM.port.readyState=4;
-					VM.timeout=true;
-					if (typeof VM.stop_request=="function") VM.stop_request();
-				},this.timeout)
-			};
-			if (VM.async) {
-				(async function() {
-					if (!VM.stop) await (async function(){self.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":0}))})();
-					if (VM.method=="post") {
-						if (!VM.stop) await (async function(){self.upload.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})();
-						if (!VM.stop&&!inerror) await (async function(){self.upload.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})
-						if (!(VM.stop||VM.abort||VM.timeout||inerror)) console.log("发送数据",body);
-						if (!VM.stop&&!inerror) await (async function(){self.upload.dispatchEvent(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
-						if (!VM.stop) {
-							switch (true) {
-								case inerror:
-									self.upload.dispatchEvent(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
-									break;
-								case VM.timeout:
-									self.upload.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
-									break;
-								case VM.abort:
-									self.upload.dispatchEvent(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
-								default:
-							}
-						};
-						if (!VM.stop) await (async function(){self.upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
-					};
-					if (!(VM.stop||VM.abort||VM.timeout||inerror)) VM.port.readyState=2;
-					if (!(VM.stop||VM.abort||VM.timeout||inerror)) VM.port.readyState=3;
-					if (!VM.stop&&!inerror) await (async function(){self.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))})();
-					if (!VM.stop&&!inerror) VM.progressID=setInterval(function(){if (!(VM.stop||VM.abort||VM.timeout||inerror)) self.dispatchEvent(new ProgressEvent("progress",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}))},50);
-					if (!(VM.stop||VM.abort||VM.timeout||inerror)) {
-						VM.value.responseURL=VM.url;
-						if (typeof XHR_Local[VM.url]=="undefined") {
-							var temp=await XHR_request(VM);
-						} else {
-							var temp=[true,XHR_Local[VM.url]];
-						};
-						if (temp[0]) {
-							VM.value.status=200;
-							VM.value.statusText="OK";
-							VM.value.responseText=temp[1];
-							switch (self.responseType.toLowerCase()) {
-								case "json":
-									VM.value.response=JSON.parse(VM.value.responseText);
-									break;
-								/*
-								case "document":
-									VM.value.response=JSON.parse(VM.value.responseText);
-									break;
-								*/
-								default:
-									VM.value.response=VM.value.responseText;
-							};
-						} else {
-							VM.value.status=404;
-							VM.value.statusText="Not Found";
-						};
-					};
-					clearInterval(VM.progressID);
-					if (!(VM.stop||VM.abort||VM.timeout)) VM.port.readyState=4;
-					if (!VM.stop&&!inerror) await (async function(){self.dispatchEvent(new ProgressEvent("load",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
-					if (!VM.stop) {
+		if (username) this.#RequestHeaders[":username"]=username;
+		if (password) this.#RequestHeaders[":password"]=password;
+		this.#ResponseHeaders={};
+		this.#async=async;
+		this.#response="";
+		this.#responseText="";
+		this.#responseType="";
+		this.#responseURL="";
+		this.#responseXML=null,
+		this.#status=0;
+		this.#statusText="";
+		this.#changeReadyState(1);
+	}
+	async #asyncRequest(responser,body){
+		if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+		if (!this.#isStoped()) {
+			var response=await responser.post(["request headers",this.#RequestHeaders]);
+			switch (response[1]) {
+				case "post body":
+					let upload=this.upload;
+					let uploadTotal=new Blob([body]).size;
+					if (!this.#isStoped()) upload.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":0,"total":uploadTotal}));
+					if (!this.#isStoped()) upload.dispatchEvent(new ProgressEvent("progress",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":0,"total":uploadTotal}));
+					if (!this.#isStoped()) response=await responser.post(["request body",body]);
+					if (!this.#isStoped()) upload.dispatchEvent(new ProgressEvent("load",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":uploadTotal,"total":uploadTotal}));
+					if (!this.#isStoped(1,1,0)) {
 						switch (true) {
-							case inerror:
-								console.error(VM.method.toUpperCase(),VM.url,"net::ERR_VM_NETWORK_ERROR");
-								self.dispatchEvent(new ProgressEvent("error",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+							case this.#Exception.error:
+								upload.dispatchEvent(new ProgressEvent("error",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":0,"total":uploadTotal}));
 								break;
-							case VM.timeout:
-								self.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+							case this.#Exception.timeout:
+								upload.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":0,"total":uploadTotal}));
 								break;
-							case VM.abort:
-								self.dispatchEvent(new ProgressEvent("abort",{"currentTarget":self,"srcElement":self,"target":self,"loaded":0,"total":1}));
+							case this.#Exception.abort:
+								upload.dispatchEvent(new ProgressEvent("abort",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":0,"total":uploadTotal}));
 							default:
 						}
 					};
-					if (!VM.stop) await (async function(){self.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":self,"srcElement":self,"target":self,"loaded":1,"total":1}))})();
-					VM.stop=true;
-				})();
-			} else {
-				if (!VM.stop) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
-				if (VM.method=="post") {
-					if (!VM.stop) this.upload.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
-					if (!VM.stop&&!inerror) this.upload.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
-					if (!VM.stop&&!inerror) console.log("发送数据",body);
-					if (!VM.stop&&!inerror) this.upload.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
-					if (!VM.stop&&inerror) this.upload.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
-					if (!VM.stop) this.upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
-				};
-				if (!VM.stop&&!inerror) VM.port.readyState=2;
-				if (!VM.stop&&!inerror) VM.port.readyState=3;
-				if (!VM.stop&&!inerror) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
-				if (!VM.stop&&!inerror) {
-					if (typeof XHR_Local[VM.url]=="undefined") {
-						console.warn("未在预设库中找到请求的资源，在同步模式下禁止实时配置，请求失败。");
-						VM.value.status=404;
-						VM.value.statusText="Not Found";
-						VM.value.responseURL=VM.url;
-					} else {
-						VM.value.status=200;
-						VM.value.statusText="OK";
-						VM.value.responseURL=VM.url;
-						VM.value.responseText=XHR_Local[VM.url];
-						VM.value.response=VM.value.responseText;
+					if (!this.#isStoped()) upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":uploadTotal,"total":uploadTotal}));
+				case "response headers":
+					this.#status=response[2][":status"];
+					this.#statusText=this.#statusList[this.#status]?this.#statusList[this.#status]:"";
+					if (!this.#isStoped()) this.#changeReadyState(2);
+					let downloadTotal=Number(response[2]["Content-Length"]);
+					if (!this.#isStoped()) this.#changeReadyState(3);
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+					response=await responser.post(["post body"]);
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
+					this.#responseText=response[2];
+					if (this.#status==200) {
+						switch (this.#responseType) {
+							case "json":
+								try {this.#response=JSON.parse(this.#responseText)} catch(error) {console.error(error)}
+								break;
+							/*
+							case "document":
+								this.#responseXML=null;
+								this.#response=this.#responseXML;
+								break;
+							*/
+							default:
+								this.#response=this.#responseText;
+						}
+					} else this.#response=this.#responseText;
+					if (!this.#isStoped()) this.#changeReadyState(4);
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
+					if (!this.#isStoped(1,1,0)) {
+						switch (true) {
+							case this.#Exception.error:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+								break;
+							case this.#Exception.timeout:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+								break;
+							case this.#Exception.abort:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("abort",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+							default:
+						}
 					};
-				};
-				if (!VM.stop) VM.port.readyState=4;
-				if (!VM.stop&&!inerror) this.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
-				if (!VM.stop&&inerror){
-					console.error(VM.method.toUpperCase(),VM.url,"net::ERR_VM_NETWORK_ERROR");
-					this.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":1}));
-				};
-				if (!VM.stop) this.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":1,"total":1}));
-				VM.stop=true;
-			};
-		};
-		this.abort=function() {
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-			if (this.readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
-			if (this.readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
-			VM.port.readyState=4;
-			VM.abort=true;
-			if (typeof VM.stop_request=="function") VM.stop_request();
-		};
-		this.setRequestHeader=function(name,value) {
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-			if (VM.OPENED!=true) throw new DOMException("Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.");
-			VM.value.RequestHeader[name]=value;
-		};
-		this.getResponseHeader=function(name){
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		};
-		this.getAllResponseHeaders=function(){
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		};
-		this.overrideMimeType=function(mime){
-			if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-			if (typeof mime=="undefined") throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
-			this.VM.mimeType=mime;
-			this.VM.value.RequestHeader.accept=mime;
-		};
-	};
-	DONE=4;
-	HEADERS_RECEIVED=2;
-	LOADING=3;
-	OPENED=1;
-	UNSENT=0;
-	upload=new XMLHttpRequestUpload(XMLHttpRequestUpload.check);
-	static NetworkError=false;
+					if (this.#inNetworkError) console.error(this.#RequestHeaders[":method"],this.#RequestHeaders[":path"],"net::ERR_VM_NETWORK_ERROR");
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
+					this.#Exception.stop=true;
+			}
+		}
+	}
+	#syncRequest(responser,body){
+		if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+		if (!this.#isStoped()) {
+			var response=responser.post(["request headers",this.#RequestHeaders]);
+			switch (response[1]) {
+				case "post body":
+					if (!this.#isStoped()) response=responser.post(["request body",body]);
+				case "response headers":
+					this.#status=response[2][":status"];
+					this.#statusText=this.#statusList[this.#status]?this.#statusList[this.#status]:"";
+					let downloadTotal=Number(response[2]["Content-Length"]);
+					response=responser.post(["post body"]);
+					this.#responseText=response[2];
+					this.#response=this.#responseText;
+					if (!this.#isStoped()) this.#changeReadyState(4);
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
+					if (!this.#isStoped(1,1,0)) {
+						switch (true) {
+							case this.#Exception.error:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("error",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+								break;
+							case this.#Exception.timeout:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("timeout",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+								break;
+							case this.#Exception.abort:
+								responser.stopRequest();
+								this.dispatchEvent(new ProgressEvent("abort",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
+							default:
+						}
+					};
+					if (this.#inNetworkError) console.error(this.#RequestHeaders[":method"],this.#RequestHeaders[":path"],"net::ERR_VM_NETWORK_ERROR");
+					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
+					this.#Exception.stop=true;
+			}
+		}
+	}
+	send(body=null) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		if (body??true) body="";
+		switch (typeof body) {
+			case "object":
+				break;
+			case "number":
+			case "bigint":
+			case "boolean":
+				body=String(body);
+				break;
+			default:
+		}
+		if (this.#readyState!=1) throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.");
+		if (this.#inNetworkError) {
+			console.error(this.#RequestHeaders[":method"],this.#RequestHeaders[":path"],"net::ERR_VM_NETWORK_ERROR");
+			throw new DOMException("Failed to execute 'send' on 'XMLHttpRequest': Failed to load '"+this.#RequestHeaders[":path"]+"'.");
+		}
+		this.#Exception.stop=false;
+		if (document.cookie!="") this.#RequestHeaders.Cookie=document.cookie;
+		this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+		if (this.#timeout>0) {
+			this.#timeoutID=setTimeout(function(){
+				this.#changeReadyState(4);
+				this.#Exception.timeout=true;
+			},this.#timeout)
+		}
+		this.#responser=new XMLHttpRequestResponser(this.#async);
+		if (this.#async) {
+			this.#asyncRequest(this.#responser,body)
+		} else {
+			this.#syncRequest(this.#responser,body)
+		}
+	}
+	abort() {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		if (this.#readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
+		if (this.#readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
+		this.#changeReadyState(4);
+		this.#Exception.abort=true;
+	}
+	setRequestHeader(name,value) {
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		if (this.#readyState!=1) throw new DOMException("Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.");
+		console.warn("Function 'setRequestHeader' still building.");
+	}
+	getResponseHeader(name){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		console.warn("Function 'getResponseHeader' still building.");
+		return "";
+	}
+	getAllResponseHeaders(){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		console.warn("Function 'getAllResponseHeaders' still building.");
+		return "";
+	}
+	overrideMimeType(mime){
+		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
+		if (arguments.length<1) throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only "+arguments.length+" present.");
+		console.warn("Function 'overrideMimeType' still building.")
+	}
 }
 
 //Notification 模拟
-Notification=class extends EventTarget{
+Notification=class Notification extends EventTarget{
 	constructor(title,options) {
 		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
 		super();
