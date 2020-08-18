@@ -19,11 +19,18 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 		for (let i=0,l=this.#VM.length-1;i<l;i++) if (this.#VM[i]) return this.#VM[i].select();
 		return "没有正在等待响应的请求。"
 	};
+	static cleanVM(){
+		for (let i=this.#VM.length-1;i<-1;i--) if (this.#VM[i]==null) this.#VM.splice(i,1);
+		return "清理已完成。"
+	}
 	constructor(async){this.#async=Boolean(async)}
 	#stopRequest(){
 		this.#available=false;
+		this.unhook()
+	}
+	#unhook(){
 		if (!this.#VMHooked) return;
-		XMLHttpRequestResponser.#VM[this.#VMID]=null;
+		this.constructor.#VM[this.#VMID]=null;
 		this.#VMHooked=false;
 	}
 	get stopRequest(){return this.#stopRequest}
@@ -77,7 +84,7 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 	#setResponse(status,body){
 		this.#response.headers={
 			":status":status,
-			"Content-Length":new Blob([this.#response.body]).size,
+			"Content-Length":body.size,
 			"Content-Type":"*/*;charset=utf-8,",
 			"Date":(new Date).toUTCString()
 		};
@@ -85,8 +92,8 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 	}
 	#process(){
 		var url=this.#receivedHeaders[":path"];
-		if (typeof XMLHttpRequestResponser.#prepare[url]!="undefined") {
-			this.#setResponse(200,XMLHttpRequestResponser.#prepare[url])
+		if (typeof this.constructor.#prepare[url]!="undefined") {
+			this.#setResponse(200,new Blob([this.constructor.#prepare[url]]),this.constructor.#prepare[url])
 		} else {
 			if (!this.#async) {
 				this.#setResponse(404,"404 Not Found");
@@ -95,21 +102,16 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 				var self=this;
 				return new Promise(function(resolve,reject){
 					self.#VMHooked=true;
-					var ID=self.#VMID=XMLHttpRequestResponser.#VM.length;
-					XMLHttpRequestResponser.#VM.push({
+					var ID=self.#VMID=self.constructor.#VM.length;
+					self.constructor.#VM.push({
 						"url":url,
 						"select":function(){
 							var VM=document.createElement("input");
 							VM.type="file";
 							VM.addEventListener("change",function(){
-								var file=this.files[0];
-								self.#stopRequest();
-								var reader=new FileReader;
-								reader.onload=function(){
-									self.#setResponse(200,this.result);
-									resolve(self.#responseHeaders())
-								};
-								reader.readAsText(file);
+								self.#unhook();
+								self.#setResponse(200,this.files[0]);
+								resolve(self.#responseHeaders())
 							},{"once":true});
 							VM.dispatchEvent(new MouseEvent("click",{"button":0}));
 							return url;
@@ -139,8 +141,8 @@ var XHR_Local={ //JSON 预设库
 for (let i in XHR_Local) if (XHR_Local[i]??typeof XHR_Local[i]=="object") XMLHttpRequestResponser.prepare[i]=JSON.stringify(XHR_Local[i]);
 
 XMLHttpRequestEventTarget=class XMLHttpRequestEventTarget extends EventTarget {
-	constructor(check){
-		if (check!="LocalDebug") throw new TypeError("Illegal constructor");
+	constructor(){
+		if (arguments[0]!="LocalDebug") throw new TypeError("Illegal constructor");
 		super();
 		for (let eventName of ["abort","error","load","loadend","loadstart","progress","timeout"]) this.addEventListener(eventName,function(event){if (this["on"+eventName]) this["on"+eventName](event)});
 	}
@@ -158,20 +160,41 @@ XMLHttpRequestEventTarget=class XMLHttpRequestEventTarget extends EventTarget {
 	get onloadstart(){return this.#onloadstart}
 	get onprogress(){return this.#onprogress}
 	get ontimeout(){return this.#ontimeout}
-	set onabort(value){if (typeof value=="function"||value===null) this.#onabort=value}
-	set onerror(value){if (typeof value=="function"||value===null) this.#onerror=value}
-	set onload(value){if (typeof value=="function"||value===null) this.#onabort=value}
-	set onloadend(value){if (typeof value=="function"||value===null) this.#onload=value}
-	set onloadstart(value){if (typeof value=="function"||value===null) this.#onloadstart=value}
-	set onprogress(value){if (typeof value=="function"||value===null) this.#onprogress=value}
-	set ontimeout(value){if (typeof value=="function"||value===null) this.#ontimeout=value}
+	set onabort(value){
+		if (typeof value=="function"||value===null) this.#onabort=value;
+		return value
+	}
+	set onerror(value){
+		if (typeof value=="function"||value===null) this.#onerror=value;
+		return value
+	}
+	set onload(value){
+		if (typeof value=="function"||value===null) this.#onloadend=value;
+		return value
+	}
+	set onloadend(value){
+		if (typeof value=="function"||value===null) this.#onloadend=value;
+		return value
+	}
+	set onloadstart(value){
+		if (typeof value=="function"||value===null) this.#onloadstart=value;
+		return value
+	}
+	set onprogress(value){
+		if (typeof value=="function"||value===null) this.#onprogress=value;
+		return value
+	}
+	set ontimeout(value){
+		if (typeof value=="function"||value===null) this.#ontimeout=value;
+		return value
+	}
 	get [Symbol.toStringTag](){return "XMLHttpRequestEventTarget"}
 }
 
 XMLHttpRequestUpload=class XMLHttpRequestUpload extends XMLHttpRequestEventTarget {
-	constructor(check){
-		if (check!="LocalDebug") throw new TypeError("Illegal constructor");
-		super(check);
+	constructor(){
+		if (arguments[0]!="LocalDebug") throw new TypeError("Illegal constructor");
+		super(arguments[0]);
 	}
 	get [Symbol.toStringTag](){return "XMLHttpRequestUpload"}
 }
@@ -186,15 +209,18 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	static get HEADERS_RECEIVED(){return 2}
 	static get LOADING(){return 3}
 	static get DONE(){return 4}
-	#statusList={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","300":"Multiple Choices","301":"Moved Permanently","302":"Move Temporarily","303":"See Other","304":"Not Modified","305":"Use Proxy","306":"Switch Proxy","307":"Temporary Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Request Entity Too Large","414":"Request-URI Too Long","415":"Unsupported Media Type","416":"Requested Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Too Early","426":"Upgrade Required","449":"Retry With","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","509":"Bandwidth Limit Exceeded","510":"Not Extended","600":"Unparseable Response Headers"};
-	get UNSENT(){return 0}
-	get OPENED(){return 1}
-	get HEADERS_RECEIVED(){return 2}
-	get LOADING(){return 3}
-	get DONE(){return 4}
+	static #statusList={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","300":"Multiple Choices","301":"Moved Permanently","302":"Move Temporarily","303":"See Other","304":"Not Modified","305":"Use Proxy","306":"Switch Proxy","307":"Temporary Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Request Entity Too Large","414":"Request-URI Too Long","415":"Unsupported Media Type","416":"Requested Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Too Early","426":"Upgrade Required","449":"Retry With","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","509":"Bandwidth Limit Exceeded","510":"Not Extended","600":"Unparseable Response Headers"};
+	get UNSENT(){return this.constructor.UNSENT}
+	get OPENED(){return this.constructor.OPENED}
+	get HEADERS_RECEIVED(){return this.constructor.HEADERS_RECEIVED}
+	get LOADING(){return this.constructor.LOADING}
+	get DONE(){return this.constructor.DONE}
 	#onreadystatechange=null;
 	get onreadystatechange(){return this.#onreadystatechange}
-	set onreadystatechange(value){if (typeof value=="function"||value===null) this.#onreadystatechange=value}
+	set onreadystatechange(value){
+		if (typeof value=="function"||value===null) this.#onreadystatechange=value;
+		return value
+	}
 	#async=true;
 	#readyState=0;
 	#changeReadyState(value){
@@ -234,14 +260,17 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	#timeoutID=-1;
 	#withCredentials=false;
 	get withCredentials(){return this.#withCredentials}
-	set withCredentials(value){this.#withCredentials=value?true:false}
+	set withCredentials(value){
+		this.#withCredentials=value?true:false;
+		return value;
+	}
 	#RequestHeaders={};
 	#ResponseHeaders={};
 	#mimeType="";
 	#progressID=-1;
 	static NetworkError=false;
 	#Exception={"stop":true,"abort":false,"timeout":false,"error":false};
-	get #inNetworkError(){return Boolean(XMLHttpRequest.NetworkError)}
+	get #inNetworkError(){return Boolean(this.constructor.NetworkError)}
 	#isStoped(networkError=true,stop=true,exception=true) {
 		networkError=networkError?this.#inNetworkError:false;
 		stop=stop?this.#Exception.stop:false;
@@ -327,18 +356,25 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 					if (!this.#isStoped()) upload.dispatchEvent(new ProgressEvent("loadend",{"currentTarget":upload,"srcElement":upload,"target":upload,"loaded":uploadTotal,"total":uploadTotal}));
 				case "response headers":
 					this.#status=response[2][":status"];
-					this.#statusText=this.#statusList[this.#status]?this.#statusList[this.#status]:"";
+					this.#statusText=this.constructor.#statusList[this.#status]??"";
 					if (!this.#isStoped()) this.#changeReadyState(2);
 					let downloadTotal=Number(response[2]["Content-Length"]);
 					if (!this.#isStoped()) this.#changeReadyState(3);
 					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
 					response=await responser.post(["post body"]);
 					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
-					this.#responseText=response[2];
+					this.#responseText=await new Promise(function(resolve){
+						var Operator=new FileReader;
+						Operator.readAsText(response[2]);
+						Operator.onload=function(){resolve(this.result)};
+					});
 					if (this.#status==200) {
 						switch (this.#responseType) {
 							case "json":
 								try {this.#response=JSON.parse(this.#responseText)} catch(error) {console.error(error)}
+								break;
+							case "blob":
+								this.#response=new Blob([response[2]]);
 								break;
 							/*
 							case "document":
@@ -386,7 +422,7 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 					this.#statusText=this.#statusList[this.#status]?this.#statusList[this.#status]:"";
 					let downloadTotal=Number(response[2]["Content-Length"]);
 					response=responser.post(["post body"]);
-					this.#responseText=response[2];
+					this.#responseText=response[3];
 					this.#response=this.#responseText;
 					if (!this.#isStoped()) this.#changeReadyState(4);
 					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("load",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
@@ -475,135 +511,397 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	}
 }
 
-//Notification 模拟
+//Notification 模拟（桌面版）
 Notification=class Notification extends EventTarget{
-	constructor(title,options) {
-		if (typeof title=="undefined") throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
-		super();
-		var self=this;
-		var model={"title":title,"body":"","image":"","icon":"","tag":"","data":"","timestamp":Date.now(),"dir":"auto","badge":"","lang":"","vibrate":[],"renotify":false,"silent":false,"sound":"","sticky":false,"requireInteraction":false,"noscreen":false};
-		Object.assign(model,options);
-		var VM={
-			"onclick":null,
-			"onclose":null,
-			"onerror":null,
-			"onshow":null,
-			"autoClose":{"auto":false,"timeoutID":null},
-			"CLOSED":false
-		};
-		for (let item of ["onclick","onclose","onerror","onshow"]) {
-			Object.defineProperty(this,item,{
-				"get":function(){return VM[item]},
-				"set":function(value){if (typeof value=="function"||value===null) VM[item]=value},
-				"configurable":true,
-				"enumerable":true
-			});
-			let EventName="";
-			for (let i=2,length=item.length;i<length;i++) EventName+=item[i];
-			this.addEventListener(EventName,function(event){if (this[item]) this[item](event)})
-		};
-		this.actions=[];
-		this.badge=model.badge;
-		this.body=model.body;
-		this.data=model.data;
-		this.dir=model.dir;
-		this.icon=model.icon;
-		this.image=model.image;
-		this.lang=model.lang;
-		this.renotify=model.renotify;
-		this.requireInteraction=model.requireInteraction;
-		this.silent=model.silent;
-		this.tag=model.tag;
-		this.timestamp=model.timestamp;
-		this.title=model.title;
-		this.vibrate=model.vibrate;
-		this.close=function(){
-			if (!(this instanceof Notification)) throw new TypeError("Illegal invocation");
-			if (VM.CLOSED!=true) {
-				VM.CLOSED=true;
-				clearTimeout(VM.autoClose.timeoutID);
-				console.log("通知关闭",this);
-				this.dispatchEvent(new Event("close",{"currentTarget":this,"srcElement":this,"target":this}));
-			} else console.warn("此通知已经被关闭！");
-		};
-		new Promise(function(done){
-			setTimeout(function(){
-				if (Notification.permission=="granted") {
-					Notification.VM[Notification.VM_count]={
-						"close":function(){self.close()},
-						"click":function() {
-							if (VM.CLOSED!=true) {
-								console.log("点击通知",self);
-								if (VM.autoClose.auto) {
-									clearTimeout(VM.autoClose.timeoutID);
-									VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
-								};
-								self.dispatchEvent(new Event("click",{"currentTarget":this,"srcElement":this,"target":this}));
-							} else console.warn("此通知已经被关闭！");
-						}
-					};
-					console.log("Notification Interface:",Notification.VM_count++);
-					var preview={"icon":"","body":"","image":""};
-					if (model.icon!=="") preview.icon="\"\\nicon:\",model.icon,";
-					if (model.body!=="") preview.body=",\"\\nbody:\",model.body";
-					if (model.image!=="") preview.image=",\"\\nicon:\",model.image";
-					eval("console.log(\"Notification Content:\","+preview.icon+"\"\\ntitle:\",model.title"+preview.body+preview.image+")");
-					if (model.requireInteraction!==true) {
-						VM.autoClose.timeoutID=setTimeout(function(){self.close()},25000);
-						VM.autoClose.auto=true;
-					};
-					self.dispatchEvent(new Event("show",{"currentTarget":this,"srcElement":this,"target":this}));
-				} else console.warn("未获得通知权限",Notification.permission);
-				done();
-			},50);
-		});
-	};
+	get [Symbol.toStringTag](){return "Notification"}
+	static get #Interface(){
+		var Interface=document.getElementById(":NotificationInterface");
+		if (!Interface) {
+			Interface=document.createElement("div");
+			Interface.id=":NotificationInterface";
+			Interface.style="position:fixed;bottom:0;right:0;width:352px;margin:16px;display:grid;grid-gap:16px;grid-template-rows:repeat(auto,auto)";
+			document.body.appendChild(Interface);
+		}
+		return Interface
+	}
+	static get Interface(){return this.#Interface}
 	static maxActions=2;
 	static VM=[];
 	static VM_count=0;
-	static GRANTED=true;
-};
-Notification.changePermission=(function() {
-	if (Notification.GRANTED) {var permission="granted"} else {var permission="default"};
-	Object.defineProperty(Notification,"permission",{
-		"get":function(){return permission},
-		"set":function(){return false},
-		"enumerable":true
-	});
-	return function(n){
-		switch (n) {
-			case 0:
-				permission="denied";
-				break;
-			case 1:
-				permission="granted";
-				break;
-			default:
-				permission="default";
-		}
+	static #GRANTED=false;
+	static get GRANTED(){return this.#GRANTED}
+	static set GRANTED(value){
+		this.#GRANTED=Boolean(value);
+		return value
 	}
-})();
-Notification.requestPermission=function() {
-	if (Notification.permission=="default") {
-		if (Notification.requestPermission.trys<3) {
-			Notification.requestPermission.trys++;
-			return new Promise(function(resolve,reject){
-				Notification.requestPermission.set=function(permission) {
-					delete Notification.requestPermission.set;
-					Notification.changePermission(permission);
-					resolve(Notification.permission);
-				};
-				console.log("您的脚本正在请求通知权限，请指定响应结果。\n通道：Notification.requestPermission.set()\n参数：0:禁止，1:允许，2:忽略");
+	static #Permission=(function (){
+		var permission=localStorage.getItem(":NotificationVMPermission");
+		switch (permission) {
+			default:
+				return "default";
+			case "granted":
+			case "denied":
+				return permission;
+		}
+	})();
+	static get #permission(){return this.#GRANTED?"granted":this.#Permission}
+	static get permission(){return this.#permission}
+	static #requestPermissionTrys=(function (){
+		var times=parseInt(localStorage.getItem(":NotificationVMRequestPermissionTrys"));
+		return isNaN(times)||times<0?0:times
+	})();
+	static resetPermission(){
+		localStorage.removeItem(":NotificationVMPermission");
+		localStorage.removeItem(":NotificationVMRequestPermissionTrys");
+		return "通知权限状态已重置，请刷新页面应用设置。"
+	}
+	static #requestingPermission=false;
+	static #requestProcessor=null;
+	static requestPermission(deprecatedCallback=null){
+		if (this.#permission=="default") {
+			var self=this;
+			var processor=this.requestingPermission?this.#requestProcessor:this.#requestProcessor=new Promise(function(resolve){
+				if (self.#requestPermissionTrys>2) {
+					localStorage.setItem(":NotificationVMPermission",self.#Permission="denied");
+					console.warn("【Notification 模拟】\n您的通知权限请求提示已多次被关闭，用户代理自动拒绝了您的请求。\n如果您是在模拟用户行为时触发了此效果，您或许需要在请求权限前进行说明并引导用户授权。如果用户执意关闭，那么此时您不应该再打扰用户。\n你可以通过执行“Notification.resetPermission()”来重置模拟授权状态，重置后可刷新页面重新模拟授权过程。");
+					return resolve(self.#permission)
+				}
+				self.requestingPermission=true;
+				localStorage.setItem(":NotificationVMRequestPermissionTrys",++self.#requestPermissionTrys);
+				function closeInterface(){
+					Protection.style.display="block";
+					self.clientTop;
+					localStorage.setItem(":NotificationVMPermission",self.#Permission);
+					self.requestingPermission=false;
+					resolve(self.#permission);
+					Interface.addEventListener("transitionend",function(){this.parentNode?.removeChild(this)},{"once":true});
+					Interface.style.opacity=0;
+				}
+				var identifier=Symbol("NotificationRequestPermissionInterface");
+				var Interface=document.createElement("div");
+				Interface.id=":NotificationRequestPermissionInterface";
+				Interface.style="position:fixed;margin:8px;width:320px;height:128px;box-sizing:border-box;display:none;grid-template-rows:auto 20px 32px;grid-gap:10px;padding:16px;box-shadow:0px 0px 8px #000000;border-radius:4px;background-color:#FFFFFF;color:#000000;opacity:0;transition:opacity 0.3s ease-in-out;z-index:2147483647";
+				Interface[identifier]=true;
+				var Title=document.createElement("div");
+				var TitleDomain=document.createElement("p");
+				TitleDomain.innerText=location?.hostname==""?"此网站":location.hostname;
+				Title.appendChild(TitleDomain);
+				var TitleWant=document.createElement("p");
+				TitleWant.innerText=" 想要";
+				TitleWant.style=TitleDomain.style="display:inline;color:#000000;font-size:14px;font-weight:bold";
+				Title.appendChild(TitleWant);
+				Interface.appendChild(Title);
+				var Permission=document.createElement("div");
+				Permission.style="display:grid;grid-template-columns:20px 1fr;grid-gap:8px;place-items:center start;font-size:12px";
+				var PermissionIcon=document.createElement("canvas");
+				PermissionIcon.height=PermissionIcon.width=20;
+				PermissionIcon.style.display="inline-block";
+				var canvas=PermissionIcon.getContext("2d");
+				canvas.strokeStyle="#000000";
+				canvas.lineWidth=1;
+				canvas.moveTo(0,16);
+				canvas.lineTo(20,16);
+				canvas.stroke();
+				canvas.beginPath();
+				canvas.moveTo(3,16);
+				canvas.arc(10,8,7,-3,0);
+				canvas.lineTo(17,16);
+				canvas.stroke();
+				canvas.beginPath();
+				canvas.moveTo(12,16);
+				canvas.arc(10,17,2,0,3);
+				canvas.lineTo(8,17);
+				canvas.stroke();
+				Permission.appendChild(PermissionIcon);
+				var PermissionName=document.createElement("p");
+				PermissionName.innerText="显示通知";
+				PermissionName.style="display:inline";
+				Permission.appendChild(PermissionName);
+				Interface.appendChild(Permission);
+				var Buttons=document.createElement("div");
+				Buttons.style="height:100%;display:grid;grid-template-columns:64px 64px;grid-gap:8px;place-self:end";
+				var Grant=document.createElement("button")
+				Grant.innerText="允许";
+				Grant.addEventListener("click",function(){
+					self.#Permission="granted";
+					closeInterface()
+				},{"once":true});
+				Buttons.appendChild(Grant);
+				var Deny=document.createElement("button")
+				Deny.innerText="拒绝";
+				Deny.addEventListener("click",function(){
+					self.#Permission="denied";
+					closeInterface()
+				},{"once":true});
+				Deny.style=Grant.style="height:100%;width:64px;border-radius:2px;border:solid 2px #7F7F7F;background-color:#EFEFEF;transition:background-color 0.5s ease-in-out;font-size:12px;font-weight:bold;color:#000000";
+				function ColorLight(){this.style.backgroundColor="#EFEFEF"}
+				function ColorDark(){this.style.backgroundColor="#D8D8D8"}
+				function ColorTransparent(){this.style.backgroundColor="transparent"}
+				Grant.addEventListener("mouseleave",ColorLight);
+				Deny.addEventListener("mouseleave",ColorLight);
+				Grant.addEventListener("mouseover",ColorDark);
+				Deny.addEventListener("mouseover",ColorDark);
+				Buttons.appendChild(Deny);
+				Interface.appendChild(Buttons);
+				var Close=document.createElement("button");
+				Close.style="position:absolute;right:4px;top:4px;width:20px;height:20px;display:block;padding:0;border:none;background-color:transparent;transition:background-color 0.5s ease-in-out;overflow:hidden";
+				var CloseIcon=document.createElement("canvas");
+				CloseIcon.height=CloseIcon.width=20;
+				CloseIcon.style="position:absolute;display:inline-block;top:0;left:0";
+				canvas=CloseIcon.getContext("2d");
+				canvas.strokeStyle="#000000";
+				canvas.lineWidth=1;
+				canvas.moveTo(5.5,5.5);
+				canvas.lineTo(14.5,14.5);
+				canvas.stroke();
+				canvas.beginPath();
+				canvas.moveTo(14.5,5.5);
+				canvas.lineTo(5.5,14.5);
+				canvas.stroke();
+				Close.appendChild(CloseIcon);
+				Close.addEventListener("click",closeInterface,{"once":true});
+				Close.addEventListener("mouseleave",ColorTransparent);
+				Close.addEventListener("mouseover",ColorDark);
+				Interface.appendChild(Close);
+				var Protection=document.createElement("div");
+				Protection.style="position:absolute;display:block;margin:0;width:100%;height:100%;opacity:0";
+				Interface.appendChild(Protection);
+				var temp=document.getElementById(":NotificationRequestPermissionInterface");
+				temp?.parentNode.removeChild(temp);
+				document.body.appendChild(Interface);
+				Interface.style.display="grid";
+				Interface.clientTop;
+				Interface.addEventListener("transitionend",function(){Protection.style.display="none"},{"once":true});
+				Interface.style.opacity=1;
 			});
-		} else {
-			Notification.changePermission(0);
-			console.warn("Notifications permission has been blocked as the user has dismissed the permission prompt several times. This can be reset in Page Info which can be accessed by clicking the lock icon next to the URL. See https://www.chromestatus.com/features/6443143280984064 for more information.");
-			return Promise.resolve(Notification.permission);
-		};
-	};
-	return Promise.resolve(Notification.permission);
+			processor.then(deprecatedCallback);
+			return processor
+		}
+		if (this.#permission=="denied") console.warn("【Notification 模拟】\n您的通知权限已被设置为“拒绝”。\n你可以通过执行“Notification.resetPermission()”来重置模拟授权状态，重置后可刷新页面重新模拟授权过程。");
+		var result=Promise.resolve(this.#permission);
+		result.then(deprecatedCallback);
+		return result
+	}
+	#action=[];
+	#badge="";
+	#body="";
+	#data=null;
+	#dir="auto";
+	#icon="";
+	#image="";
+	#lang="";
+	#renotify=false;
+	#requireInteraction=false;
+	#silent=false;
+	#tag="";
+	#timestamp=Date.now();
+	#title="";
+	#vibrate=[];
+	get action(){return this.#action}
+	get badge(){return this.#body}
+	get body(){return this.#body}
+	get data(){return this.#data}
+	get dir(){return this.#dir}
+	get icon(){return this.#icon}
+	get image(){return this.#image}
+	get lang(){return this.#lang}
+	get renotify(){return this.#renotify}
+	get requireInteraction(){return this.#requireInteraction}
+	get silent(){return this.#silent}
+	get tag(){return this.#tag}
+	get timestamp(){return this.#timestamp}
+	get title(){return this.#title}
+	get vibrate(){return this.#vibrate}
+	#onclick=null;
+	#onclose=null;
+	#onerror=null;
+	#onshow=null;
+	get onclick(){return this.#onclick}
+	get onclose(){return this.#onclose}
+	get onerror(){return this.#onerror}
+	get onshow(){return this.#onshow}
+	set onclick(value){
+		if (typeof value=="function"||value===null) this.#onclick=value;
+		return value
+	}
+	set onclose(value){
+		if (typeof value=="function"||value===null) this.#onclose=value;
+		return value
+	}
+	set onerror(value){
+		if (typeof value=="function"||value===null) this.#onerror=value;
+		return value
+	}
+	set onshow(value){
+		if (typeof value=="function"||value===null) this.#onshow=value;
+		return value
+	}
+	#closed=false;
+	#element=null;
+	#changeTime=-1;//更改时间
+	#timing=-1;
+	constructor(title,options) {
+		if (arguments.length<1) throw new TypeError("Failed to construct 'Notification': 1 argument required, but only "+arguments.length+" present.");
+		super();
+		for (let eventName of ["click","close","error","show"]) this.addEventListener(eventName,function(event){if (this["on"+eventName]) this["on"+eventName](event)});
+		this.#title=String(title);
+		var setting={};
+		if (typeof (options??false)=="object") {
+			for (let item in options) {
+				switch (item) {
+					case "dir":
+						let dir=String(options[item]);
+						if (["auto","ltr","rtl"].indexOf(dir)==-1) throw new TypeError("Failed to construct 'Notification': The provided value '"+dir+"' is not a valid enum value of type NotificationDirection.");
+					case "badge":
+					case "body":
+					case "icon":
+					case "image":
+					case "lang":
+					case "sound":
+					case "tag":
+						setting[item]=String(options[item]);
+						break;
+					case "renotify":
+						if (!("tag" in options)) throw new TypeError("Failed to construct 'Notification': Notifications which set the renotify flag must specify a non-empty tag.");
+					case "noscreen":
+					case "requireInteraction":
+					case "silent":
+					case "sticky":
+						setting[item]=Boolean(options[item]);
+						break;
+					case "vibrate":
+						let vibrate=options[item];
+						if (vibrate instanceof Array) {
+							for (let item in vibrate) {
+								let data=Number(vibrate[item]);
+								vibrate[item]=(isNaN(data))?0:data;
+							}
+							setting[item]=vibrate
+						} else {
+							let data=Number(vibrate);
+							if (isNaN(data)) data=0;
+							setting[item]=[data]
+						}
+						break;
+					case "actions":
+						let actions=options[item];
+						if (typeof (actions??false)!="object") throw new TypeError("Failed to construct 'Notification': The provided value cannot be converted to a sequence.");
+						if (typeof (actions[Symbol.iterator]??false)!="function") throw new TypeError("Failed to construct 'Notification': The object must have a callable @@iterator property.");
+						for (let item of actions) throw new TypeError("Failed to construct 'Notification': Actions are only supported for persistent notifications shown using ServiceWorkerRegistration.showNotification().");
+					case "data":
+						setting[item]=options[item];
+					default:
+						break;
+				}
+			}
+		}
+		if ("badge" in setting) this.#badge=setting.badge;
+		if ("body" in setting) this.#body=setting.body;
+		if ("data" in setting) this.#data=setting.data;
+		if ("dir" in setting) this.#dir=setting.dir;
+		if ("icon" in setting) this.#icon=setting.icon;
+		if ("image" in setting) this.#image=setting.image;
+		if ("lang" in setting) this.#lang=setting.lang;
+		if ("renotify" in setting) this.#renotify=setting.renotify;
+		if ("requireInteraction" in setting) this.#requireInteraction=setting.requireInteraction;
+		if ("silent" in setting) this.#silent=setting.silent;
+		if ("tag" in setting) this.#tag=setting.tag;
+		if ("vibrate" in setting) this.#vibrate=setting.vibrate;
+		if (this.constructor.#permission!="granted") return console.log("【Notification 模拟】\n未获得通知权限，通知绘制过程已被跳过，通知显示失败。");
+		var self=this;
+		new Promise(async function(resolve,reject){
+			function request(url){
+				return new Promise(function(resolve){
+					var XHR=new XMLHttpRequest;
+					XHR.open("get",url);
+					XHR.responseType="blob";
+					XHR.onload=function(){
+						if ((this.status>=200&&this.status<300)||this.status==304) {
+							resolve(URL.createObjectURL(this.response));
+						} else resolve(false);
+					}
+					XHR.onerror=function(){resolve(false)};
+					XHR.send();
+				})
+			}
+			var icon=false;
+			if (self.#icon!="") {
+				let data=await request(self.#icon);
+				if (data) icon=data;
+			}
+			var image=false;
+			if (self.#image!="") {
+				let data=await request(self.#image);
+				if (data) image=data;
+			}
+			//绘制通知
+			var frame=document.createElement("div");
+			frame.style="display:grid;grid-template-rows:24px 1fr;padding:8px;background-color:#FFFFFF;max-height:384px;box-shadow:0px 0px 8px #000000;transition-duration:0.5s;transition-property:opacity,transform";
+			var title=document.createElement("div");
+			title.innerText="通知";
+			title.style.fontSize="15px";
+			frame.appendChild(title);
+			var content=document.createElement("div");
+			content.style="position:relative;padding:8px;display:grid;grid-gap:8px;color:#000000;overflow:hidden";
+			content.style.gridTemplateAreas="\""+(icon?"icon ":"")+"message\""+(image?"\""+(icon?"image ":"")+"image\"":"");
+			content.style.gridTemplateColumns=icon?"52px 1fr":null;
+			content.style.gridTemplateRows=(icon?"52px":"auto")+(image?" 1fr":"");
+			var tMessage=document.createElement("div");
+			var tTitle=document.createElement("p");
+			tTitle.innerText=self.#title;
+			tTitle.style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;font-weight:bold;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
+			tMessage.appendChild(tTitle);
+			if (self.#body) {
+				//tMessage.appendChild(document.createElement("br"));
+				let tBody=document.createElement("p");
+				tBody.innerText=self.#body;
+				tBody.style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
+				//tBody.style=tTitle.style;
+				//tBody.style.webkitLineClamp=2;
+				//tBody.style.fontWeight=null;
+				tMessage.appendChild(tBody);
+			}
+			content.appendChild(tMessage);
+			if (icon) {
+				let tIcon=document.createElement("img");
+				tIcon.src=icon;
+				tIcon.style="max-width:100%;max-height:100%;grid-area:icon";
+				content.appendChild(tIcon);
+			}
+			if (image) {
+				let tImage=document.createElement("img");
+				tImage.src=image;
+				tImage.style="max-width:100%;max-height:284px;grid-area:image;place-self:center";
+				content.appendChild(tImage);
+			}
+			content.addEventListener("click",function(){
+				if (!self.#requireInteraction) {
+					clearTimeout(self.#timing);
+					self.#timing=setTimeout(self.#close.bind(self),50000);
+				}
+				self.dispatchEvent(new Event("click",{"currentTarget":self,"srcElement":self,"target":self}));
+			})
+			frame.appendChild(content);
+			self.#element=frame;
+			self.dispatchEvent(new Event("show",{"currentTarget":self,"srcElement":self,"target":self}));
+			self.constructor.#Interface.appendChild(frame);
+			if (!self.#requireInteraction) self.#timing=setTimeout(self.#close.bind(self),25000);
+		});
+	}
+	#close(){
+		if (this.#closed) return;
+		this.#closed=true;
+		var self=this;
+		this.#element.addEventListener("transitionend",function(){
+			this.parentNode?.removeChild(this);
+			clearTimeout(self.#timing);
+			clearInterval(self.#changeTime);
+			self.dispatchEvent(new Event("close",{"currentTarget":self,"srcElement":self,"target":self}));
+		},{"once":true});
+		this.#element.style.opacity=0;
+	}
+	close(){return this.#close}
 };
-Notification.requestPermission.trys=0;
 
 //cookie 模拟
 (function() {

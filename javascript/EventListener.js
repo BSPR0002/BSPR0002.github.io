@@ -1,5 +1,5 @@
 document.getElementById("navigation").addEventListener("mouseover",WakeHoverPointer);
-document.getElementById("navigation").addEventListener("mouseout",HideHoverPointer);
+document.getElementById("navigation").addEventListener("mouseleave",HideHoverPointer);
 document.getElementById("nav_item_1").addEventListener("mouseover",function(){MoveHoverPointer(90)});
 document.getElementById("nav_item_2").addEventListener("mouseover",function(){MoveHoverPointer(290)});
 document.getElementById("nav_item_3").addEventListener("mouseover",function(){MoveHoverPointer(490)});
