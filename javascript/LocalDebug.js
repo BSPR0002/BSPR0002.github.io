@@ -16,11 +16,11 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 		return "上个 XHR 已失效，请手动查找。"
 	};
 	static responseNext(){
-		for (let i=0,l=this.#VM.length-1;i<l;i++) if (this.#VM[i]) return this.#VM[i].select();
+		for (let i=0,l=this.#VM.length;i<l;i++) if (this.#VM[i]) return this.#VM[i].select();
 		return "没有正在等待响应的请求。"
 	};
 	static cleanVM(){
-		for (let i=this.#VM.length-1;i<-1;i--) if (this.#VM[i]==null) this.#VM.splice(i,1);
+		for (let i=this.#VM.length-1;i>-1;i--) if (this.#VM[i]==null) this.#VM.splice(i,1);
 		return "清理已完成。"
 	}
 	constructor(async){this.#async=Boolean(async)}
@@ -204,17 +204,22 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 		super("LocalDebug");
 		this.addEventListener("readystatechange",function(event){if (this.onreadystatechange) this.onreadystatechange(event)});
 	}
-	static get UNSENT(){return 0}
-	static get OPENED(){return 1}
-	static get HEADERS_RECEIVED(){return 2}
-	static get LOADING(){return 3}
-	static get DONE(){return 4}
+	static #UNSENT=0;
+	static #OPENED=1;
+	static #HEADERS_RECEIVED=2;
+	static #LOADING=3;
+	static #DONE=4;
+	static get UNSENT(){return this.#UNSENT}
+	static get OPENED(){return this.#OPENED}
+	static get HEADERS_RECEIVED(){return this.#HEADERS_RECEIVED}
+	static get LOADING(){return this.#LOADING}
+	static get DONE(){return this.#DONE}
 	static #statusList={"100":"Continue","101":"Switching Protocols","102":"Processing","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","300":"Multiple Choices","301":"Moved Permanently","302":"Move Temporarily","303":"See Other","304":"Not Modified","305":"Use Proxy","306":"Switch Proxy","307":"Temporary Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Request Entity Too Large","414":"Request-URI Too Long","415":"Unsupported Media Type","416":"Requested Range Not Satisfiable","417":"Expectation Failed","418":"I'm a teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Too Early","426":"Upgrade Required","449":"Retry With","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","509":"Bandwidth Limit Exceeded","510":"Not Extended","600":"Unparseable Response Headers"};
-	get UNSENT(){return this.constructor.UNSENT}
-	get OPENED(){return this.constructor.OPENED}
-	get HEADERS_RECEIVED(){return this.constructor.HEADERS_RECEIVED}
-	get LOADING(){return this.constructor.LOADING}
-	get DONE(){return this.constructor.DONE}
+	get UNSENT(){return this.constructor.#UNSENT}
+	get OPENED(){return this.constructor.#OPENED}
+	get HEADERS_RECEIVED(){return this.constructor.#HEADERS_RECEIVED}
+	get LOADING(){return this.constructor.#LOADING}
+	get DONE(){return this.constructor.#DONE}
 	#onreadystatechange=null;
 	get onreadystatechange(){return this.#onreadystatechange}
 	set onreadystatechange(value){
@@ -519,15 +524,16 @@ Notification=class Notification extends EventTarget{
 		if (!Interface) {
 			Interface=document.createElement("div");
 			Interface.id=":NotificationInterface";
-			Interface.style="position:fixed;bottom:0;right:0;width:352px;margin:16px;display:grid;grid-gap:16px;grid-template-rows:repeat(auto,auto)";
+			Interface.style="position:fixed;bottom:0;right:0;width:360px;margin:16px;display:grid;grid-gap:16px;grid-template-rows:repeat(auto,auto)";
 			document.body.appendChild(Interface);
 		}
 		return Interface
 	}
 	static get Interface(){return this.#Interface}
 	static maxActions=2;
-	static VM=[];
-	static VM_count=0;
+	static #VM={};
+	static #VM_count=0;
+	static #VM_wait=[];
 	static #GRANTED=false;
 	static get GRANTED(){return this.#GRANTED}
 	static set GRANTED(value){
@@ -583,10 +589,10 @@ Notification=class Notification extends EventTarget{
 				Interface.style="position:fixed;margin:8px;width:320px;height:128px;box-sizing:border-box;display:none;grid-template-rows:auto 20px 32px;grid-gap:10px;padding:16px;box-shadow:0px 0px 8px #000000;border-radius:4px;background-color:#FFFFFF;color:#000000;opacity:0;transition:opacity 0.3s ease-in-out;z-index:2147483647";
 				Interface[identifier]=true;
 				var Title=document.createElement("div");
-				var TitleDomain=document.createElement("p");
+				var TitleDomain=document.createElement("span");
 				TitleDomain.innerText=location?.hostname==""?"此网站":location.hostname;
 				Title.appendChild(TitleDomain);
-				var TitleWant=document.createElement("p");
+				var TitleWant=document.createElement("span");
 				TitleWant.innerText=" 想要";
 				TitleWant.style=TitleDomain.style="display:inline;color:#000000;font-size:14px;font-weight:bold";
 				Title.appendChild(TitleWant);
@@ -613,7 +619,7 @@ Notification=class Notification extends EventTarget{
 				canvas.lineTo(8,17);
 				canvas.stroke();
 				Permission.appendChild(PermissionIcon);
-				var PermissionName=document.createElement("p");
+				var PermissionName=document.createElement("span");
 				PermissionName.innerText="显示通知";
 				PermissionName.style="display:inline";
 				Permission.appendChild(PermissionName);
@@ -738,7 +744,7 @@ Notification=class Notification extends EventTarget{
 	}
 	#closed=false;
 	#element=null;
-	#changeTime=-1;//更改时间
+	#updateSince=-1;
 	#timing=-1;
 	constructor(title,options) {
 		if (arguments.length<1) throw new TypeError("Failed to construct 'Notification': 1 argument required, but only "+arguments.length+" present.");
@@ -762,7 +768,7 @@ Notification=class Notification extends EventTarget{
 						setting[item]=String(options[item]);
 						break;
 					case "renotify":
-						if (!("tag" in options)) throw new TypeError("Failed to construct 'Notification': Notifications which set the renotify flag must specify a non-empty tag.");
+						if (options[item]&&!("tag" in options)) throw new TypeError("Failed to construct 'Notification': Notifications which set the renotify flag must specify a non-empty tag.");
 					case "noscreen":
 					case "requireInteraction":
 					case "silent":
@@ -824,55 +830,82 @@ Notification=class Notification extends EventTarget{
 					XHR.send();
 				})
 			}
-			var icon=false;
 			if (self.#icon!="") {
 				let data=await request(self.#icon);
-				if (data) icon=data;
+				var icon=data?data:false;
 			}
-			var image=false;
 			if (self.#image!="") {
 				let data=await request(self.#image);
-				if (data) image=data;
+				var image=data?data:false;
 			}
 			//绘制通知
 			var frame=document.createElement("div");
-			frame.style="display:grid;grid-template-rows:24px 1fr;padding:8px;background-color:#FFFFFF;max-height:384px;box-shadow:0px 0px 8px #000000;transition-duration:0.5s;transition-property:opacity,transform";
-			var title=document.createElement("div");
-			title.innerText="通知";
-			title.style.fontSize="15px";
-			frame.appendChild(title);
+			frame.style="display:grid;grid-template-rows:20px 1fr;padding:8px;background-color:#FFFFFF;max-height:384px;box-shadow:0px 0px 8px #000000;transition-duration:0.5s;transition-property:opacity,transform";
+			var topBar=document.createElement("div");
+			topBar.style="display:grid;grid-template-columns:30px 1fr 64px 20px;grid-gap:8px";
+			var tTitle=document.createElement("span");
+			tTitle.style.fontSize="15px";
+			tTitle.innerText="通知";
+			topBar.appendChild(tTitle);
+			var tDomain=document.createElement("span");
+			tDomain.style="font-size:12px;align-self:center;white-space:nowrap;text-overflow:ellipsis;overflow:hidden";
+			tDomain.innerText=location?.hostname==""?"此网站":location.hostname;
+			topBar.appendChild(tDomain);
+			var tDuration=document.createElement("span");
+			tDuration.style="font-size:12px;place-self:center end;overflow:hidden";
+			tDuration.innerText="刚才";
+			topBar.appendChild(tDuration);
+			var tClose=document.createElement("button");
+			tClose.style="position:relative;width:20px;height:20px;display:block;padding:0;border:none;background-color:transparent;transition:background-color 0.5s ease-in-out;overflow:hidden";
+			{
+				let CloseIcon=document.createElement("canvas");
+				CloseIcon.height=CloseIcon.width=20;
+				CloseIcon.style="position:absolute;display:inline-block;top:0;left:0";
+				let canvas=CloseIcon.getContext("2d");
+				canvas.strokeStyle="#000000";
+				canvas.lineWidth=1;
+				canvas.moveTo(5.5,5.5);
+				canvas.lineTo(14.5,14.5);
+				canvas.stroke();
+				canvas.beginPath();
+				canvas.moveTo(14.5,5.5);
+				canvas.lineTo(5.5,14.5);
+				canvas.stroke();
+				tClose.appendChild(CloseIcon);
+			}
+			tClose.addEventListener("click",self.#close.bind(self),{"once":true});
+			tClose.addEventListener("mouseleave",function(){this.style.backgroundColor="transparent"});
+			tClose.addEventListener("mouseover",function(){this.style.backgroundColor="#D8D8D8"});
+			topBar.appendChild(tClose);
+			frame.appendChild(topBar);
 			var content=document.createElement("div");
 			content.style="position:relative;padding:8px;display:grid;grid-gap:8px;color:#000000;overflow:hidden";
 			content.style.gridTemplateAreas="\""+(icon?"icon ":"")+"message\""+(image?"\""+(icon?"image ":"")+"image\"":"");
-			content.style.gridTemplateColumns=icon?"52px 1fr":null;
-			content.style.gridTemplateRows=(icon?"52px":"auto")+(image?" 1fr":"");
-			var tMessage=document.createElement("div");
-			var tTitle=document.createElement("p");
-			tTitle.innerText=self.#title;
-			tTitle.style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;font-weight:bold;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
-			tMessage.appendChild(tTitle);
-			if (self.#body) {
-				//tMessage.appendChild(document.createElement("br"));
-				let tBody=document.createElement("p");
-				tBody.innerText=self.#body;
-				tBody.style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
-				//tBody.style=tTitle.style;
-				//tBody.style.webkitLineClamp=2;
-				//tBody.style.fontWeight=null;
-				tMessage.appendChild(tBody);
-			}
-			content.appendChild(tMessage);
+			content.style.gridTemplateColumns=icon?"auto 1fr":null;
+			content.style.gridTemplateRows="auto"+(image?" 1fr":"");
 			if (icon) {
-				let tIcon=document.createElement("img");
-				tIcon.src=icon;
-				tIcon.style="max-width:100%;max-height:100%;grid-area:icon";
-				content.appendChild(tIcon);
+				let temp=document.createElement("img");
+				temp.src=icon;
+				temp.style="max-width:60px;max-height:60px;grid-area:icon;place-self:center";
+				content.appendChild(temp);
 			}
+			var message=document.createElement("div");
+			var mTitle=document.createElement("p");
+			mTitle.innerText=self.#title;
+			mTitle.style="display:-webkit-box;margin:0;-webkit-box-orient:vertical;-webkit-line-clamp:1;font-weight:bold;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
+			message.appendChild(mTitle);
+			if (self.#body) {
+				let mBody=document.createElement("p");
+				mBody.innerText=self.#body;
+				mBody.style="display:-webkit-box;margin:0;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:15px;width:100%;word-break:break-all;text-overflow:ellipsis;overflow:hidden";
+				message.appendChild(mBody);
+			}
+			content.appendChild(message);
 			if (image) {
-				let tImage=document.createElement("img");
-				tImage.src=image;
-				tImage.style="max-width:100%;max-height:284px;grid-area:image;place-self:center";
-				content.appendChild(tImage);
+				let temp=document.createElement("img");
+				temp.src=image;
+				temp.style="max-width:100%;max-height:284px;grid-area:image;place-self:center";
+				content.appendChild(temp);
 			}
 			content.addEventListener("click",function(){
 				if (!self.#requireInteraction) {
@@ -882,25 +915,36 @@ Notification=class Notification extends EventTarget{
 				self.dispatchEvent(new Event("click",{"currentTarget":self,"srcElement":self,"target":self}));
 			})
 			frame.appendChild(content);
+			frame.style.transform="translateX(400px)";
 			self.#element=frame;
 			self.dispatchEvent(new Event("show",{"currentTarget":self,"srcElement":self,"target":self}));
-			self.constructor.#Interface.appendChild(frame);
+			self.constructor.#Interface.prepend(frame);
+			frame.clientTop;
+			frame.style.transform=null;
 			if (!self.#requireInteraction) self.#timing=setTimeout(self.#close.bind(self),25000);
+			{
+				let duration=0;
+				self.#updateSince=setInterval(function(){
+					duration++
+					tDuration.innerText=duration<60?duration+" 分钟前":duration<1440?Math.floor(duration/60)+" 小时前":duration<11520?Math.floor(duration/1440)+" 天前":"猴年马月";
+				},60000);
+			}
 		});
 	}
-	#close(){
+	async #close(){
 		if (this.#closed) return;
 		this.#closed=true;
+		clearTimeout(this.#timing);
 		var self=this;
 		this.#element.addEventListener("transitionend",function(){
+			clearInterval(self.#updateSince);
 			this.parentNode?.removeChild(this);
-			clearTimeout(self.#timing);
-			clearInterval(self.#changeTime);
 			self.dispatchEvent(new Event("close",{"currentTarget":self,"srcElement":self,"target":self}));
 		},{"once":true});
 		this.#element.style.opacity=0;
+		
 	}
-	close(){return this.#close}
+	close(){this.#close()}
 };
 
 //cookie 模拟
@@ -963,7 +1007,7 @@ Notification=class Notification extends EventTarget{
 			if (expires) {
 				try {
 					if (typeof JSON.parse(expires)=="number") var temp3=false;
-				} catch(no) {var temp3=true};
+				} catch(none) {var temp3=true};
 				if (temp3) {
 					expires=new Date(expires).getTime();
 					if (!(expires>-1)) expires=-1;
