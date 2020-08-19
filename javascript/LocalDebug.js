@@ -529,11 +529,11 @@ Notification=class Notification extends EventTarget{
 		}
 		return Interface
 	}
-	static get Interface(){return this.#Interface}
 	static maxActions=2;
 	static #VM={};
-	static #VM_count=0;
+	static #VM_show=[];
 	static #VM_wait=[];
+	static #VM_count=0;
 	static #GRANTED=false;
 	static get GRANTED(){return this.#GRANTED}
 	static set GRANTED(value){
@@ -552,21 +552,30 @@ Notification=class Notification extends EventTarget{
 	})();
 	static get #permission(){return this.#GRANTED?"granted":this.#Permission}
 	static get permission(){return this.#permission}
+	static #looked=false;
 	static #requestPermissionTrys=(function (){
 		var times=parseInt(localStorage.getItem(":NotificationVMRequestPermissionTrys"));
 		return isNaN(times)||times<0?0:times
 	})();
-	static resetPermission(){
+	static #resetPermission(){
+		if (this.#permission=="default"||this.#looked) return "未进行操作。";
+		this.#Permission="default";
 		localStorage.removeItem(":NotificationVMPermission");
 		localStorage.removeItem(":NotificationVMRequestPermissionTrys");
+		this.#looked=true;
 		return "通知权限状态已重置，请刷新页面应用设置。"
 	}
+	static get resetPermission(){return this.#resetPermission}
 	static #requestingPermission=false;
 	static #requestProcessor=null;
 	static requestPermission(deprecatedCallback=null){
 		if (this.#permission=="default") {
 			var self=this;
 			var processor=this.requestingPermission?this.#requestProcessor:this.#requestProcessor=new Promise(function(resolve){
+				if (self.#looked) {
+					console.warn("【Notification 模拟】\n通知权限状态已被锁定，出现此情况一般是由于通知权限被重置，请刷新页面后重试。");
+					return resolve(self.#permission);
+				}
 				if (self.#requestPermissionTrys>2) {
 					localStorage.setItem(":NotificationVMPermission",self.#Permission="denied");
 					console.warn("【Notification 模拟】\n您的通知权限请求提示已多次被关闭，用户代理自动拒绝了您的请求。\n如果您是在模拟用户行为时触发了此效果，您或许需要在请求权限前进行说明并引导用户授权。如果用户执意关闭，那么此时您不应该再打扰用户。\n你可以通过执行“Notification.resetPermission()”来重置模拟授权状态，重置后可刷新页面重新模拟授权过程。");
@@ -610,12 +619,12 @@ Notification=class Notification extends EventTarget{
 				canvas.stroke();
 				canvas.beginPath();
 				canvas.moveTo(3,16);
-				canvas.arc(10,8,7,-3,0);
+				canvas.arc(10,8,7,-Math.PI,0);
 				canvas.lineTo(17,16);
 				canvas.stroke();
 				canvas.beginPath();
 				canvas.moveTo(12,16);
-				canvas.arc(10,17,2,0,3);
+				canvas.arc(10,17,2,0,Math.PI);
 				canvas.lineTo(8,17);
 				canvas.stroke();
 				Permission.appendChild(PermissionIcon);
@@ -688,6 +697,14 @@ Notification=class Notification extends EventTarget{
 		result.then(deprecatedCallback);
 		return result
 	}
+	static #reject() {
+		if (!confirm("您正在进行的操作即将收回此网站的通知权限，您确定吗？\n收回权限将会清空页面上的所有通知，并重置此网站的通知权限。")) return;
+		this.#resetPermission();
+		for (let item of this.#VM_wait) item(false);
+		var Interface=this.#Interface;
+		Interface?.parentNode.removeChild(Interface);
+		for (let item of this.#VM_show) item.#close();
+	}
 	#action=[];
 	#badge="";
 	#body="";
@@ -704,7 +721,7 @@ Notification=class Notification extends EventTarget{
 	#title="";
 	#vibrate=[];
 	get action(){return this.#action}
-	get badge(){return this.#body}
+	get badge(){return this.#badge}
 	get body(){return this.#body}
 	get data(){return this.#data}
 	get dir(){return this.#dir}
@@ -743,6 +760,7 @@ Notification=class Notification extends EventTarget{
 		return value
 	}
 	#closed=false;
+	#hooked=false;
 	#element=null;
 	#updateSince=-1;
 	#timing=-1;
@@ -838,11 +856,10 @@ Notification=class Notification extends EventTarget{
 				let data=await request(self.#image);
 				var image=data?data:false;
 			}
-			//绘制通知
 			var frame=document.createElement("div");
 			frame.style="display:grid;grid-template-rows:20px 1fr;padding:8px;background-color:#FFFFFF;max-height:384px;box-shadow:0px 0px 8px #000000;transition-duration:0.5s;transition-property:opacity,transform";
 			var topBar=document.createElement("div");
-			topBar.style="display:grid;grid-template-columns:30px 1fr 64px 20px;grid-gap:8px";
+			topBar.style="display:grid;grid-template-columns:30px 1fr 64px 20px 20px;grid-gap:8px";
 			var tTitle=document.createElement("span");
 			tTitle.style.fontSize="15px";
 			tTitle.innerText="通知";
@@ -855,6 +872,28 @@ Notification=class Notification extends EventTarget{
 			tDuration.style="font-size:12px;place-self:center end;overflow:hidden";
 			tDuration.innerText="刚才";
 			topBar.appendChild(tDuration);
+			var tReject=document.createElement("button");
+			tReject.style="position:relative;width:20px;height:20px;display:block;padding:0;border:none;background-color:transparent;transition:background-color 0.5s ease-in-out;overflow:hidden";
+			{
+				let RejectIcon=document.createElement("canvas");
+				RejectIcon.height=RejectIcon.width=20;
+				RejectIcon.style="position:absolute;display:inline-block;top:0;left:0";
+				let canvas=RejectIcon.getContext("2d");
+				canvas.strokeStyle="#000000";
+				canvas.lineWidth=1;
+				canvas.moveTo(14.5,10);
+				canvas.arc(10,10,4.5,0,2*Math.PI);
+				canvas.stroke();
+				canvas.beginPath();
+				canvas.moveTo(6.8,6.8);
+				canvas.lineTo(13.2,13.2);
+				canvas.stroke();
+				tReject.appendChild(RejectIcon);
+			}
+			tReject.addEventListener("click",function(){self.constructor.#reject()});
+			tReject.addEventListener("mouseleave",function(){this.style.backgroundColor="transparent"});
+			tReject.addEventListener("mouseover",function(){this.style.backgroundColor="#D8D8D8"});
+			topBar.appendChild(tReject);
 			var tClose=document.createElement("button");
 			tClose.style="position:relative;width:20px;height:20px;display:block;padding:0;border:none;background-color:transparent;transition:background-color 0.5s ease-in-out;overflow:hidden";
 			{
@@ -915,12 +954,31 @@ Notification=class Notification extends EventTarget{
 				self.dispatchEvent(new Event("click",{"currentTarget":self,"srcElement":self,"target":self}));
 			})
 			frame.appendChild(content);
-			frame.style.transform="translateX(400px)";
 			self.#element=frame;
+			//if (!(await self.constructor.#manager(self.#tag))) self.#close();
+			if (self.#closed) return resolve();
+			self.constructor.#VM_show.push(self);
 			self.dispatchEvent(new Event("show",{"currentTarget":self,"srcElement":self,"target":self}));
-			self.constructor.#Interface.prepend(frame);
-			frame.clientTop;
-			frame.style.transform=null;
+			{
+				let showed=false;
+				if (self.#tag) {
+					let mate=self.constructor.#VM[self.#tag];
+					if (mate) {
+						mate.#element.parentNode?.replaceChild(frame,mate.#element);
+						//if (this.#renotify) notice();
+						showed=true;
+						mate.#close();
+					} 
+					self.constructor.#VM[self.#tag]=self;
+					self.#hooked=true;
+				}
+				if (!showed) {
+					frame.style.transform="translateX(400px)";
+					self.constructor.#Interface.prepend(frame);
+					frame.clientTop;
+					frame.style.transform=null;
+				}
+			}
 			if (!self.#requireInteraction) self.#timing=setTimeout(self.#close.bind(self),25000);
 			{
 				let duration=0;
@@ -929,22 +987,22 @@ Notification=class Notification extends EventTarget{
 					tDuration.innerText=duration<60?duration+" 分钟前":duration<1440?Math.floor(duration/60)+" 小时前":duration<11520?Math.floor(duration/1440)+" 天前":"猴年马月";
 				},60000);
 			}
+			resolve();
 		});
 	}
-	async #close(){
+	#close(){
 		if (this.#closed) return;
 		this.#closed=true;
 		clearTimeout(this.#timing);
-		var self=this;
-		this.#element.addEventListener("transitionend",function(){
-			clearInterval(self.#updateSince);
-			this.parentNode?.removeChild(this);
-			self.dispatchEvent(new Event("close",{"currentTarget":self,"srcElement":self,"target":self}));
-		},{"once":true});
+		clearInterval(this.#updateSince);
+		this.dispatchEvent(new Event("close",{"currentTarget":this,"srcElement":this,"target":this}));
+		var dad=this.constructor;
+		if (this.#hooked) delete dad.#VM[this.#tag];
+		dad.#VM_show.splice(dad.#VM_show.indexOf(this));
+		this.#element.addEventListener("transitionend",function(){this.parentNode?.removeChild(this)},{"once":true});
 		this.#element.style.opacity=0;
-		
 	}
-	close(){this.#close()}
+	get close(){return this.#close}
 };
 
 //cookie 模拟
