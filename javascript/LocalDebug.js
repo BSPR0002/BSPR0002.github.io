@@ -26,7 +26,7 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 	constructor(async){this.#async=Boolean(async)}
 	#stopRequest(){
 		this.#available=false;
-		this.unhook()
+		this.#unhook();
 	}
 	#unhook(){
 		if (!this.#VMHooked) return;
@@ -47,7 +47,7 @@ XMLHttpRequestResponser=class XMLHttpRequestResponser {
 		if (!this.#available) return [0];
 		switch (data[0]) {
 			default:
-				this.#available=false;
+				this.#stopRequest()
 				return [0];
 			case "request headers":
 				return this.#receiveHeaders(data[1]);
@@ -334,7 +334,9 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 		this.#changeReadyState(1);
 	}
 	async #asyncRequest(responser,body){
-		if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+		var responser=this.#responser;
+		if (!this.#isStoped(0,1,1)) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
+		await new Promise(function(resolve){setTimeout(resolve,0)});
 		if (!this.#isStoped()) {
 			var response=await responser.post(["request headers",this.#RequestHeaders]);
 			switch (response[1]) {
@@ -366,7 +368,8 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 					let downloadTotal=Number(response[2]["Content-Length"]);
 					if (!this.#isStoped()) this.#changeReadyState(3);
 					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":downloadTotal}));
-					response=await responser.post(["post body"]);
+					if (!this.#isStoped()) response=await responser.post(["post body"]);
+					this.#responser=null;
 					if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("progress",{"currentTarget":this,"srcElement":this,"target":this,"loaded":downloadTotal,"total":downloadTotal}));
 					this.#responseText=await new Promise(function(resolve){
 						var Operator=new FileReader;
@@ -416,6 +419,7 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 		}
 	}
 	#syncRequest(responser,body){
+		var responser=this.#responser;
 		if (!this.#isStoped()) this.dispatchEvent(new ProgressEvent("loadstart",{"currentTarget":this,"srcElement":this,"target":this,"loaded":0,"total":0}));
 		if (!this.#isStoped()) {
 			var response=responser.post(["request headers",this.#RequestHeaders]);
@@ -427,6 +431,7 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 					this.#statusText=this.#statusList[this.#status]?this.#statusList[this.#status]:"";
 					let downloadTotal=Number(response[2]["Content-Length"]);
 					response=responser.post(["post body"]);
+					this.#responser=null;
 					this.#responseText=response[3];
 					this.#response=this.#responseText;
 					if (!this.#isStoped()) this.#changeReadyState(4);
@@ -482,17 +487,18 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 		}
 		this.#responser=new XMLHttpRequestResponser(this.#async);
 		if (this.#async) {
-			this.#asyncRequest(this.#responser,body)
+			this.#asyncRequest(body)
 		} else {
-			this.#syncRequest(this.#responser,body)
+			this.#syncRequest(body)
 		}
 	}
 	abort() {
 		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (this.#readyState<2) return console.warn("此 XmlHttpRequest 尚未开始传输！");
+		if (!this.#responser) return console.warn("此 XmlHttpRequest 尚未开始传输！");
 		if (this.#readyState==4) return console.warn("此 XmlHttpRequest 已经结束！");
 		this.#changeReadyState(4);
 		this.#Exception.abort=true;
+		this.#responser.post(0)
 	}
 	setRequestHeader(name,value) {
 		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
@@ -511,7 +517,7 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	}
 	overrideMimeType(mime){
 		if (!(this instanceof XMLHttpRequest)) throw new TypeError("Illegal invocation");
-		if (arguments.length<1) throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only "+arguments.length+" present.");
+		if (arguments.length<1) throw new TypeError("Failed to execute 'overrideMimeType' on 'XMLHttpRequest': 1 argument required, but only 0 present.");
 		console.warn("Function 'overrideMimeType' still building.")
 	}
 }
@@ -765,7 +771,7 @@ Notification=class Notification extends EventTarget{
 	#updateSince=-1;
 	#timing=-1;
 	constructor(title,options) {
-		if (arguments.length<1) throw new TypeError("Failed to construct 'Notification': 1 argument required, but only "+arguments.length+" present.");
+		if (arguments.length<1) throw new TypeError("Failed to construct 'Notification': 1 argument required, but only 0 present.");
 		super();
 		for (let eventName of ["click","close","error","show"]) this.addEventListener(eventName,function(event){if (this["on"+eventName]) this["on"+eventName](event)});
 		this.#title=String(title);

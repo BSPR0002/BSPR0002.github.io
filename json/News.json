@@ -10,14 +10,5 @@
 		"content":["HtmlArray","详细内容"],
 		"force":false,
 		"unshow":true
-	},
-	{
-		"ID":"0",
-		"name":"message",
-		"title":"维护提醒",
-		"preview":{
-			"message":"近期正在开发分页功能，资源库可能会出现无法正常显示的情况，敬请谅解。"
-		},
-		"force":true
 	}
 ]

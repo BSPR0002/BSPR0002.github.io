@@ -1,5 +1,18 @@
+{
+	Math.root=function root(x,y) {
+		var evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
+		return solution&&negative&&solution!=Infinity?-solution:solution;
+	}
+	Math.rootM=function rootM(x,y) {
+		var result=[],evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
+		result[0]=solution&&negative&&solution!=Infinity?-solution:solution;
+		if (evenPowerRoot&&solution) result[1]=-solution;
+		return result;
+	}
+}
+
 function AJAX(options) {
-	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"error":null};
+	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"done":null,"error":null};
 	Object.assign(model,options);
 	var XHR=new XMLHttpRequest();
 	XHR.open(model.method,model.url,model.async,model.username,model.password);
@@ -12,6 +25,7 @@ function AJAX(options) {
 		if ((this.status>=200&&this.status<300)||this.status==304) {
 			if (typeof model.success=="function") model.success(this.response);
 		} else if (typeof model.fail=="function") model.fail(this.status);
+		if (typeof model.done=="function") model.done(this.status,this.response)
 	};
 	XHR.onerror=model.error;
 	XHR.send(model.send);
@@ -32,8 +46,8 @@ function getXML(url,callback,AllowCache) {
 	return AJAX(AJAXModel);
 }
 
-function Load(url,TargetElement,AllowCache,fully) {
-	var AJAXModel={"url":url};
+function Load(url,TargetElement,AllowCache,fully,onerror) {
+	var AJAXModel={"url":url,"onerror":onerror};
 	if (AllowCache===false) AJAXModel.cache=false;
 	if (fully===true) {
 		var FullLoadInterface={"readyState":0,"children":null};
@@ -71,12 +85,38 @@ function Load(url,TargetElement,AllowCache,fully) {
 									temp.setAttribute(attribute.name,attribute.value)
 								}
 							};
-							item.parentNode.replaceChild(temp,item);
-							requests.number--
+							item.parentNode.replaceChild(temp,item)
 						},
-						"fail":function(){
-							console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.");
-							requests.number--
+						"fail":function(){console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.")},
+						"done":function(){requests.number--},
+						"error":function(){
+							requests.number--;
+							console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.")
+						}
+					}))
+				}
+			};
+			for (let item of Operator.querySelectorAll("script")) {
+				if (item.getAttribute("src")) {
+					requests.list.push(AJAX({
+						"url":item.src,
+						"cache":AllowCache,
+						"success":function(response){
+							var temp=document.createElement("script");
+							temp.appendChild(document.createTextNode(response));
+							if (item.hasAttributes()==true) {
+								for (let attribute of item.attributes) {
+									if (attribute.name=="src") continue;
+									temp.setAttribute(attribute.name,attribute.value)
+								}
+							};
+							item.parentNode.replaceChild(temp,item)
+						},
+						"fail":function(){console.warn("The resource \""+item.src+"\" request for FullLoad \""+url+"\" failed.")},
+						"done":function(){requests.number--},
+						"error":function(){
+							requests.number--;
+							console.warn("The resource \""+item.src+"\" request for FullLoad \""+url+"\" failed due to a network error.")
 						}
 					}))
 				}
@@ -381,9 +421,8 @@ var Base64={
 };
 
 class AudioPlayer {
-	//if (!(this instanceof AudioPlayer)) throw new Error("不合规范的调用！");
 	constructor() {
-		var audioContext=new window.AudioContext;
+		var audioContext=new AudioContext;
 		var analyser=audioContext.createAnalyser();
 		var gainNode=audioContext.createGain();
 		analyser.connect(audioContext.destination);
@@ -398,6 +437,7 @@ class AudioPlayer {
 			"enumerable":true
 		});
 	}
+	get [Symbol.toStringTag](){return "AudioPlayer"}
 	linkAudio(AudioNode) {
 		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new Error("输入的参数不是音频源节点！")
 		AudioNode.connect(this.analyser);
@@ -407,6 +447,11 @@ class AudioPlayer {
 			"start":function(){AudioNode.start()},
 			"stop":function(){AudioNode.stop()}
 		};
+		Object.defineProperty(controller,Symbol.toStringTag,{
+			"value":"AudioPlayerController",
+			"writeable":false,
+			"enumerable":false
+		});
 		Object.defineProperty(controller,"onended",{
 			"get":function(){return AudioNode.onended},
 			"set":function(value){AudioNode.onended=value},
@@ -420,22 +465,23 @@ class AudioPlayer {
 		return controller
 	}
 	linkBuffer(AudioBuffer) {
-		var source=this.audioContext.createBufferSource();
-		source.buffer=AudioBuffer;
-		var controller=this.linkAudio(source)
+		var audioNode=this.audioContext.createBufferSource();
+		audioNode.buffer=AudioBuffer;
+		var controller=this.linkAudio(audioNode)
 		for (let item of ["loop","loopStart","loopEnd"]) {
 			Object.defineProperty(controller,item,{
-				"get":function(){return controller.audioNode[item]},
-				"set":function(value){controller.audioNode[item]=value},
+				"get":function(){return audioNode[item]},
+				"set":function(value){audioNode[item]=value},
 				"enumerable":true
 			});
 		};
 		Object.defineProperty(controller,"speed",{
-			"get":function(){return controller.audioNode.playbackRate.value},
-			"set":function(value){controller.audioNode.playbackRate.value=value},
+			"get":function(){return Math.round(audioNode.playbackRate.value*100)/100},
+			"set":function(value){audioNode.playbackRate.value=value},
 			"enumerable":true
 		});
-		for (let item of [["pause",0],["resume",1]]) controller[item[0]]=function(){controller.audioNode.playbackRate.value=item[1]};
+		controller.pause=function(){audioNode.playbackRate.value=0};
+		controller.resume=function(){audioNode.playbackRate.value=1};
 		return controller
 	}
 	play(AudioBuffer,loop=false,loopStart=0,loopEnd=0) {
@@ -456,4 +502,32 @@ class AudioPlayer {
 	pause(){this.audioContext.suspend()}
 	resume(){this.audioContext.resume()}
 	close(){this.audioContext.close()}
+}
+
+class WebAudioPlayer {
+	#node=document.createElement("audio");
+	get node(){return this.#node}
+	#localSrc=null;
+	constructor(file=null,playImmediately=false,loop=false){
+		switch (typeof file) {
+			case "object":
+				if (file instanceof Blob) {
+					let address=this.#localSrc=URL.createObjectURL(file);
+					this.#node.src=address;
+				}
+			default:
+				break;
+			case "string":
+				this.#node.src=file;
+		}
+		if (playImmediately) this.#node.play();
+		if (loop) this.#node.loop=true;
+	}
+	get position(){return this.#node.currentTime}
+	set position(value){return this.#node.currentTime=value}
+	showElement(targetElement) {
+		if (!(targetElement instanceof HTMLElement)) throw new Error("Failed to execute 'showElement' on WebAudioPlayer: Argument 'targetElement' is not a HTMLElement.");
+		this.node.controls=true;
+		targetElement.appendChild(this.#node)
+	}
 }

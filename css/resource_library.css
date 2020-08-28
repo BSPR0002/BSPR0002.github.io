@@ -57,20 +57,32 @@
 	border:solid 2px #000000;
 	border-radius:50%;
 }
-#library_search_bar_magnifier.pulling:after {background-color:#FF0000}
+#library_search_bar_magnifier.loading:after {background-color:#FF0000}
 #library_search_bar_magnifier.waiting:after {background-color:#FFFF00}
 #library_search_bar_magnifier.searching:after {background-color:#00FF00}
 
 #library_search_bar_search {
+	position:relative;
 	height:25px;
 	border:none;
 	border-radius:5px;
-	font-size:15px;
+	font-size:14px;
 	background-color:#92C1DC;
 	transition:background-color 0.2s ease-in-out;
 }
 #library_search_bar_search:hover {background-color:#87CEFA}
-#library_search_bar_search:active {background-image:linear-gradient(rgba(0,0,0,5%),rgba(0,0,0,5%));}
+#library_search_bar_search:before {
+	content:"";
+	position:absolute;
+	display:block;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+}
+#library_search_bar_search:active:before {
+	background-color:rgba(0,0,0,5%)
+}
 
 #library_search_bar_input {
 	border:solid 1px;
@@ -78,7 +90,7 @@
 	padding:1px 5px;
 }
 
-#pagination {
+#library_pagination {
 	width:100%;
 	box-sizing:border-box;
 	border-radius:10px;
@@ -89,10 +101,49 @@
 	display:grid;
 	place-items:center;
 }
+#library_box_frame.no-pagination #library_pagination {display:none}
 
-#library_box_frame.no-pagination #pagination {display:none}
+#library_pagination_frame {
+	display:grid;
+	grid-template-columns:repeat(3,auto);
+	grid-gap:5px;
+	place-items:center;
+}
 
-#show_box {
+.library_pagination_button {
+	position:relative;
+	font-size:14px;
+  box-sizing:border-box;
+  height:25px;
+  border-radius:5px;
+  border:none;
+  background-color:#92C1DC;
+  transition:background-color 0.2s ease-in-out;
+}
+.library_pagination_button:hover {background-color:#87CEFA}
+.library_pagination_button:before {
+	content:"";
+	position:absolute;
+	display:block;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+}
+.library_pagination_button:active:before {
+	background-color:rgba(0,0,0,5%)
+}
+
+#library_pagination_display {font-size:15px}
+
+#library_pagination_input {
+	border:solid 1px #767676;
+  border-radius:3px;
+	text-align:center;
+}
+#library_pagination_input::-webkit-inner-spin-button,#library_pagination_input::-webkit-outer-spin-button {-webkit-appearance: none}
+
+#library_show_box {
 	display:grid;
 	grid-template-rows:repeat(auto-fill,130px);
 	grid-template-columns:repeat(2,1fr);

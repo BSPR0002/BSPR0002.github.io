@@ -1,13 +1,50 @@
-var TotalPage=null;
-var CurrentPage=null;
-
-var ResourceLibrary=(function(){
-	var libraryData=null;
-	var pullState={
+{
+	let libraryBox=null;
+	let searchInput=null;
+	let searchButton=null;
+	let searchIcon=null;
+	let pagesDisplay=null;
+	let pageSelect=null;
+	let nextPage=null;
+	let previousPage=null;
+	let showArea=null;
+	let libraryData=null;
+	let showData=null;
+	let totalPage=null;
+	let currentPage=null;
+	let pulling={
 		"state":false,
-		"callback":null
+		"operator":null,
+		"xhr":null
 	};
-	var Cardboard={
+	let pullData=function(callback) {
+		if (pulling.state) {pulling.operator.then(callback)} else {
+			pulling.state=true;
+			let operator=new Promise(function(resolve,reject){
+				pulling.xhr=AJAX({
+					"url":"/json/resource.json",
+					"type":"json","cache":false,
+					"success":function(data){resolve(data)},
+					"fail":function(){reject(false)},
+					"done":function(){
+						pulling.state=false;
+						pulling.xhr=pulling.operator=null
+					}
+				})
+			});
+			operator.then(callback);
+			pulling.operator=operator;
+		}
+		return pulling.operator
+	};
+	let spliceData=function(data) {
+		if (!(data instanceof Array)) throw new Error("Library exception: Cannot splice data, argument 'data' is not an Array.");
+		var temp=data.concat();
+		var fragments=[];
+		do {fragments.push(temp.splice(0,10))} while (temp.length);
+		return fragments
+	};
+	let Cardboard={
 		"show":function() {
 			var Board=this.parentNode.parentNode.getElementsByClassName("card_board")[0];
 			var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
@@ -31,62 +68,51 @@ var ResourceLibrary=(function(){
 			window_board.display(Container.cloneContents(),"详细信息");
 		}
 	};
-	function pullData(callback) {
-		pullState.callback=callback;
-		if (pullState.state) return false;
-		pullState.state=true;
-		getJSON("/json/resource.json",function(response) {
-			libraryData=response;
-			pullState.callback();
-			pullState.state=false;
-		})
-	};
-	function show(ShowData) {
-		var ShowBox=document.createDocumentFragment();
+	let show=function(ShowData) {
+		var showBox=document.createDocumentFragment();
 		for (let obj of ShowData) {
-			var Card=document.createElement("div");
+			let Card=document.createElement("div");
 			Card.className="card";
 			Card.id="CardID"+obj.ID;
-			var CardIcon=document.createElement("div");
+			let CardIcon=document.createElement("div");
 			CardIcon.className="card_icon body_color";
 			if (typeof obj.icon=="string") {
 				CardIcon.style.backgroundImage="url("+obj.icon+")";
 			} else CardIcon.className+=" card_icon_none";
 			Card.appendChild(CardIcon);
-			var CardName=document.createElement("p");
+			let CardName=document.createElement("p");
 			CardName.className="card_name";
 			CardName.appendChild(document.createTextNode(obj.display));
 			CardName.title=obj.display;
 			Card.appendChild(CardName);
-			var CardType=document.createElement("p");
+			let CardType=document.createElement("p");
 			CardType.className="card_type";
+			let typeText="？？？";
 			switch (obj.type) {
 				case "allinone":
-					var allinone="合集（";
+					let allinone="合集（";
 					for (let item of obj.AllInOne) {
 						if (allinone!="合集（") allinone=allinone+"、";
 						allinone=allinone+item;
 					};
-					var Node=allinone+"）";
+					typeText=allinone+"）";
 					break;
 				case "PC game":
-					var Node="PC 游戏";
+					typeText="PC 游戏";
 					break;
 				case "game":
-					var Node="游戏";
-					break;
+					typeText="游戏";
 				default:
-					var Node="？？？";
 			};
-			CardType.appendChild(document.createTextNode(Node));
-			CardType.title=Node;
+			CardType.appendChild(document.createTextNode(typeText));
+			CardType.title=typeText;
 			Card.appendChild(CardType);
-			var CardLink=document.createElement("div");
+			let CardLink=document.createElement("div");
 			CardLink.className="card_link";
 			if (obj.resource.BDND) {
-				var CardLinkBDND=document.createElement("button");
+				let CardLinkBDND=document.createElement("button");
 				CardLinkBDND.className="card_link_button card_link_button_BDND";
-				var CardLinkBDNDBoardContent=document.createDocumentFragment();
+				let CardLinkBDNDBoardContent=document.createDocumentFragment();
 				let CardLinkBDNDBoardContentNode=document.createElement("p");
 				CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("链接："));
 				let CardLinkBDNDBoardContentNodeA=document.createElement("a");
@@ -120,78 +146,108 @@ var ResourceLibrary=(function(){
 					"Content":CardLinkBDNDBoardContent
 				};
 				CardLinkBDND.addEventListener("click",Cardboard.show);
-				var CardLinkBDNDIcon=document.createElement("div");
+				let CardLinkBDNDIcon=document.createElement("div");
 				CardLinkBDNDIcon.className="card_link_button_icon";
 				CardLinkBDND.appendChild(CardLinkBDNDIcon);
-				var CardLinkBDNDText=document.createElement("p");
+				let CardLinkBDNDText=document.createElement("p");
 				CardLinkBDNDText.className="card_link_button_text";
 				CardLinkBDNDText.appendChild(document.createTextNode("百度网盘"));
 				CardLinkBDND.appendChild(CardLinkBDNDText);
 				CardLink.appendChild(CardLinkBDND);
 			};
 			if (typeof obj.resource.Torrent!="undefined"&&obj.resource.Torrent!=null) {
-				var CardLinkTorrent=document.createElement("button");
+				let CardLinkTorrent=document.createElement("button");
 				CardLinkTorrent.addEventListener("click",function(){window.location.href=obj.resource.Torrent});
 				CardLinkTorrent.className="card_link_button card_link_button_Torrent";
-				var CardLinkTorrentIcon=document.createElement("div");
+				let CardLinkTorrentIcon=document.createElement("div");
 				CardLinkTorrentIcon.className="card_link_button_icon";
 				CardLinkTorrent.appendChild(CardLinkTorrentIcon);
-				var CardLinkTorrentText=document.createElement("p");
+				let CardLinkTorrentText=document.createElement("p");
 				CardLinkTorrentText.className="card_link_button_text";
 				CardLinkTorrentText.appendChild(document.createTextNode("磁力链接"));
 				CardLinkTorrent.appendChild(CardLinkTorrentText);
 				CardLink.appendChild(CardLinkTorrent);
 			};
 			Card.appendChild(CardLink);
-			var CardBoard=document.createElement("div");
+			let CardBoard=document.createElement("div");
 			CardBoard.className="card_board";
-			var CardBoardFrame=document.createElement("div");
+			let CardBoardFrame=document.createElement("div");
 			CardBoardFrame.className="card_board_frame";
-			var CardBoardTitle=document.createElement("div");
+			let CardBoardTitle=document.createElement("div");
 			CardBoardTitle.className="card_board_title";
-			var CardBoardTitleIcon=document.createElement("div");
+			let CardBoardTitleIcon=document.createElement("div");
 			CardBoardTitleIcon.className="card_board_title_icon";
 			CardBoardTitle.appendChild(CardBoardTitleIcon);
-			var CardBoardTitleText=document.createElement("p");
+			let CardBoardTitleText=document.createElement("p");
 			CardBoardTitleText.className="card_board_title_text";
 			CardBoardTitle.appendChild(CardBoardTitleText);
 			CardBoardFrame.appendChild(CardBoardTitle);
-			var CardBoardContent=document.createElement("div");
+			let CardBoardContent=document.createElement("div");
 			CardBoardContent.className="card_board_content";
 			CardBoardFrame.appendChild(CardBoardContent);
-			var CardBoardShowDetail=document.createElement("button");
+			let CardBoardShowDetail=document.createElement("button");
 			CardBoardShowDetail.className="card_board_detail";
 			CardBoardShowDetail.appendChild(document.createTextNode("详细信息"));
 			CardBoardShowDetail.addEventListener("click",Cardboard.detail);
 			CardBoardFrame.appendChild(CardBoardShowDetail);
-			var CardBoardClose=document.createElement("button");
+			let CardBoardClose=document.createElement("button");
 			CardBoardClose.className="card_board_close";
 			CardBoardClose.addEventListener("click",Cardboard.close);
 			CardBoardFrame.appendChild(CardBoardClose);
 			CardBoard.appendChild(CardBoardFrame);
 			Card.appendChild(CardBoard);
-			ShowBox.appendChild(Card);
+			showBox.appendChild(Card);
 		};
-		EmptyElement(document.getElementById("show_box"));
-		document.getElementById("show_box").appendChild(ShowBox);
+		showArea.innerHTML="";
+		showArea.appendChild(showBox);
+	}
+	let loading={
+		state:false,
+		callback:null
 	};
-	function overview() {
-		if (libraryData==null) {
-			pullData(overview);
-		} else show(libraryData);
+	let load=function(callback=null) {
+		loading.callback=callback;
+		if (loading.state) return;
+		loading.state=true;
+		pullData(function(data){
+			let callback=loading.callback;
+			loading.state=false;
+			loading.callback=null;
+			if (!data) return;
+			libraryData=data;
+			if (typeof callback=="function") return callback(data);
+			setShowData(spliceData(data));
+			changePage(1)
+		})
 	};
-	var Search=(function(){
+	let setShowData=function(data) {
+		libraryBox.className=(pagesDisplay.innerText=totalPage=data.length)>1?"pagination":"no-pagination";
+		pageSelect.max=totalPage;
+		showData=data;
+	};
+	let changePage=function(page) {
+		page=parseInt(page);
+		if (isNaN(page)||page<1||page>totalPage) {
+			pageSelect.value=currentPage;
+			return
+		}
+		pageSelect.value=currentPage=page;
+		show(showData[page-1])
+	};
+	let toNextPage=function(){changePage(currentPage+1)};
+	let toPreviousPage=function(){changePage(currentPage-1)};
+	let Search=(function(){
 		var wait=false;
 		var timeoutID=null;
 		function engine() {
 			if (libraryData==null) {
-				document.getElementById("library_search_bar_magnifier").className="pulling";
-				pullData(engine);
-				return false;
+				searchIcon.className="loading";
+				load(engine);
+				return;
 			};
 			wait=false;
-			var input=document.getElementById("library_search_bar_input").value;
-			var ShowState=document.getElementById("library_search_bar_magnifier");
+			var input=searchInput.value;
+			var ShowState=searchIcon;
 			if (input!="") {
 				ShowState.className="searching";
 				ShowState.clientTop;
@@ -226,13 +282,14 @@ var ResourceLibrary=(function(){
 				};
 			} else result=libraryData;
 			ShowState.className="";
-			show(result);
+			setShowData(spliceData(result));
+			changePage(1)
 		};
 		return {
 			"auto":function() {
 				if (wait!=true) {
 					wait=true;
-					document.getElementById("library_search_bar_magnifier").className="waiting";
+					searchIcon.className="waiting";
 					timeoutID=setTimeout(engine,1000);
 				};
 			},
@@ -242,39 +299,33 @@ var ResourceLibrary=(function(){
 			}
 		}
 	})();
-	return {
-		"overview":overview,
-		"show":show,
-		"pull":pullData,
-		"Search":Search,
+	{
+		libraryBox=document.getElementById("library_box_frame");
+		searchInput=document.getElementById("library_search_bar_input");
+		searchButton=document.getElementById("library_search_bar_search");
+		searchIcon=document.getElementById("library_search_bar_magnifier");
+		pagesDisplay=document.getElementById("library_pagination_total");
+		pageSelect=document.getElementById("library_pagination_input");
+		nextPage=document.getElementById("library_pagination_next");
+		previousPage=document.getElementById("library_pagination_previous");
+		showArea=document.getElementById("library_show_box");
+		searchInput.addEventListener("input",Search.auto);
+		searchInput.addEventListener("keypress",function(){if (event.keyCode==13) Search.manual()});
+		searchButton.addEventListener("click",Search.manual);
+		{
+			let respond=function(){changePage(pageSelect.value)};
+			pageSelect.addEventListener("keypress",function(){if (event.keyCode==13) respond()});
+			pageSelect.addEventListener("blur",respond);
+		}
+		previousPage.addEventListener("click",toPreviousPage);
+		nextPage.addEventListener("click",toNextPage);
 	}
-})();
-
-(function() { //Beginning
-	async function Initial_view() {
-		await new Promise(function(resolve) {
-			var wait=setInterval(function() {
-				if (document.getElementById("show_box")) {
-					clearInterval(wait);
-					resolve();
-				}
-			},100)
-		});
-		ResourceLibrary.overview();
-	};
-	async function Search_Initialize() {
-		await new Promise(function(resolve) {
-			var wait=setInterval(function() {
-				if (document.getElementById("library_search_bar")) {
-					clearInterval(wait);
-					resolve();
-				}
-			},100)
-		});
-		document.getElementById("library_search_bar_input").addEventListener("input",ResourceLibrary.Search.auto);
-		document.getElementById("library_search_bar_input").addEventListener("keypress",function(){if (event.keyCode==13) ResourceLibrary.Search.manual()});
-		document.getElementById("library_search_bar_search").addEventListener("click",ResourceLibrary.Search.manual);
-	};
-	Initial_view();
-	Search_Initialize();
-})();
+	let nodeWatcher=new MutationObserver(function(){
+		if (!document.body.contains(libraryBox)) {
+			if (pulling.xhr) pulling.xhr.abort();
+			nodeWatcher.disconnect()
+		}
+	});
+	nodeWatcher.observe(libraryBox.parentNode,{"childList":true});
+	load()
+}
