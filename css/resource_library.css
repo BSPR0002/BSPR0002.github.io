@@ -66,6 +66,7 @@
 	height:25px;
 	border:none;
 	border-radius:5px;
+	overflow:hidden;
 	font-size:14px;
 	background-color:#92C1DC;
 	transition:background-color 0.2s ease-in-out;
@@ -117,6 +118,7 @@
   height:25px;
   border-radius:5px;
   border:none;
+  overflow:hidden;
   background-color:#92C1DC;
   transition:background-color 0.2s ease-in-out;
 }
