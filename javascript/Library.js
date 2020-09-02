@@ -256,7 +256,7 @@
 				var match_word=[];
 				match_word.push(RegExp(keyword,"i"));
 				var break_word=keyword.split(" ");
-				if (break_word.length!=1) {
+				if (break_word.length>1) {
 					let duplicate_removal=[];
 					for (let word of break_word) {
 						if (duplicate_removal.indexOf(word)==-1&&word!="") {
@@ -310,11 +310,11 @@
 		previousPage=document.getElementById("library_pagination_previous");
 		showArea=document.getElementById("library_show_box");
 		searchInput.addEventListener("input",Search.auto);
-		searchInput.addEventListener("keypress",function(){if (event.keyCode==13) Search.manual()});
+		searchInput.addEventListener("keypress",function(event){if (event.keyCode==13) Search.manual()});
 		searchButton.addEventListener("click",Search.manual);
 		{
 			let respond=function(){changePage(pageSelect.value)};
-			pageSelect.addEventListener("keypress",function(){if (event.keyCode==13) respond()});
+			pageSelect.addEventListener("keypress",function(event){if (event.keyCode==13) respond()});
 			pageSelect.addEventListener("blur",respond);
 		}
 		previousPage.addEventListener("click",toPreviousPage);

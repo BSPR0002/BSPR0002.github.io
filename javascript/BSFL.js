@@ -496,6 +496,7 @@ class AudioPlayer {
 		return audio
 	}
 	async playFile(file,loop=false,loopStart=0,loopEnd=0) {
+		if (!(file instanceof Blob)) throw new Error("Failed to execute 'playFile' on AudioPlayer: Argument 'file' is not a binary object.");
 		var buffer=await this.audioContext.decodeAudioData(await file.arrayBuffer());
 		return this.play(buffer,loop,loopStart,loopEnd)
 	}

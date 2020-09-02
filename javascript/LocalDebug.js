@@ -272,7 +272,6 @@ XMLHttpRequest=class XMLHttpRequest extends XMLHttpRequestEventTarget {
 	#RequestHeaders={};
 	#ResponseHeaders={};
 	#mimeType="";
-	#progressID=-1;
 	static NetworkError=false;
 	#Exception={"stop":true,"abort":false,"timeout":false,"error":false};
 	get #inNetworkError(){return Boolean(this.constructor.NetworkError)}
