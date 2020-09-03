@@ -1,42 +1,93 @@
 ﻿{
-	let ap=new AudioPlayer,ac,busy=false;
-	window.ap=ap;
-	var test=async function() {
+	let ap=new AudioPlayer,ac=null,busy=false,nodes=null;
+	let play=async function() {
 		if (busy) return alert("尚在加载其他音频，请稍后！");
-		try {ac.stop()} catch(none) {};
+		try {stop()} catch(none) {};
+		changeFileName([2]);
 		busy=true;
 		try {
-			ac=await ap.playFile(document.getElementById("tool_select_files_select").files[0],true);
+			let file=nodes.input.files[0];
+			ac=await ap.playFile(file,true);
+			changeFileName([1,file.name]);
+			nodes.playbackRate.innerText=1;
 		} catch(e) {
 			alert("发生了错误，您可能没有选择正确的音频文件。");
+			changeFileName([0]);
 		};
-		busy=false;
-		window.ac=ac;
+		busy=false
 	};
+	let stop=function(){
+		if (ac) {
+			ac.stop();
+			ac=null;
+			changeFileName([0]);
+		}
+	};
+	let changeSpeed=function(FoS){
+		if (ac) {
+			let pr=ac.speed*10
+			switch (Boolean(FoS)) {
+				case true:
+					if (pr<40) nodes.playbackRate.innerText=ac.speed=(pr+1)/10;
+					break;
+				case false:
+					if (pr>1) nodes.playbackRate.innerText=ac.speed=(pr-1)/10;
+			}
+		}
+	}
+	let changeFileName=function(option){
+		switch (option[0]) {
+			case 1:
+				nodes.currentFile.title=nodes.currentFile.innerText=option[1];
+				break;
+			case 2:
+				nodes.currentFile.innerText="读取文件中……";
+				nodes.currentFile.removeAttribute("title");
+				break;
+			default:
+				nodes.currentFile.innerText="无文件";
+				nodes.currentFile.removeAttribute("title");
+		}
+	}
+	//ap.analyser.fftSize=8192;
 	window.addEventListener("load",function() {
 		context=testCanvas.context;
-		context.strokeStyle="rgba(255,0,0,1)";
-		var pa=x=>x+0.5;
+		context.translate(0.5,255.5);
+		context.scale(1,-1);
 		var data=new Uint8Array(1024);
+		var data2=new Uint8Array(2048);
 		function draw() {
 			ap.analyser.getByteFrequencyData(data);
-			context.clearRect(0,0,1024,256);
 			context.beginPath();
-			context.moveTo(0,pa(255-data[0]));
-			for (let x=0;x<1024;x++) context.lineTo(pa(x),pa(255-data[x]));
-			context.lineTo(1024,pa(255-data[1023]))
+			context.strokeStyle="rgb(255,0,0)";
+			context.moveTo(-0.5,data[0]);
+			for (let x=0;x<1024;++x) context.lineTo(x,data[x]);
+			context.lineTo(1023.5,data[1023]);
 			context.stroke();
 		}
-		var data2=new Uint8Array(2048);
 		function draw2() {
 			ap.analyser.getByteTimeDomainData(data2);
-			context.clearRect(0,0,1024,256);
 			context.beginPath();
-			context.moveTo(0,255-data2[0]);
-			for (let x=1;x<1024;x++) context.lineTo(2*x,255-data2[2*x]);
+			context.strokeStyle="rgb(0,0,255)";
+			context.moveTo(-0.5,data2[0]);
+			for (let x=0;x<1024;++x) context.lineTo(x,data2[x*2]);
+			context.lineTo(1023.5,data2[2046]);
 			context.stroke();
 		}
-		function loop(){draw();requestAnimationFrame(loop)}
+		function loop(){
+			context.clearRect(0,0,1024,256);
+			draw();
+			draw2();
+			requestAnimationFrame(loop)
+		}
+		let AH=[["DIV",[["SPAN","BSIF Audio Player",{"style":"grid-area:name"}],["SPAN",[["SPAN","当前文件："],["SPAN","无文件",null,"currentFile"]],{"style":"white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],["DIV",[["STYLE","#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"],["BUTTON","播放",null,"play"],["BUTTON","停止",null,"stop"],["DIV",[["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],["SPAN",["× ",["SPAN","1",null,"playbackRate"]]],["BUTTON","＋",{"class":"controls_speed","title":"+0.1"},"speedUp"]],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:5px;place-items:center;width:100%;height:100%","title":"速度"}]],{"style":"display:grid;grid-template-columns:1fr 1fr 2fr;grid-gap:5px;place-items:center;width:100%;height:100%"}],["INPUT",null,{"type":"file","style":"grid-area:input"},"input"]],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"name current\"\"input controls\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]];
+		let toolInterface=ArrayHtml.decode(AH,"test audio player",true);
+		nodes=toolInterface.getNodes;
+		nodes.play.addEventListener("click",play);
+		nodes.stop.addEventListener("click",stop);
+		nodes.speedUp.addEventListener("click",function(){changeSpeed(true)});
+		nodes.speedDown.addEventListener("click",function(){changeSpeed(false)});
+		document.getElementById("tools_plate").appendChild(toolInterface.DocumentFragment);
 		loop();
 	},{"once":true})
 }
@@ -64,4 +115,26 @@ var a=[];
 	//window.addEventListener("load",function(){bgs=document.body.style;function loop(){bgs.backgroundColor=a[i];if(++i==e)i=0;requestAnimationFrame(loop)}loop()},{once:true})
 }
 
-var floatOperate={}
+var floatOperate={
+	
+}
+
+function IEVersion() {
+	var userAgent=navigator.userAgent;
+	var isIE=userAgent.indexOf("compatible")>-1&&userAgent.indexOf("MSIE")>-1;
+	var isEdge=userAgent.indexOf("Edge")>-1&&!isIE;
+	var isIE11=userAgent.indexOf('Trident')>-1&&userAgent.indexOf("rv:11.0")>-1;
+	switch (true) {
+		case isIE:
+			var reIE=new RegExp("MSIE (\\d+\\.\\d+);");
+			reIE.test(userAgent);
+			var fIEVersion=parseFloat(RegExp["$1"]);
+			return fIEVersion>6?fIEVersion:6;
+		case isEdge:
+			return "edge";
+		case isIE11:
+			return 11;
+		default:
+			return -1;
+	}
+}

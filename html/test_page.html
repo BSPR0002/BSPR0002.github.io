@@ -89,11 +89,6 @@
 				overflow:hidden;
 				background-color:#FFFFFF;
 			}
-			#test_canvas {
-				box-sizing:border-box;
-				width:100%;
-				border:solid 1px #000000;
-			}
 		</style>
 		<script src="/javascript/BSFL.js"></script>
 		<script src="/javascript/LocalDebug.js"></script>
@@ -125,7 +120,7 @@
 			</div>
 		</div>
 		<div id="test_page_show_area">
-			<canvas id="test_canvas" width="1024" height="256">
+			<canvas id="test_canvas" width="1024" height="256" style="box-sizing:border-box;width:100%;border:solid 1px #000000">
 				您的浏览器不支持 canvas ！
 				<script>{let canvas=document.getElementById("test_canvas");var testCanvas={"node":canvas,"context":canvas.getContext("2d")}}</script>
 			</canvas>
