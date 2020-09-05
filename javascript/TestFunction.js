@@ -115,26 +115,165 @@ var a=[];
 	//window.addEventListener("load",function(){bgs=document.body.style;function loop(){bgs.backgroundColor=a[i];if(++i==e)i=0;requestAnimationFrame(loop)}loop()},{once:true})
 }
 
-var floatOperate={
-	
-}
-
-function IEVersion() {
-	var userAgent=navigator.userAgent;
-	var isIE=userAgent.indexOf("compatible")>-1&&userAgent.indexOf("MSIE")>-1;
-	var isEdge=userAgent.indexOf("Edge")>-1&&!isIE;
-	var isIE11=userAgent.indexOf('Trident')>-1&&userAgent.indexOf("rv:11.0")>-1;
-	switch (true) {
-		case isIE:
-			var reIE=new RegExp("MSIE (\\d+\\.\\d+);");
-			reIE.test(userAgent);
-			var fIEVersion=parseFloat(RegExp["$1"]);
-			return fIEVersion>6?fIEVersion:6;
-		case isEdge:
-			return "edge";
-		case isIE11:
-			return 11;
-		default:
-			return -1;
+class DecimalNumber {
+	get [Symbol.toStringTag](){return "DecimalNumber"}
+	#sign=false;
+	#integer=0n;
+	#mantissa=new Uint8Array(64);
+	#extreme=0;
+	#notNumber=false;
+	get sign(){return this.#sign}
+	get integer(){return this.#integer}
+	get mantissa(){return this.#mantissa}
+	get extreme(){return this.#extreme}
+	constructor(initial=undefined){
+		if (arguments.length>0) {
+			let input=initial;
+			switch (typeof input) {
+				case "object":
+					if (input instanceof this.constructor) {
+						this.#sign=input.#sign;
+						this.#integer=input.#integer;
+						this.#mantissa=new Uint8Array(input.#mantissa);
+						this.#extreme=input.#extreme;
+						break;
+					};
+					if (input===null) break;
+				case "string":	
+				case "number":
+					if (!isFinite(input)) {
+						this.#notNumber=true;
+						break
+					}
+					if (input==0) break;
+					let translate=input.toString().split(".");
+					let integer=BigInt(translate[0]);
+					this.#integer=(this.#sign=input<0)?-integer:integer;
+					if (translate[1]) {
+						let temp=translate[1],length=temp.length>64?65:temp.length,mantissa=this.#mantissa;
+						for (let i=0,l=(length>63?64:length);i<l;++i) mantissa[i]=parseInt(temp[i]);
+						if (length==65) this.#extreme=parseInt(temp[64])
+					}
+					break;
+				case "bigint":
+					this.#integer=input
+				default:
+			}
+		}
 	}
+	toString() {
+		if (this.#notNumber) return "NaN";
+		var fixed=this.plus(0);
+		var integer=fixed.#integer;
+		var mantissa="";
+		for (let i=63,temp=fixed.#mantissa,first=true;i>-1;--i) {
+			if (first&&temp[i]==0) {continue} else {first=false}
+			mantissa=temp[i]+mantissa;
+		}
+		return (fixed.#sign&&(integer||mantissa)?"-":"")+(mantissa?integer+"."+mantissa:integer)
+	}
+	isGreater(compare) {
+		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		if (this.#sign<compare.#sign) return true;
+		var translate=x=>this.#sign?!x:x;
+		{
+			let intGreater=this.#integer>compare.#integer;
+			if (intGreater||this.#integer<compare.#integer) return translate(intGreater);
+		}
+		for (let selfMantissa=this.#mantissa,compareMantissa=compare.#mantissa,i=0;i<64;++i) {
+			if (selfMantissa[i]>compareMantissa[i]) return translate(true);
+			if (selfMantissa[i]<compareMantissa[i]) return translate(false);
+		}
+		if (this.#extreme>compare.#extreme) return translate(true);
+		return false
+	}
+	isEqual(compare) {
+		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		for (let selfMantissa=this.#mantissa,compareMantissa=compare.#mantissa,i=0;i<64;++i) if (selfMantissa[i]!=compareMantissa[i]) return false;
+		if (this.#sign==compare.#sign&&this.#integer==compare.#integer&&this.#extreme==compare.#extreme) return true;
+		return false;
+	}
+	isNaN(){return this.#notNumber}
+	plus(addends){
+		var result=new this.constructor(this)
+		var resultMantissa=result.#mantissa;
+		var temp=[];
+		for (let item of arguments) temp=temp.concat(item);
+		for (let addend of temp) {
+			addend=new this.constructor(addend);
+			let sub=result.#sign!=addend.#sign,last=0;
+			if (sub) {
+				addend.#sign=!addend.#sign;
+				let isGreater=addend.isGreater(result),minuend=isGreater?addend:result,subtrahend=isGreater?result:addend;
+				if (isGreater) result.#sign=!result.#sign;
+				result.#integer=minuend.#integer-subtrahend.#integer;
+				result.#extreme=minuend.#extreme-subtrahend.#extreme;
+				if (result.#extreme<0) {
+					result.#extreme+=10;
+					last=1;
+				}
+				let minuendMantissa=minuend.#mantissa,subtrahendMantissa=subtrahend.#mantissa;
+				if (result.#extreme==1||result.#extreme==9) {
+					let first=minuendMantissa[63]-subtrahendMantissa[63]-last;
+					if (first<0) first+=10;
+					if (result.#extreme==9) {
+						if (first==9) {
+							result.#extreme=0;
+							last-=1
+						}
+					} else if (first%10==0) result.#extreme=0
+				}
+				for (let i=63;i>-1;--i) {
+					let calc=minuendMantissa[i]-subtrahendMantissa[i]-last;
+					if (calc<0) {
+						calc+=10;
+						last=1;
+					} else last=0;
+					resultMantissa[i]=calc;
+				}
+				if (last) {
+					--result.#integer;
+				}
+				continue;
+			}
+			result.#integer+=addend.#integer
+			result.#extreme+=addend.#extreme;
+			if (result.#extreme>9) {
+				result.#extreme-=10;
+				last=1;
+			}
+			let addendMantissa=addend.#mantissa;
+			if (result.#extreme==1||result.#extreme==9) {
+				let first=resultMantissa[63]+addendMantissa[63]+last;
+				if (first>10) first-=10;
+				if (result.#extreme==9) {
+					if (first==9) {
+						result.#extreme=0;
+						last+=1
+					}
+				} else if (first%10==0) result.#extreme=0
+			}
+			for (let i=63;i>-1;--i) {
+				let calc=resultMantissa[i]+addendMantissa[i]+last;
+				if (calc>9) {
+					calc-=10;
+					last=1;
+				} else last=0;
+				resultMantissa[i]=calc;
+			}
+			if (last) ++result.#integer;
+		}
+		return result;
+	}
+	sub(subtrahends){
+		var temp=[],next=[];
+		for (let item of arguments) temp=temp.concat(item);
+		for (let subtrahend of temp) {
+			if (!(subtrahend instanceof this.constructor)) subtrahend=new this.constructor(subtrahend);
+			subtrahend.#sign=!subtrahend.#sign;
+			next.push(subtrahend)
+		}
+		return this.plus(next)
+	}
+	
 }
