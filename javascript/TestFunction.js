@@ -265,7 +265,7 @@ class DecimalNumber {
 		}
 		return result;
 	}
-	sub(subtrahends){
+	sub(subtrahends) {
 		var temp=[],next=[];
 		for (let item of arguments) temp=temp.concat(item);
 		for (let subtrahend of temp) {
@@ -275,5 +275,44 @@ class DecimalNumber {
 		}
 		return this.plus(next)
 	}
-	
+	multiply(multiplier) {
+		var operand1=new this.constructor(this),operand2=new this.constructor(multiplier);
+		if (operand1.#notNumber||operand2.#notNumber) return this.constructor.notNumber();
+		
+		
+		
+		
+		
+		
+	}
+	static notNumber() {
+		var temp=new this;
+		temp.#notNumber=true;
+		return temp
+	}
+	static constructFromData(integer_BigInt,sign_boolean=null,mantissa_Uint8Array=null,extreme_number=null) {
+		var result=new this;
+		if (typeof integer_BigInt!="bigint") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'integer_BigInt' is not a BigInt.");
+		if (integer_BigInt<0) throw new TypeError("Failed to construct DecimalNumber from data: The integer part cannot be negative.");
+		result.#integer=integer_BigInt;
+		if (sign_boolean!=null) {
+			if (typeof sign_boolean!="boolean") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'sign_boolean' is not a boolean.");
+			result.#sign=sign_boolean;
+		}
+		if (mantissa_Uint8Array!=null) {
+			if (!(mantissa_Uint8Array instanceof Uint8Array)) throw new TypeError("Failed to construct DecimalNumber from data: Argument 'mantissa_Uint8Array' is not a Uint8Array.");
+			result.#mantissa=new Uint8Array(64);
+			let length=mantissa_Uint8Array.length;
+			for (let i=0,l=length>63?64:length;i<l;++i) {
+				if (mantissa_Uint8Array[i]>9) throw new TypeError("Failed to construct DecimalNumber from data: One of the mantissa is greater than 9.[at mantissa_Uint8Array["+i+"]]");
+				result.#mantissa=mantissa_Uint8Array[i];
+			}
+		}
+		if (extreme_number!=null) {
+			if (typeof extreme_number!="number") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'extreme_number' is not a number.");
+			result.#extreme=extreme_number;
+		}
+		return result
+	}
 }
+

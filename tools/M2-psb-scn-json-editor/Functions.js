@@ -1,10 +1,20 @@
+﻿{
+	let prevent=function(event){event.preventDefault()};
+	document.addEventListener("dragover",prevent);
+	document.addEventListener("drop",prevent);
+	let special=function(event){event.stopPropagation()};
+	let input=document.getElementById("input_file")
+	input.addEventListener("dragover",special);
+	input.addEventListener("drop",special);
+}
+
 function generate_preview(data) {
 	var preview=document.createDocumentFragment();
 	function operator_meta(target,index,value,type,path) {
-		var obj_child=document.createElement("p");
+		var obj_child=document.createElement("span");
 		obj_child.className="preview_child";
 		obj_child.appendChild(document.createTextNode(index+":"));
-		var obj_child_value=document.createElement("p");
+		var obj_child_value=document.createElement("span");
 		value=JSON.stringify(value);
 		obj_child_value.innerText=value;
 		obj_child_value.className="preview_value_"+type;
@@ -18,7 +28,7 @@ function generate_preview(data) {
 		var obj_child=document.createElement("details");
 		var obj_child_index=document.createElement("summary");
 		obj_child_index.appendChild(document.createTextNode(index+":"));
-		var obj_child_type=document.createElement("p");
+		var obj_child_type=document.createElement("span");
 		obj_child_type.innerText=type+"("+Object.keys(data).length+")";
 		obj_child_type.className="preview_value_type_"+type;
 		obj_child_index.appendChild(obj_child_type);
@@ -99,7 +109,7 @@ var editor=(function(){
 		"save":function(){FileAPI.save(new File([JSON.stringify(file.json)],file.name,{"type":"application/json;charset=utf-8"}),file.name)},
 		"close":function() {
 			if (file.modified) {
-				var HN=HtmlArray.decode([
+				let HN=ArrayHtml.decode([
 					"文件已被修改，是否要保存？",
 					["br"],
 					["button","是",{
@@ -107,24 +117,24 @@ var editor=(function(){
 						"id":"dialog_button_yes",
 						"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
 						"onmouseout":"javascript:this.style.backgroundColor=null"
-					}],"　",
+					},"yes"],"　",
 					["button","否",{
 						"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s",
 						"id":"dialog_button_no",
 						"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
 						"onmouseout":"javascript:this.style.backgroundColor=null"
-					}],"　",
+					},"no"],"　",
 					["button","取消",{
 						"style":"border:solid 1px #000000;border-radius:5px;transition:background-color 0.2s",
 						"id":"dialog_button_cancel",
 						"onmouseover":"javascript:this.style.backgroundColor='#FFFFFF'",
 						"onmouseout":"javascript:this.style.backgroundColor=null"
-					}]
-				],"dialog-close");
-				HN.getElementById("dialog_button_yes").addEventListener("click",function(){window_board.hide();file.save();file_close()});
-				HN.getElementById("dialog_button_no").addEventListener("click",function(){window_board.hide();file_close()});
-				HN.getElementById("dialog_button_cancel").addEventListener("click",window_board.hide());
-				window_board.display(HN,"保存文件",true);
+					},"cancel"]
+				],"dialog-close",true);
+				HN.getNodes.yes.addEventListener("click",function(){window_board.hide();file.save();file_close()});
+				HN.getNodes.no.addEventListener("click",function(){window_board.hide();file_close()});
+				HN.getNodes.cancel.addEventListener("click",window_board.hide());
+				window_board.display(HN.DocumentFragment,"保存文件",true);
 			} else file_close();
 		}
 	};
@@ -132,26 +142,25 @@ var editor=(function(){
 		function add(title,value) {
 			if (typeof title!="string") title="索引器";
 			if (typeof value!="string") value="";
-			var Filter=HtmlArray.decode([
+			var Filter=ArrayHtml.decode([
 				["DIV",[
 					["DIV",[
-						["INPUT",null,{"class":"filter_title_input","type":"text","value":title}],
-						["BUTTON",null,{"class":"filter_delete","title":"删除这个索引器"}]
+						["INPUT",null,{"class":"filter_title_input","type":"text","value":title},"title"],
+						["BUTTON",null,{"class":"filter_delete","title":"删除这个索引器"},"remove"]
 					],{"class":"filter_title"}],
 					["DIV",[
 						["P",["索引路径"]],
-						["INPUT",null,{"class":"filter_path_input","type":"search","placeholder":"索引编号占位符 ${i}","value":value}]
+						["INPUT",null,{"class":"filter_path_input","type":"search","placeholder":"索引编号占位符 ${i}","value":value},"path"]
 					],{"class":"filter_path"}],
-					["INPUT",null,{"class":"filter_edit","type":"text"}]
+					["INPUT",null,{"class":"filter_edit","type":"text"},"edit"]
 				],{"class":"filter"}]
-			]);
-			var target=Filter.firstElementChild;
-			target.getElementsByClassName("filter_path_input")[0].addEventListener("input",filter.radio.toInside);
-			target.getElementsByClassName("filter_edit")[0].addEventListener("radio",filter.radio.listener);
-			target.getElementsByClassName("filter_edit")[0].addEventListener("input",editor.edit);
-			target.getElementsByClassName("filter_delete")[0].addEventListener("click",filter.remove);
-			target.getElementsByClassName("filter_edit")[0].dispatchEvent(new Event("radio"));
-			document.getElementById("filter_list_frame").appendChild(Filter);
+			],"editor-filter",true);
+			Filter.getNodes.path.addEventListener("input",filter.radio.toInside);
+			Filter.getNodes.edit.addEventListener("radio",filter.radio.listener);
+			Filter.getNodes.edit.addEventListener("input",editor.edit);
+			Filter.getNodes.remove.addEventListener("click",filter.remove);
+			Filter.getNodes.edit.dispatchEvent(new Event("radio"));
+			document.getElementById("filter_list_frame").appendChild(Filter.DocumentFragment);
 		};
 		function remove() {
 			var target=this.parentNode.parentNode;
