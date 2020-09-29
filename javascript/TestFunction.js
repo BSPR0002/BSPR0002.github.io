@@ -292,15 +292,15 @@ class DecimalNumber {
 	}
 	static constructFromData(integer_BigInt,sign_boolean=null,mantissa_Uint8Array=null,extreme_number=null) {
 		var result=new this;
-		if (typeof integer_BigInt!="bigint") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'integer_BigInt' is not a BigInt.");
+		if (typeof integer_BigInt!="bigint") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'integer_BigInt' is not a BigInt.");
 		if (integer_BigInt<0) throw new TypeError("Failed to construct DecimalNumber from data: The integer part cannot be negative.");
 		result.#integer=integer_BigInt;
 		if (sign_boolean!=null) {
-			if (typeof sign_boolean!="boolean") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'sign_boolean' is not a boolean.");
+			if (typeof sign_boolean!="boolean") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'sign_boolean' is not a boolean.");
 			result.#sign=sign_boolean;
 		}
 		if (mantissa_Uint8Array!=null) {
-			if (!(mantissa_Uint8Array instanceof Uint8Array)) throw new TypeError("Failed to construct DecimalNumber from data: Argument 'mantissa_Uint8Array' is not a Uint8Array.");
+			if (!(mantissa_Uint8Array instanceof Uint8Array)) throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'mantissa_Uint8Array' is not a Uint8Array.");
 			result.#mantissa=new Uint8Array(64);
 			let length=mantissa_Uint8Array.length;
 			for (let i=0,l=length>63?64:length;i<l;++i) {
@@ -309,7 +309,7 @@ class DecimalNumber {
 			}
 		}
 		if (extreme_number!=null) {
-			if (typeof extreme_number!="number") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'extreme_number' is not a number.");
+			if (typeof extreme_number!="number") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'extreme_number' is not a number.");
 			result.#extreme=extreme_number;
 		}
 		return result
