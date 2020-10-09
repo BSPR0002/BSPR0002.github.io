@@ -316,3 +316,30 @@ class DecimalNumber {
 	}
 }
 
+class WebAudioPlayer {
+	#node=document.createElement("audio");
+	get node(){return this.#node}
+	#localSrc=null;
+	constructor(file=null,playImmediately=false,loop=false){
+		switch (typeof file) {
+			case "object":
+				if (file instanceof Blob) {
+					let address=this.#localSrc=URL.createObjectURL(file);
+					this.#node.src=address;
+				}
+			default:
+				break;
+			case "string":
+				this.#node.src=file;
+		}
+		if (playImmediately) this.#node.play();
+		if (loop) this.#node.loop=true;
+	}
+	get position(){return this.#node.currentTime}
+	set position(value){return this.#node.currentTime=value}
+	showElement(targetElement) {
+		if (!(targetElement instanceof HTMLElement)) throw new Error("Failed to execute 'showElement' on WebAudioPlayer: Argument 'targetElement' is not a HTMLElement.");
+		this.node.controls=true;
+		targetElement.appendChild(this.#node)
+	}
+}

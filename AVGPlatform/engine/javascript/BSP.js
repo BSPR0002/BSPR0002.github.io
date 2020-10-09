@@ -20,9 +20,38 @@ class Window extends EventTarget {
 	static toString=toString;
 	get [Symbol.toStringTag](){return "Window"}
 	static #legal=true;
-	[Symbols.setMainWindow](){this.#isMainWindow=true}
+	[Symbols.setMainWindow](){
+		this.#isMainWindow=true;
+		this.#element.id="main_window";
+	}
 	#isMainWindow=false;
-	#Element=document.createElement("div");
+	#parent=null;
+	get parent(){return this.#parent}
+	#children=[];
+	appendChild(Window){
+		if (!this.constructor.#legal) throw new TypeError("Illegal invocation");
+		if (!(Window instanceof this.constructor)) throw new TypeError("Failed to execute 'appendChild' on 'Window': Parameter 'Window' is not an instance of Engine Window!");
+		if (Window==this) throw new Error("Failed to execute 'appendChild' on 'Window': Cannot append self as a child!")
+		if (Window.#parent) {
+			Window.#parent.#children.splice(Window.#parent.#children.indexOf(Window),1);
+			Window.#parent=this;
+		}
+		this.#children.push(Window);
+		this.#element.appendChild(Window.#element);
+	}
+	removeChild(Window){
+		if (!this.#legal) throw new TypeError("Illegal invocation");
+		if (!(Window instanceof this.constructor)) throw new TypeError("Failed to execute 'removeChild' on 'Window': Parameter 'Window' is not an instance of Engine Window!");
+		if (Window.#parent!=this) throw new Error("Failed to execute 'removeChild' on 'Window': Parameter 'Window' is not child of 'this'!");
+		Window.#parent=null;
+		this.#children.splice(this.#children.indexOf(Window),1);
+		this.#element.removeChild(Window.#element);
+	}
+	#element=(function(){
+		var temp=document.createElement("div");
+		temp.style="width:800px;height:600px;position:absolute;display:none";
+		return temp
+	})();
 	#closable=true;
 	get closable(){return this.#closable}
 	#screenWidth=800;
@@ -32,12 +61,13 @@ class Window extends EventTarget {
 		if (!isFinite(value)) throw new TypeError("The input value is not a finite number.")
 		if (value<256) {
 			console.warn("The minimum screen width is 256.")
-			return this.#screenWidth=256;
-		}
-		if (value>4096) {
+			this.#screenWidth=256;
+		} else if (value>4096) {
 			console.warn("The maximum screen width is 4096.")
-			return this.#screenWidth=4096;
-		}
+			this.#screenWidth=4096;
+		} else this.#screenWidth=value;
+		this.#element.style.width=this.#screenWidth+"px";
+		return value;
 	}
 	#screenHeight=600;
 	get screenHeight(){return this.#screenHeight}
@@ -46,20 +76,45 @@ class Window extends EventTarget {
 		if (!isFinite(value)) throw new TypeError("The input value is not a finite number.")
 		if (value<256) {
 			console.warn("The minimum screen height is 256.")
-			return this.#screenHeight=256;
-		}
-		if (value>4096) {
+			this.#screenHeight=256;
+		} else if (value>4096) {
 			console.warn("The maximum screen height is 4096.")
-			return this.#screenHeight=4096;
+			this.#screenHeight=4096;
+		} else this.#screenHeight=value;
+		this.#element.style.height=this.#screenHeight+"px";
+		return value;
+	}
+	#contextSet=false;
+	#context=null;
+	get context(){return this.#context}
+	setContext(type) {
+		if (this.#contextSet) throw new Error("Failed to execute 'setContext' on 'window': Window context has been set.");
+		switch (type) {
+			case "frame":
+				
+				break;
+			case "witget":
+				
+				break;
+			default:
+				throw new Error("Failed to execute 'setContext' on 'window': The input is not a string representing the name of the window context type.");
 		}
+		this.#contextSet=true;
+	}
+	#showed=false;
+	show(){
+		if (!(this.#isMainWindow||this.parent)) throw new Error("Failed to execute 'show' on 'window': Did not associate with a parent window and it is not the main window!");
+		if (!this.#contextSet) throw new Error("Failed to execute 'show' on 'window': Did not set window context!");
+		this.#element.style.display="block";
 	}
 	constructor(options) {
 		super();
+		if (!(options instanceof Object)) options={};
 		if (options.closable===false) this.#closable=false;
 		Object.freeze(this);
 		if (options.screenWidth) this.#screenWidth=options.screenWidth;
 		if (options.screenHeight) this.#screenHeight=options.screenHeight;
-		var window=this.Element;
+		var window=this.#element;
 		
 	}
 }
@@ -115,7 +170,7 @@ class System extends EventTarget {
 	setMainWindow(Window){
 		if (!(Window instanceof local.Window)) throw new TypeError("Failed to execute 'setMainWindow' on 'System': Parameter 'Window' is not an instance of Engine Window!")
 		if (this.#mainWindow) throw new Error("Failed to execute 'setMainWindow' on 'System': The main window has been set.");
-		Window[Symbols.setMainWindow]();
+		document.body.appendChild(Window[Symbols.setMainWindow]());
 		this.#mainWindow=Window;
 		Window.addEventListener("close",this.#onMainWindowClose.bind(this));
 	}
@@ -128,8 +183,8 @@ class System extends EventTarget {
 		return this.#appLocked=true
 	}
 	exit() {
-		if (!this.#legal) throw new TypeError("Illegal invocation");
-		window.close()
+		if (!this.constructor.#legal) throw new TypeError("Illegal invocation");
+		window.parent.controller.exit();
 	}
 	constructor() {
 		super();
@@ -158,6 +213,5 @@ window.addEventListener("error",function(event) {
 	event.preventDefault();
 	var error=event.error?event.error:{"name":"未知","message":"未知"};
 	console.log("出错文件：",event.filename,"\n出错行号：",event.lineno,"\n出错列号：",event.colno,"\n错误类型：",error.name,"\n错误详情：",error.message);
-	return true
 });
 console.log("Debugger: The web system environment has been set up.");

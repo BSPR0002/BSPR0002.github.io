@@ -17,7 +17,7 @@ function MovePointer(pst) {
 }
 
 var ChangePage=(function(){
-	var SheetList=["home_page","resource_library","projects","about_us"];
+	var SheetList=["home_page","resource_library","information","about_us"];
 	var currentSheet=null;
 	var lastLoad={"readyState":4};
 	return function(sheet){
@@ -44,7 +44,7 @@ var window_board={
 		},{"once":true});
 		board.style.opacity="0";
 	},
-	"display":function(content,title,NoManualClose,boardSize={}) {
+	"display":function(content,title,noManualClose,boardSize={}) {
 		if (typeof boardSize!="object") {
 			console.warn("无法接收参数 boardSize ！\n",boardSize);
 			boardSize={};
@@ -55,7 +55,7 @@ var window_board={
 		var board_content=document.getElementById("window_board_content");
 		board.style.width=boardSize.width?boardSize.width:null;
 		board.style.height=boardSize.height?boardSize.height:null;
-		if (NoManualClose===true) {board_close.style.display="none"} else {board_close.style.display="block"};
+		board_close.style.display=noManualClose===true?"none":"block";
 		if (typeof title=="string") {
 			board_title.innerText=title;
 		} else {

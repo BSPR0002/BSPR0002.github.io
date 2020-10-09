@@ -27,7 +27,7 @@ var News=(function(){
 	var Data=[];
 	function request() {
 		if (getNotificationPermission(request)===1) AJAX({
-			"url":"/json/News.json","type":"json",
+			"url":"/json/news.json","type":"json",
 			"success":play,
 			"fail":function() {
 				if (retry<5) {

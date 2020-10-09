@@ -1,0 +1,39 @@
+#information_box_frame {
+	width:1024px;
+	height:576px;
+	margin:0 auto;
+	position:relative;
+	overflow:hidden;
+}
+#information_frame {
+	width:100%;
+	height:100%;
+	background-color:#FFFFFF;
+	margin-bottom:5px;
+	border-radius:10px;
+	padding:10px;
+	box-sizing:border-box;
+	overflow:hidden;
+	display:grid;
+	grid-template-rows:repeat(4,1fr);
+	grid-template-columns:repeat(4,1fr);
+	grid-gap:10px;
+	grid-template-areas:"large large large .""large large large .""large large large ."". project development more";
+}
+.information_box {
+	background-color:#92C1DC;
+	border-radius:5px;
+	overflow:hidden;
+}
+#information_box_large {
+	grid-area:large
+}
+#information_project {
+	grid-area:project
+}
+#information_development {
+	grid-area:development
+}
+#information_more_information {
+	grid-area:more
+}

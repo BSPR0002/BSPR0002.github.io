@@ -1,0 +1,133 @@
+#display_error {
+	display:none;
+	background-color:#000000;
+	color:#C0C0C0;
+	position:fixed;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	z-index:2;
+}
+@media (max-height:479px){#display_error{display:block}}
+@media (max-width:479px){#display_error{display:block}}
+@media (min-width:480px) and (min-height:480px){html{font-size:calc(100vmin/240*12)}}
+
+body {
+	background-color:#000000;
+}
+#UI {
+	position:fixed;
+	width:100vmin;
+	height:100vmin;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	margin:auto;
+	background-color:#ffffff;
+	z-index:1;
+}
+#game_board {
+	position:absolute;
+	width:50%;
+	height:100%;
+	right:0;
+	background-color:#000080;
+	box-sizing:border-box;
+	padding:0.5rem;
+	z-index:2;
+}
+.board_box {
+	overflow:hidden;
+	margin-bottom:0.5rem;
+	border-radius:0.5rem;
+	padding:0.5rem;
+	background-color:#008000;
+	display:grid;
+	grid-template-rows:1rem auto;
+	grid-gap:0.2rem;
+}
+.board_box span {font-size:0.8rem}
+#board_block_preview {
+	width:4rem;
+	height:4rem;
+	display:grid;
+	grid-template-rows:repeat(4,1fr);
+	grid-template-columns:repeat(4,1fr);
+	margin:0 auto;
+}
+#board_score_display {
+	height:1rem;
+}
+#board_option_list {
+	display:grid;
+	grid-template-rows:repeat(2,1rem);
+	grid-gap:0.2rem;
+}
+#board_option_list button {
+	background-color:#C0C0C0;
+	border:none;
+	border-radius:0.2rem;
+	font-size:0.5rem;
+	font-weight:bold;
+	outline:none;
+}
+#board_option_list button:hover {background-color:#FFFFFF}
+#board_option_list button:active {background-color:#808080}
+#game_area {
+	position:absolute;
+	width:50%;
+	height:100%;
+	left:0;
+	background-color:#202020;
+	z-index:1;
+}
+#tetris_box {
+	display:grid;
+	width:100%;
+	height:100%;
+	grid-template-columns:repeat(10,1fr);
+	grid-template-rows:repeat(20,1fr);
+}
+#start {
+	position:absolute;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	background-color:rgba(0,0,0,50%);
+	z-index:3;
+}
+#start_menu {
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	width:50%;
+	height:2.5rem;
+	margin:auto;
+	padding:0.5rem;
+	background-color:#92C1DC;
+	color:#FFFFFF;
+	font-weight:bold;
+	font-size:0.8rem;
+	display:grid;
+	grid-template-rows:1rem 1rem;
+	grid-gap:0.5rem;
+	border-radius:0.5rem;
+}
+#start_game {
+	border:none;
+	border-radius:0.2rem;
+	font-weight:inherit;
+	font-size:0.5rem;
+	outline:none;
+}
+#start_game:hover {background-color:#C0C0C0}
+#start_game:active {background-color:#808080}
+.tetris {
+	background-color:#FFFFFF;
+	border-radius:0.1rem;
+}

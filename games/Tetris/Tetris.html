@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>俄罗斯方块</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+		<link rel="stylesheet" type="text/css" href="./main.css">
+		<script src="./engine.js"></script>
+		<script src="./event.js" defer></script>
+	</head>
+	<body>
+		<div id="display_error">显示空间过小，游戏要求最矮480像素，最窄480像素。</div>
+		<div id="UI">
+			<div id="game_area">
+				<div id="tetris_box"></div>
+			</div>
+			<div id="game_board">
+				<div class="board_box" id="board_next_block">
+					<span>下一个方块：</span>
+					<div id="board_block_preview"></div>
+				</div>
+				<div class="board_box" id="board_score">
+					<span>得分：</span>
+					<span id="board_score_display">0</span>
+				</div>
+				<div class="board_box" id="board_option">
+					<span>选项：</span>
+					<div id="board_option_list">
+						<button id="board_option_pause">暂停游戏</button>
+						<button id="board_option_end">结束本局</button>
+					</div>
+				</div>
+			</div>
+			<div id="start">
+				<div id="start_menu">
+					<div id="high_score"><span>最高分：<span id="high_score_display">0</span></span></div>
+					<button id="start_game">开始游戏</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
