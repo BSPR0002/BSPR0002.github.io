@@ -1,18 +1,15 @@
 "use strict";
 const global=window;
 {
-let functions=[];
+let Symbols={"nativeCode":Symbol("native code")};
 let temp_toString=Function.prototype.toString;
 function toString(){
 	if (typeof this!="function") throw new TypeError("Function.prototype.toString requires that 'this' be a Function");
-	for (let i of functions) {
-		if (this==i) return "function "+this.name+"() { [native code] }";
-	}
+	if (this[Symbols.nativeCode]) return "function "+this.name+"() { [native code] }";
 	return temp_toString.call(this)
 }
-functions[0]=toString;
+toString[Symbols.nativeCode]=true;
 Function.prototype.toString=toString;
-let Symbols={};
 let local={};
 
 Symbols.setMainWindow=Symbol("setMainWindow");
@@ -118,7 +115,7 @@ class Window extends EventTarget {
 		
 	}
 }
-functions.push(Window);
+Window[Symbols.nativeCode]=true;
 Object.freeze(Window);
 local.Window=Window;
 global.Window=Window;
@@ -204,7 +201,7 @@ class System extends EventTarget {
 		Object.freeze(this)
 	}
 }
-functions.push(System);
+System[Symbols.nativeCode]=true;
 Object.freeze(System);
 global.System=System;
 }

@@ -343,3 +343,4 @@ class WebAudioPlayer {
 		targetElement.appendChild(this.#node)
 	}
 }
+
