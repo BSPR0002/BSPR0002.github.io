@@ -1,0 +1,113 @@
+#about_box_frame {
+	width:1024px;
+	height:576px;
+	margin:0 auto;
+	background-color:#FFFFFF;
+	border-radius:10px;
+	padding:20px;
+	box-sizing:border-box;
+	position:relative;
+	overflow:hidden;
+}
+
+#inner-block {
+	width:100%;
+	height:100%;
+	border-radius:5px;
+	box-sizing:border-box;
+	background-color:#0079FF;
+	color:#FFFFFF;
+	padding:10px;
+	overflow:hidden;
+}
+
+#inner-block hr {
+	border-color: #FFFFFF;
+}
+
+#intro,#recruit {
+	height:100%;
+	float:left;
+	display:flex;
+}
+
+#intro {
+	width:500px;
+	margin:0 5px 0 0;
+}
+
+.center-frame {
+	width:100%;
+	margin:auto 0;
+	text-align:center;
+}
+
+#sign {
+	font-weight:bold;
+}
+
+#sign p:first-child {font-size:5em}
+#sign p:last-child {font-size:2em}
+
+#intro-content {
+	display:inline-block;
+	text-align:left;
+}
+
+#service button {
+	height:25px;
+	color:#000000;
+	background-color:#FFFFFF;
+	border:none;
+	border-radius:12.5px;
+	margin:0 0 0 0.5em;
+}
+
+#recruit {
+	width:459px;
+}
+
+#recruit_image {
+	width:200px;
+	height:auto;
+}
+
+#main-body {
+	width:400px;
+	margin:0 auto;
+	text-align:left;
+}
+
+#contact {
+	margin:0.5em auto 1em auto;
+	display:inline-block;
+}
+
+.contact {
+	border-radius:10px;
+	height:50px;
+	float:left;
+	background-color:#FFFFFF;
+	padding:2px;
+	margin:0 5px;
+	color:#000000;
+	display:flex;
+}
+
+.head-pic {
+	width:50px;
+	height:50px;
+	border-radius:25px;
+	background-color:white;
+	background-repeat:no-repeat;
+	border:1px solid #000000;
+	background-position:center;
+	background-size:cover;
+	box-sizing:border-box;
+	float:left;
+}
+
+.link-text {
+	margin:auto 5px;
+	text-align:left;
+}

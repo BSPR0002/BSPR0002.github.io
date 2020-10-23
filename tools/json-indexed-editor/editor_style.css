@@ -1,0 +1,376 @@
+* {
+	box-sizing:border-box;
+}
+
+body {
+	margin:0;
+}
+
+h2,h3,p {display:inline}
+
+button,input {outline:none}
+
+button {
+	color:inherit;
+	cursor:pointer;
+	border-style:solid;
+}
+
+#window_board_layer {
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	z-index:100;
+	background-color:rgba(0,0,0,0.7);
+	opacity:0;
+	display:none;
+	transition:opacity 0.5s ease-in-out;
+}
+
+#window_board {
+	margin:auto;
+	min-width:256px;
+	min-height:128px;
+	max-width:80%;
+	max-height:80%;
+	background-color:#FFFFFF;
+	border-radius:10px;
+	overflow:hidden;
+	padding:10px;
+	display:grid;
+	grid-template-rows:20px auto 1fr;
+	font-size:15px;
+}
+
+#window_board_top {
+	position:relative;
+	overflow:hidden;
+}
+
+#window_board_title {
+	position:absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:22px;
+	margin:0;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+
+#window_board_close{
+	display:block;
+	position:absolute;
+	top:0;
+	right:0;
+	background-color:transparent;
+	width:20px;
+	height:20px;
+	border:none;
+}
+
+#window_board_close:before,#window_board_close:after {
+	position:absolute;
+	display:block;
+	top:50%;
+	right:50%;
+	width:2px;
+	height:20px;
+	content:"";
+	background-color:#000000;
+	box-sizing:border-box;
+	transform:translate(50%,-50%) rotate(45deg);
+}
+
+#window_board_close:after {
+	transform:translate(50%,-50%) rotate(135deg);
+}
+
+#window_board_hr{
+	width:100%;
+	border-radius:1px;
+	border-color:#000000;
+}
+
+#window_board_content {
+	word-wrap:break-word;
+	word-break:normal;
+	overflow:auto;
+}
+
+#window_board_content img {
+	display:block;
+	max-width:100%;
+	height:auto;
+}
+
+#top {
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	height:85px;
+	padding:0 2em;
+	background-color:#00bfff;
+}
+
+#work_place {
+	position:absolute;
+	top:85px;
+	bottom:0;
+	left:0;
+	right:0;
+	padding:8px;
+	background-color:#eeeeee;
+}
+
+#open,#editor {
+	width:100%;
+	height:100%;
+	display:block;
+}
+
+#select_file {
+	position:relative;
+	display:block;
+	margin:auto;
+	width:500px;
+	height:150px;
+	background-color:#00bfff;
+	overflow:hidden;
+	border-radius:10px;
+	padding:2em;
+	text-align:center;
+	border:#000000 dashed 3px;
+}
+
+#select_file input {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	opacity:0;
+}
+
+#editor {
+	display:none;
+	word-wrap:break-word;
+	word-break:normal;
+	overflow:hidden;
+}
+
+#editor_frame {
+	display:grid;
+	width:100%;
+	height:100%;
+	grid-template-columns:repeat(2,1fr);
+	grid-column-gap:10px;
+	grid-template-rows:32px 1fr;
+	grid-auto-flow:column;
+}
+
+#editor_frame h3 {
+	margin:0 1em;
+}
+
+#preview,#console {
+	background-color:#ffffff;
+	border-radius:10px;
+	border:solid #777777 2px;
+	padding:10px;
+	width:100%;
+	height:100%;
+	overflow:hidden;
+}
+
+#preview {
+	background-color:#111111;
+	color:#ffffff;
+}
+
+#preview_frame {
+	width:100%;
+	height:100%;
+	overflow:auto;
+}
+
+.preview_child {
+	display:block;
+	margin:0 0 0 1em;
+}
+
+.preview_value_string {color:#ffff00}
+.preview_value_number {color:#00ff00}
+.preview_value_type_Array {color:#ff0000}
+.preview_value_type_Object {color:#00bfff}
+.preview_value_boolean,.preview_value_null,.preview_value_undefined {color:#ff00ff}
+
+#console {
+	display:grid;
+	grid-template-rows:32px 32px 1fr;
+	grid-row-gap:5px;
+}
+
+#file_SC {
+	display:grid;
+	grid-template-columns:repeat(4,1fr);
+	grid-column-gap:10px;
+}
+
+#file_S,#file_C,#filter_S,#filter_C {
+	height:100%;
+	width:100%;
+	border:solid #000000 1px;
+	border-radius:5px;
+	background-color:#00ff00;
+	outline:none;
+}
+
+#file_C {background-color:#ffff00}
+
+#filter_S,#filter_C {background-color:#ff0000}
+
+#file_S:hover,#file_C:hover,#filter_S:hover,#filter_C:hover {
+	background-color:#00bfff;
+}
+
+#file_S:active,#file_C:active,#filter_S:active,#filter_C:active {
+	background-image:linear-gradient(rgba(0,0,0,10%),rgba(0,0,0,10%));
+}
+
+#editor_counter,#filter {
+	border:solid #000000 1px;
+	border-radius:5px;
+	height:100%;
+	width:100%;
+	padding:3px 0.5em;
+	background-color:#eeeeee;
+}
+
+#filter {
+	display:grid;
+	grid-template-rows:1.5em 1fr;
+	grid-row-gap:10px;
+	padding:3px;
+	overflow:hidden;
+}
+
+#filter_list {
+	width:100%;
+	height:100%;
+	overflow:auto;
+}
+
+#filter_list_frame {
+	display:grid;
+	grid-template-rows:repeat(auto-fill,6em);
+	grid-row-gap:10px;
+}
+
+#index_set {
+	margin-left:1em;
+	text-align:right;
+	border:solid #000000 1px;
+	border-radius:3px;
+}
+
+#filter_add {
+	padding:1px 0 1px 1em;
+	border-radius:3px;
+	background-color:#00bfff;
+}
+
+#filter_add_button {
+	margin-left:1em;
+	border-width:1px;
+	border-color:#000000;
+	background-color:#ffffff;
+	border-radius:5px;
+}
+
+#filter_add_button:hover {background-color:#ffbbbb}
+#filter_add_button:active {background-color:#00bfff}
+
+.filter {
+	width:100%;
+	height:6em;
+	padding:3px;
+	border:solid #000000 1px;
+	border-radius:3px;
+	display:grid;
+	grid-template-rows:repeat(3,1fr);
+	grid-row-gap:5px;
+}
+
+.filter input {
+	border:solid #000000 1px;
+	border-radius:3px;
+	padding-left:0.5em
+}
+
+.filter_title {
+	position:relative;
+	background-color:#00ff00;
+	display:grid;
+	grid-template-columns:1fr 1.5em;
+	grid-column-gap:5px;
+}
+
+#filter_0 .filter_title {
+	grid-template-columns:1fr;
+}
+
+.filter_title_input {
+	background-color:inherit;
+}
+
+.filter_delete {
+	display:block;
+	place-self:center;
+	background-color:transparent;
+	position:relative;
+	width:20px;
+	height:20px;
+	border:none;
+	border-radius:2px;
+}
+
+.filter_delete:hover {background-color:rgba(0,0,0,25%);}
+.filter_delete:active {background-color:rgba(0,0,0,50%);}
+
+.filter_delete:before,.filter_delete:after {
+	position:absolute;
+	display:block;
+	top:0;
+	right:9px;
+	width:2px;
+	height:20px;
+	content:"";
+	border-style:solid;
+	border-width:1px;
+	border-color:#ff0000;
+	box-sizing:border-box;
+	transform:rotate(45deg);
+}
+
+.filter_delete:after {
+	transform: rotate(135deg);
+}
+
+.filter_path {
+	display:flex;
+}
+
+.filter_path p {
+	margin:0 0.5em;
+	flex-shrink:0;
+}
+
+.filter_path_input {
+	height:100%;
+	width:100%;
+}

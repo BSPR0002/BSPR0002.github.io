@@ -1,0 +1,35 @@
+body {
+	font-family:Arial,"Microsoft YaHei",SimHei,sans-serif,serif,"Segoe UI Emoji";
+	margin:0;
+}
+
+h1,h2,h3,h4,h5,h6,p {
+	display:inline;
+}
+
+p {margin:0}
+
+hr {
+	border-style:solid;
+	border-radius:1px;
+}
+
+button {
+	color:inherit;
+	font:inherit;
+	border-style:solid;
+	outline:none;
+}
+
+button,input[type="radio"] {cursor:pointer}
+
+/* 鼠标样式
+body {
+	cursor:url();
+}
+*/
+
+/* 文字换行
+	word-wrap:break-word;
+	word-break:normal;
+*/

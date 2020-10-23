@@ -1,0 +1,9 @@
+body,.body_color {
+	background-color:#92C1DC;
+	color:#000000;
+}
+a {text-decoration:none}
+a:link {color:#007FFF}
+a:visited {color:#007FFF}
+a:hover {color:#92C1DC}
+a:active {color:#4B97C5}
