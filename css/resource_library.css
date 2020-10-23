@@ -248,11 +248,11 @@
 }
 
 .card_link_button_BDND .card_link_button_icon {
-	background-image:url(/Images/third_party/icon/BaiduNetdisk.png);
+	background-image:url(/images/third_party/icon/BaiduNetdisk.png);
 }
 
 .card_link_button_Torrent .card_link_button_icon {
-	background-image:url(/Images/third_party/icon/Torrent.png);
+	background-image:url(/images/third_party/icon/Torrent.png);
 }
 
 .card_link_button_text {
@@ -316,7 +316,7 @@
 
 .card_board_BDND .card_board_title_icon{
 	display:block;
-	background-image:url(/Images/third_party/icon/BaiduNetdisk.png);
+	background-image:url(/images/third_party/icon/BaiduNetdisk.png);
 }
 
 .card_board_title_text {
