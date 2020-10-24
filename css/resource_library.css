@@ -71,7 +71,6 @@
 	background-color:#92C1DC;
 	transition:background-color 0.2s ease-in-out;
 }
-#library_search_bar_search:hover {background-color:#87CEFA}
 #library_search_bar_search:before {
 	content:"";
 	position:absolute;
@@ -81,8 +80,10 @@
 	left:0;
 	right:0;
 }
-#library_search_bar_search:active:before {
-	background-color:rgba(0,0,0,5%)
+#library_search_bar_search:hover {background-color:#87CEFA}
+#library_search_bar_search:active {
+	transition:all 0s;
+	background-color:#80C4ED
 }
 
 #library_search_bar_input {
