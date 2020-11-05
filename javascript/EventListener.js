@@ -1,15 +1,18 @@
-document.getElementById("navigation").addEventListener("mouseover",WakeHoverPointer);
-document.getElementById("navigation").addEventListener("mouseleave",HideHoverPointer);
-document.getElementById("nav_item_1").addEventListener("mouseover",function(){MoveHoverPointer(90)});
-document.getElementById("nav_item_2").addEventListener("mouseover",function(){MoveHoverPointer(290)});
-document.getElementById("nav_item_3").addEventListener("mouseover",function(){MoveHoverPointer(490)});
-document.getElementById("nav_item_4").addEventListener("mouseover",function(){MoveHoverPointer(690)});
-document.getElementById("nav_item_1").addEventListener("click",function(){ChangePage(1)});
-document.getElementById("nav_item_2").addEventListener("click",function(){ChangePage(2)});
-document.getElementById("nav_item_3").addEventListener("click",function(){ChangePage(3)});
-document.getElementById("nav_item_4").addEventListener("click",function(){ChangePage(4)});
+{
+	let hoverPointer=document.getElementById("nav_hover_pointer");
+	let pointer=document.getElementById("nav_pointer");
+	function moveHoverPointer(pst){hoverPointer.style.left=pst+"px"}
+	function movePointer(pst){pointer.style.left=pst+"px"}
+}
+
+for (let i=1;i<5;++i) {
+	let item=document.getElementById("nav_item_"+i),pst=i*200-110;
+	item.addEventListener("mouseover",function(){moveHoverPointer(pst)});
+	item.addEventListener("click",function(){changeSheet(i)});
+}
+
 document.getElementById("window_board_close").addEventListener("click",window_board.hide);
-ChangePage(1); //加载主页
+changeSheet(1); //加载主页
 
 window.addEventListener("load",function() {
 	News.request();

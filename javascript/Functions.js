@@ -1,34 +1,18 @@
 if (DetectUA().Mobile) window.location.href="/Mobile/";
 
-function WakeHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.height="10px";
-}
-
-function MoveHoverPointer(pst) {
-	document.getElementById("nav_hover_pointer").style.left=pst+"px";
-}
-
-function HideHoverPointer() {
-	document.getElementById("nav_hover_pointer").style.height="0";
-}
-
-function MovePointer(pst) {
-	document.getElementById("nav_pointer").style.left=pst+"px";
-}
-
-var ChangePage=(function(){
-	var SheetList=["home_page","resource_library","information","about_us"];
-	var currentSheet=null;
-	var lastLoad={"readyState":4};
-	return function(sheet){
-		MovePointer(sheet*200-110);
+{
+	let sheetList=["home_page","resource_library","information","about_us"];
+	let currentSheet=null;
+	let lastLoad={"readyState":4};
+	function changeSheet(sheet) {
+		movePointer(sheet*200-110);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/html/"+SheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
+			lastLoad=Load("/html/"+sheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
 			currentSheet=sheet;
 		}
-	};
-})();
+	}
+}
 
 var window_board={
 	"show":function() {

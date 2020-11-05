@@ -167,9 +167,9 @@ function NotificationCreater(options) {
 		case 2:
 			return 2;
 		case 1:
-			var model={"title":"","message":"","image":"","icon":"","id":"","data":"","timestamp":undefined,"dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
+			var model={"title":"","message":"","image":"","icon":"","id":"","data":"","dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
 			Object.assign(model,options);
-			var NotificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"timestamp":model.timestamp,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
+			var NotificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
 			NotificationInterface.onshow=model.show;
 			NotificationInterface.onclick=model.click;
 			NotificationInterface.onclose=model.close;
@@ -202,68 +202,75 @@ class MultiThread {
 	shut(){this.core.terminate()}
 }
 
-var ArrayHtml={
-	"decode":function(ArrayHtml,unit=null,activeNode=false) {
+class ArrayHTML {
+	static decode(ArrayHTML,activeNode=false) {
 		activeNode=Boolean(activeNode);
 		var getNodes={};
-		if (unit===null) unit="未知";
 		var DocumentFragment=document.createDocumentFragment();
 		function Operator(data,outer) {
 			if (Array.isArray(data)) {
 				for (var item of data) {
-					if (typeof item=="string"||typeof item=="number"||Array.isArray(item)) {
-						switch (typeof item) {
-							case "string":
-							case "number":
-								outer.appendChild(document.createTextNode(item));
+					switch (typeof item) {
+						case "string":
+						case "number":
+							outer.appendChild(document.createTextNode(item));
+							break;
+						case "object":
+							if (item instanceof Node) {
+								outer.appendChild(item);
 								break;
-							case "object":
-								try {
-									let node=null;
-									switch (item[0]) {
-										case "#comment":
-											node=document.createComment(item[1]);
-											break;
-										case "#text":
-											node=document.createTextNode(item[1]);
-											break;
-										default:
-											node=document.createElement(item[0]);
-											if (typeof item[1]=="string"||typeof item[1]=="number"||Array.isArray(item[1])) {
-												switch (typeof item[1]) {
-													case "string":
-													case "number":
-														node.appendChild(document.createTextNode(item[1]));
-														break;
-													case "object":
-														Operator(item[1],node);
-												};
-											}
-											for (let attribute in item[2]) {
-												try {
-													node.setAttribute(attribute,item[2][attribute])
-												} catch (errorMessage) {
-													console.warn("HADecoder 汇报有数据错误：为节点添加属性时出错！\n出错单位：",unit,"\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"=\""+item[2][attribute]+"\"")
-												};
-											}
-									}
-									outer.appendChild(node);
-									if (item[3]&&activeNode) getNodes[item[3]]=node;
-								} catch(error) {
-									console.warn("HADecoder 汇报有数据错误：发现无效的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
-								};
-						};
-					} else {console.warn("HADecoder 汇报有数据错误：子节点树内有无法识别的节点！\n出错单位：",unit,"\n节点树：",data,"\n出错位置：",item)};
+							}
+							let node=null;
+							try {
+								switch (item[0]) {
+									case "#comment":
+										node=document.createComment(item[1]);
+										break;
+									case "#text":
+										node=document.createTextNode(item[1]);
+										break;
+									default:
+										node=document.createElement(item[0]);
+										switch (typeof item[1]) {
+											case "string":
+											case "number":
+												node.appendChild(document.createTextNode(item[1]));
+												break;
+											case "object":
+												if (item[1]==null) break;
+												if (item[1] instanceof Node) {
+													node.appendChild(item[i]);
+													break;
+												}
+												Operator(item[1],node);
+											default:
+										};
+										for (let attribute in item[2]) {
+											try {
+												node.setAttribute(attribute,item[2][attribute])
+											} catch (errorMessage) {
+												console.warn("AHDecoder 汇报有数据错误：为节点添加属性时出错！","\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"=\""+item[2][attribute]+"\"")
+											};
+										}
+								}
+								outer.appendChild(node);
+								if (item[3]&&activeNode) getNodes[item[3]]=node;
+							} catch(error) {
+								console.warn("AHDecoder 汇报有数据错误：发现无效的节点名！","\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
+							};
+							break;
+						default:
+							console.warn("AHDecoder 汇报有数据错误：节点树内有无法识别的节点！","\n节点树：",data,"\n出错位置：",item)
+					};
 				};
 			} else {
-				console.error("HADecoder 解析失败：接收到非数组的数据！\n出错单位：",unit,"\n接收内容：",data);
-				HtmlDoc=false;
+				throw new Error("AHDecoder 解析失败：接收到非数组的数据！","\n接收内容：",data);
 			};
 		};
-		Operator(ArrayHtml,DocumentFragment);
+		Operator(ArrayHTML,DocumentFragment);
 		return activeNode?{DocumentFragment,getNodes}:DocumentFragment;
-	},
-	"encode":function(Node,IncludeOuter) {
+	}
+	static encode(Node,IncludeOuter=false) {
 		var ArrayHtml=[];
 		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {
@@ -299,14 +306,15 @@ var ArrayHtml={
 		};
 		try {
 			Node=Node.cloneNode(true);
-			if (IncludeOuter===true) {Operator(Node,ArrayHtml)} else {Transporter(Node,ArrayHtml)};
+			if (IncludeOuter==true) {Operator(Node,ArrayHtml)} else Transporter(Node,ArrayHtml);
 		} catch(error) {
 			console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
 			ArrayHtml=false;
 		};
 		return ArrayHtml;
 	}
-};
+	constructor(Node,IncludeOuter=false){return this.constructor.encode(...arguments)}
+}
 
 var Cookies={
 	"get":function(cookieName) {

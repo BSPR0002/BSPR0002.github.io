@@ -80,8 +80,8 @@
 			draw2();
 			requestAnimationFrame(loop)
 		}
-		let AH=[["DIV",[["SPAN","BSIF Audio Player",{"style":"grid-area:name"}],["SPAN",[["SPAN","当前文件："],["SPAN","无文件",null,"currentFile"]],{"style":"white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],["DIV",[["STYLE","#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"],["BUTTON","播放",null,"play"],["BUTTON","停止",null,"stop"],["DIV",[["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],["SPAN",["× ",["SPAN","1",null,"playbackRate"]]],["BUTTON","＋",{"class":"controls_speed","title":"+0.1"},"speedUp"]],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:5px;place-items:center;width:100%;height:100%","title":"速度"}]],{"style":"display:grid;grid-template-columns:1fr 1fr 2fr;grid-gap:5px;place-items:center;width:100%;height:100%"}],["INPUT",null,{"type":"file","style":"grid-area:input"},"input"]],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"name current\"\"input controls\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]];
-		let toolInterface=ArrayHtml.decode(AH,"test audio player",true);
+		let AH=[["DIV",[["SPAN","BSIF Audio Player",{"style":"grid-area:name"}],["SPAN",[["SPAN","当前文件："],["SPAN","无文件",null,"currentFile"]],{"style":"white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],["DIV",[["STYLE","#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"],["BUTTON","播放",null,"play"],["BUTTON","停止",null,"stop"],["DIV",[["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],["SPAN",["× ",["SPAN","1",null,"playbackRate"]]],["BUTTON","＋",{"class":"controls_speed","title":"+0.1"},"speedUp"]],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:5px;place-items:center;width:100%;height:100%","title":"速度"}]],{"style":"display:grid;grid-template-columns:1fr 1fr 2fr;grid-gap:5px;place-items:center;width:100%;height:100%"}],["INPUT",null,{"type":"file","style":"grid-area:input;width:100%"},"input"]],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"name current\"\"input controls\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]];
+		let toolInterface=ArrayHTML.decode(AH,true);
 		nodes=toolInterface.getNodes;
 		nodes.play.addEventListener("click",play);
 		nodes.stop.addEventListener("click",stop);
@@ -108,7 +108,7 @@ class DecimalNumber {
 	#notNumber=false;
 	get sign(){return this.#sign}
 	get integer(){return this.#integer}
-	get mantissa(){return this.#mantissa}
+	get mantissa(){return new Uint8Array(this.#mantissa)}
 	get extreme(){return this.#extreme}
 	constructor(initial=undefined){
 		if (arguments.length>0) {
@@ -178,14 +178,14 @@ class DecimalNumber {
 		return false;
 	}
 	isNaN(){return this.#notNumber}
-	plus(addends){
+	add(addend){
 		var result=new this.constructor(this)
 		var resultMantissa=result.#mantissa;
 		var temp=[];
 		for (let item of arguments) temp=temp.concat(item);
 		for (let addend of temp) {
 			addend=new this.constructor(addend);
-			let sub=result.#sign!=addend.#sign,last=0;
+			let sub=this.#sign!=addend.#sign,last=0;
 			if (sub) {
 				addend.#sign=!addend.#sign;
 				let isGreater=addend.isGreater(result),minuend=isGreater?addend:result,subtrahend=isGreater?result:addend;
@@ -328,3 +328,33 @@ class WebAudioPlayer {
 	}
 }
 
+class randomStatistician {
+	#data=(new Array(10)).fill(0n);
+	get data(){return this.#data.concat()}
+	record(number) {
+		number=Number(number);
+		if (number<0||number>=1) throw new Error("Input out of range.");
+		++this.#data[Math.floor(number*10)]
+	}
+	reset(){this.#data=(new Array(10)).fill(0n)}
+	analyze(){
+		var total=0n,result="",i=0;
+		for (let item of this.#data) total+=item;
+		var result=[["total",total.toString()]];
+		while (i<10) {
+			let starting=i/10,subscript=i++,quantity=this.#data[subscript];
+			result.push(["["+starting+","+i/10+")",quantity.toString(),(total==0?"0":Number(quantity)*100/+Number(total))+"%"]);
+		}
+		return result
+	}
+}
+
+async function dooo(times) {
+	var random=Math.random,tt=new randomStatistician;
+	function infunc(resolve){setTimeout(resolve,random()*100)}
+	for (let i=0;i<times;++i) {
+		await new Promise(infunc);
+		tt.record(random());
+	}
+	console.log("done",tt.analyze())
+}

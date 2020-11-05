@@ -301,7 +301,7 @@
 	top:0;
 	height:24px;
 	left:0;
-	right:84px;
+	right:50%;
 	overflow:hidden;
 	margin-bottom:5px;
 }
@@ -350,7 +350,6 @@
 	top:0;
 	right:22px;
 	height:20px;
-	width:60px;
 	background-color:#FFFFFF;
 	color:#000000;
 	border:none;
@@ -364,25 +363,30 @@
 	width:20px;
 	height:20px;
 	border:none;
+	border-radius:4px;
 	right:0;
 	top:0;
 }
+
+.card_board_close:hover {background-color:rgba(0,0,0,20%)}
+.card_board_close:active {background-color:rgba(0,0,0,30%)}
 
 .card_board_close:before,.card_board_close:after {
 	position:absolute;
 	display:block;
 	top:50%;
-	right:50%;
+	left:50%;
 	width:2px;
-	height:20px;
+	height:16px;
 	content:"";
 	background-color:#FFFFFF;
 	box-sizing:border-box;
-	transform:translate(50%,-50%) rotate(45deg);
+	border-radius:1px;
+	transform:translate(-50%,-50%) rotate(45deg);
 }
 
 .card_board_close:after {
-	transform:translate(50%,-50%) rotate(135deg);
+	transform:translate(-50%,-50%) rotate(135deg);
 }
 
 .card_board_BDND .card_board_close:before,.card_board_BDND .card_board_close:after {

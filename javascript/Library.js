@@ -46,48 +46,38 @@
 	};
 	let Cardboard={
 		"show":function() {
-			var Board=this.parentNode.parentNode.getElementsByClassName("card_board")[0];
-			var BoardTitle=Board.getElementsByClassName("card_board_title_text")[0];
-			var BoardContent=Board.getElementsByClassName("card_board_content")[0];
-			EmptyElement(BoardTitle);
-			BoardTitle.removeAttribute("title");
-			EmptyElement(BoardContent);
-			Board.className="card_board";
-			if (typeof this.Board.Theme=="string") Board.className+=this.Board.Theme;
-			if (typeof this.Board.Title=="string") {
-				BoardTitle.appendChild(document.createTextNode(this.Board.Title));
-				BoardTitle.title=this.Board.Title;
+			var board=this.parentNode.parentNode.getElementsByClassName("card_board")[0];
+			var boardTitle=board.getElementsByClassName("card_board_title_text")[0];
+			var boardContent=board.getElementsByClassName("card_board_content")[0];
+			boardTitle.innerHTML="";
+			boardTitle.removeAttribute("title");
+			boardContent.innerHTML="";
+			board.className="card_board";
+			var data=this.boardData;
+			if (typeof data.theme=="string") board.className+=data.theme;
+			if (typeof data.title=="string") {
+				boardTitle.appendChild(document.createTextNode(data.title));
+				boardTitle.title=data.title;
 			};
-			BoardContent.appendChild(this.Board.Content.cloneNode(true));
-			Board.style.left="130px";
+			boardContent.appendChild(data.content.cloneNode(true));
+			board.style.left="130px";
 		},
 		"close":function(){this.parentNode.parentNode.style.left="100%"},
-		"detail":function CardBoardDetail() {
-			var Container=document.createRange();
-			Container.selectNodeContents(this.parentNode.getElementsByClassName("card_board_content")[0]);
-			window_board.display(Container.cloneContents(),"详细信息");
+		"detail":function() {
+			var container=document.createRange();
+			container.selectNodeContents(this.parentNode.getElementsByClassName("card_board_content")[0]);
+			window_board.display(container.cloneContents(),"详细信息");
 		}
 	};
 	let show=function(ShowData) {
 		var showBox=document.createDocumentFragment();
 		for (let obj of ShowData) {
-			let Card=document.createElement("div");
-			Card.className="card";
-			Card.id="CardID"+obj.ID;
-			let CardIcon=document.createElement("div");
-			CardIcon.className="card_icon body_color";
+			let cardIconAttr={"class":"card_icon body_color"};
 			if (typeof obj.icon=="string") {
-				CardIcon.style.backgroundImage="url("+obj.icon+")";
-			} else CardIcon.className+=" card_icon_none";
-			Card.appendChild(CardIcon);
-			let CardName=document.createElement("p");
-			CardName.className="card_name";
-			CardName.appendChild(document.createTextNode(obj.display));
-			CardName.title=obj.display;
-			Card.appendChild(CardName);
-			let CardType=document.createElement("p");
-			CardType.className="card_type";
-			let typeText="？？？";
+				cardIconAttr.style="background-image:url(\""+obj.icon+"\")";
+			} else cardIconAttr.class+=" card_icon_none";
+			let cardName=obj.display;
+			let cardType="？？？";
 			switch (obj.type) {
 				case "allinone":
 					let allinone="合集（";
@@ -95,108 +85,51 @@
 						if (allinone!="合集（") allinone=allinone+"、";
 						allinone=allinone+item;
 					};
-					typeText=allinone+"）";
+					cardType=allinone+"）";
 					break;
 				case "PC game":
-					typeText="PC 游戏";
+					cardType="PC 游戏";
 					break;
 				case "game":
-					typeText="游戏";
+					cardType="游戏";
 				default:
 			};
-			CardType.appendChild(document.createTextNode(typeText));
-			CardType.title=typeText;
-			Card.appendChild(CardType);
-			let CardLink=document.createElement("div");
-			CardLink.className="card_link";
+			let template=[["DIV",[["DIV",null,cardIconAttr],["SPAN",cardName,{"class":"card_name","title":cardName}],["SPAN",cardType,{"class":"card_type","title":cardType}],["DIV",null,{"class":"card_link"},"cardLinks"],["DIV",[["DIV",[["DIV",[["DIV",null,{"class":"card_board_title_icon"}],["SPAN",null,{"class":"card_board_title_text"}]],{"class":"card_board_title"}],["DIV",null,{"class":"card_board_content"}],["BUTTON","详细信息",{"class":"card_board_detail"},"cardBoardDetail"],["BUTTON",null,{"class":"card_board_close"},"closeCardBoard"]],{"class":"card_board_frame"}]],{"class":"card_board"}]],{"class":"card","id":"CardID"+obj.ID}]];
+			let card=ArrayHTML.decode(template,true);
+			let cardLinks=card.getNodes.cardLinks;
+			card.getNodes.closeCardBoard.addEventListener("click",Cardboard.close);
+			card.getNodes.cardBoardDetail.addEventListener("click",Cardboard.detail);
 			if (obj.resource.BDND) {
-				let CardLinkBDND=document.createElement("button");
-				CardLinkBDND.className="card_link_button card_link_button_BDND";
-				let CardLinkBDNDBoardContent=document.createDocumentFragment();
-				let CardLinkBDNDBoardContentNode=document.createElement("p");
-				CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("链接："));
-				let CardLinkBDNDBoardContentNodeA=document.createElement("a");
-				CardLinkBDNDBoardContentNodeA.href=obj.resource.BDND.link;
-				CardLinkBDNDBoardContentNodeA.target="_blank";
-				CardLinkBDNDBoardContentNodeA.appendChild(document.createTextNode(obj.resource.BDND.link));
-				CardLinkBDNDBoardContentNode.appendChild(CardLinkBDNDBoardContentNodeA);
-				CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
-				CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
-				if (typeof obj.resource.BDND.password=="string") {
-					let CardLinkBDNDBoardContentNode=document.createElement("p");
-					CardLinkBDNDBoardContentNode.appendChild(document.createTextNode("提取码："+obj.resource.BDND.password));
-					CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
-					CardLinkBDNDBoardContent.appendChild(document.createElement("br"));
-				};
+				let BDNDLink=obj.resource.BDND.link;
+				let cardLinkBDNDTemplate=[["BUTTON",[["DIV",null,{"class":"card_link_button_icon"}],["SPAN",["百度网盘"],{"class":"card_link_button_text"}]],{"class":"card_link_button card_link_button_BDND"},"button"]];
+				let cardLinkBDND=ArrayHTML.decode(cardLinkBDNDTemplate,true);
+				let boardContentTemplate=[["span",["链接：",["a",BDNDLink,{"href":BDNDLink,"target":"_blank"}],["br"]]]];
+				if (typeof obj.resource.BDND.password=="string") boardContentTemplate.push(["span","提取码："+obj.resource.BDND.password],["br"]);
 				if (obj.resource.BDND.detail) {
-					let CardLinkBDNDBoardContentNode=document.createDocumentFragment();
 					if (typeof obj.resource.BDND.detail.tips=="string") {
-						let CardBoardDetailTips=document.createElement("p");
-						CardBoardDetailTips.appendChild(document.createTextNode(obj.resource.BDND.detail.tips));
-						CardBoardDetailTips.appendChild(document.createElement("br"));
-						CardBoardDetailTips.className="CardBoardDetailTips";
-						CardLinkBDNDBoardContentNode.appendChild(CardBoardDetailTips);
+						let cardBoardDetailTips=["span",[obj.resource.BDND.detail.tips,["br"]],{"class":"CardBoardDetailTips"}];
+						boardContentTemplate.push(cardBoardDetailTips);
 					};
-					if (Array.isArray(obj.resource.BDND.detail.content)) CardLinkBDNDBoardContentNode.appendChild(ArrayHtml.decode(obj.resource.BDND.detail.content,"ID"+obj.ID));
-					CardLinkBDNDBoardContent.appendChild(CardLinkBDNDBoardContentNode);
+					if (Array.isArray(obj.resource.BDND.detail.content)) boardContentTemplate=boardContentTemplate.concat(obj.resource.BDND.detail.content);
 				};
-				CardLinkBDND.Board={
-					"Theme":" card_board_BDND",
-					"Title":"百度网盘",
-					"Content":CardLinkBDNDBoardContent
+				boardContent=ArrayHTML.decode(boardContentTemplate);
+				let cardLinkBDNDBoard={
+					"theme":" card_board_BDND",
+					"title":"百度网盘",
+					"content":boardContent
 				};
-				CardLinkBDND.addEventListener("click",Cardboard.show);
-				let CardLinkBDNDIcon=document.createElement("div");
-				CardLinkBDNDIcon.className="card_link_button_icon";
-				CardLinkBDND.appendChild(CardLinkBDNDIcon);
-				let CardLinkBDNDText=document.createElement("p");
-				CardLinkBDNDText.className="card_link_button_text";
-				CardLinkBDNDText.appendChild(document.createTextNode("百度网盘"));
-				CardLinkBDND.appendChild(CardLinkBDNDText);
-				CardLink.appendChild(CardLinkBDND);
+				let button=cardLinkBDND.getNodes.button;
+				button.boardData=cardLinkBDNDBoard;
+				button.addEventListener("click",Cardboard.show);
+				cardLinks.appendChild(cardLinkBDND.DocumentFragment);
 			};
 			if (typeof obj.resource.Torrent!="undefined"&&obj.resource.Torrent!=null) {
-				let CardLinkTorrent=document.createElement("button");
-				CardLinkTorrent.addEventListener("click",function(){window.location.href=obj.resource.Torrent});
-				CardLinkTorrent.className="card_link_button card_link_button_Torrent";
-				let CardLinkTorrentIcon=document.createElement("div");
-				CardLinkTorrentIcon.className="card_link_button_icon";
-				CardLinkTorrent.appendChild(CardLinkTorrentIcon);
-				let CardLinkTorrentText=document.createElement("p");
-				CardLinkTorrentText.className="card_link_button_text";
-				CardLinkTorrentText.appendChild(document.createTextNode("磁力链接"));
-				CardLinkTorrent.appendChild(CardLinkTorrentText);
-				CardLink.appendChild(CardLinkTorrent);
+				let cardLinkTorrentTemplate=[["BUTTON",[["DIV",null,{"class":"card_link_button_icon"}],["SPAN",["磁力链接"],{"class":"card_link_button_text"}]],{"class":"card_link_button card_link_button_Torrent"},"button"]];
+				let cardLinkTorrent=ArrayHTML.decode(cardLinkTorrentTemplate,true);
+				cardLinkTorrent.getNodes.button.addEventListener("click",function(){window.location.href=obj.resource.Torrent});
+				cardLinks.appendChild(cardLinkTorrent.DocumentFragment);
 			};
-			Card.appendChild(CardLink);
-			let CardBoard=document.createElement("div");
-			CardBoard.className="card_board";
-			let CardBoardFrame=document.createElement("div");
-			CardBoardFrame.className="card_board_frame";
-			let CardBoardTitle=document.createElement("div");
-			CardBoardTitle.className="card_board_title";
-			let CardBoardTitleIcon=document.createElement("div");
-			CardBoardTitleIcon.className="card_board_title_icon";
-			CardBoardTitle.appendChild(CardBoardTitleIcon);
-			let CardBoardTitleText=document.createElement("p");
-			CardBoardTitleText.className="card_board_title_text";
-			CardBoardTitle.appendChild(CardBoardTitleText);
-			CardBoardFrame.appendChild(CardBoardTitle);
-			let CardBoardContent=document.createElement("div");
-			CardBoardContent.className="card_board_content";
-			CardBoardFrame.appendChild(CardBoardContent);
-			let CardBoardShowDetail=document.createElement("button");
-			CardBoardShowDetail.className="card_board_detail";
-			CardBoardShowDetail.appendChild(document.createTextNode("详细信息"));
-			CardBoardShowDetail.addEventListener("click",Cardboard.detail);
-			CardBoardFrame.appendChild(CardBoardShowDetail);
-			let CardBoardClose=document.createElement("button");
-			CardBoardClose.className="card_board_close";
-			CardBoardClose.addEventListener("click",Cardboard.close);
-			CardBoardFrame.appendChild(CardBoardClose);
-			CardBoard.appendChild(CardBoardFrame);
-			Card.appendChild(CardBoard);
-			showBox.appendChild(Card);
+			showBox.appendChild(card.DocumentFragment);
 		};
 		showArea.innerHTML="";
 		showArea.appendChild(showBox);
