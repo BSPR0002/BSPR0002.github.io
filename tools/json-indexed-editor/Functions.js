@@ -109,7 +109,7 @@ var editor=(function(){
 		"save":function(){FileAPI.save(new File([JSON.stringify(file.json)],file.name,{"type":"application/json;charset=utf-8"}),file.name)},
 		"close":function() {
 			if (file.modified) {
-				let HN=ArrayHtml.decode([
+				let HN=ArrayHTML.decode([
 					"文件已被修改，是否要保存？",
 					["br"],
 					["button","是",{
@@ -142,7 +142,7 @@ var editor=(function(){
 		function add(title,value) {
 			if (typeof title!="string") title="索引器";
 			if (typeof value!="string") value="";
-			var Filter=ArrayHtml.decode([
+			var Filter=ArrayHTML.decode([
 				["DIV",[
 					["DIV",[
 						["INPUT",null,{"class":"filter_title_input","type":"text","value":title},"title"],

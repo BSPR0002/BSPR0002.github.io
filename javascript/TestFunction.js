@@ -1,5 +1,5 @@
 ﻿{
-	let ap=new AudioPlayer,ac=null,busy=false,nodes=null;
+	let ap=new AudioPlayer,ac=null,busy=false,nodes=null,context;
 	let play=async function() {
 		if (busy) return alert("尚在加载其他音频，请稍后！");
 		try {stop()} catch(none) {};
@@ -49,7 +49,9 @@
 				nodes.currentFile.removeAttribute("title");
 		}
 	}
-	//ap.analyser.fftSize=8192;
+	let fftSizeStatu=false;
+	let fftSizeSwitch=function(){ap.analyser.fftSize=(fftSizeStatu=!fftSizeStatu)?8192:2048};
+	testTools.audioPlayer={play,stop,changeSpeed,fftSizeSwitch};
 	window.addEventListener("load",function() {
 		context=testCanvas.context;
 		context.translate(0.5,255.5);
@@ -74,8 +76,8 @@
 			context.lineTo(1023.5,data2[2046]);
 			context.stroke();
 		}
-		function loop(){
-			context.clearRect(0,0,1024,256);
+		function loop() {
+			context.clearRect(-1,0,1024,256);
 			draw();
 			draw2();
 			requestAnimationFrame(loop)

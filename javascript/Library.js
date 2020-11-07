@@ -201,7 +201,7 @@
 				var result=[];
 				for (let word of match_word) {
 					let resultc=[];
-					for (let i=Data.length-1;i>-1;i--) {
+					for (let i=Data.length-1;i>-1;--i) {
 						let name_match=false;
 						for (let name of Data[i].name) {
 							if (name.match(word)) {
