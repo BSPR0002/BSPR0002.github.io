@@ -21,6 +21,7 @@
 	grid-template-areas:"large large large .""large large large .""large large large .""applets projects developments more";
 }
 .information_box {
+	position:relative;
 	background-color:#BDD1DC;
 	border-radius:5px;
 	box-sizing:border-box;
@@ -35,28 +36,28 @@
 #information_box_large {
 	grid-area:large
 }
-@keyframes colors {
-	17%{background-color:#FF00FF}
-	33%{background-color:#0000FF}
-	50%{background-color:#00FFFF}
-	67%{background-color:#00FF00}
-	83%{background-color:#FFFF00}
-	100%{background-color:#FF0000}
+@keyframes InformationLoading {
+	from{background-color:#6F90A0}
+	to{background-color:#D0F0FF}
 }
-#information_box_large.loading:before {
-	display:block;
+@keyframes InformationLoadingCircle {
+	from{transform:translate(-50%) rotate(0)}
+	to{transform:translate(-50%) rotate(1turn)}
+}
+.information_box.loading {animation:InformationLoading 2s cubic-bezier(0.5,0,0.5,1) alternate infinite forwards running}
+.information_box.loading:before {
 	content:"";
-	height:64px;
-	width:64px;
-	border-radius:32px;
-	background-color:#FF0000;
-	animation:colors 10s linear infinite forwards running;
-}
-#information_box_large.loading:after {
-	content:"加载中……";
-	color:#FFFFFF;
-	font-size:32px;
-	font-weight:bold;
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:32px;
+	height:32px;
+	box-sizing:border-box;
+	background-color:transparent;
+	border:solid #004080;
+	border-width:2px 0;
+	border-radius:50%;
+	animation:InformationLoadingCircle 1s linear infinite forwards running;
 }
 #information_applets {
 	background-color:#00FF40;
