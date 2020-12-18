@@ -24,7 +24,7 @@ function AJAX(options) {
 	XHR.onload=function() {
 		if ((this.status>=200&&this.status<300)||this.status==304) {
 			if (typeof model.success=="function") model.success(this.response);
-		} else if (typeof model.fail=="function") model.fail(this.status);
+		} else if (typeof model.fail=="function") model.fail(this.status,this.response);
 		if (typeof model.done=="function") model.done(this.status,this.response)
 	};
 	XHR.onerror=model.error;
