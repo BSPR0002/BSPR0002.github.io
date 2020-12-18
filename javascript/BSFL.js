@@ -102,6 +102,7 @@ function Load(url,TargetElement,AllowCache,fully,onerror) {
 						"url":item.src,
 						"cache":AllowCache,
 						"success":function(response){
+							if (item.type=="module") return;
 							var temp=document.createElement("script");
 							temp.appendChild(document.createTextNode(response));
 							if (item.hasAttributes()==true) {
