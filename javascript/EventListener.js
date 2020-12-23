@@ -14,5 +14,5 @@ for (let i=1;i<5;++i) {
 changeSheet(1); //加载主页
 
 window.addEventListener("load",function() {
-	News.request();
+	import("/javascript/News-module.js").then(News=>News.show());
 },{"once":true});
