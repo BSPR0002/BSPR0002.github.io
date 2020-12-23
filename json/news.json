@@ -1,7 +1,6 @@
 [
 	{
-		"ID":"Example",
-		"name":"示例",
+		"ID":"示例",
 		"title":"标题",
 		"preview":{
 			"message":"简短预览内容",
@@ -10,5 +9,11 @@
 		"content":["HtmlArray","详细内容"],
 		"force":false,
 		"unshow":true
+	},
+	{
+		"ID":"test",
+		"title":"模块化系统测试",
+		"content":"这只是一次内部功能的测试，请不要在意我……😓",
+		"force":true
 	}
 ]

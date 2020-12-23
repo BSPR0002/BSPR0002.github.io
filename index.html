@@ -11,40 +11,27 @@
 		<link rel="stylesheet" type="text/css" href="/css/main.css">
 		<script src="/javascript/BSFL.js"></script>
 		<script src="/javascript/LocalDebug.js"></script>
-		<script src="/javascript/Activity.js"></script>
 		<script src="/javascript/Functions.js"></script>
 		<script src="/javascript/EventListener.js" defer></script>
+		<script src="/javascript/MiniWindow-module.js" type="module" defer></script>
+		<script src="/javascript/News-module.js" type="module" defer></script>
 		
 	</head>
 	<body>
 		<div id="top">
-			<div id="top_frame">
+			<div id="sign">
 				<div id="logo"></div>
-				<div id="title">
-					<p>Blue Sky Information Factory</p>
-				</div>
+				<div id="title">Blue Sky Information Factory</div>
 			</div>
-			<div id="navigation_frame">
-				<ul id="navigation">
-					<li id="nav_pointer" class="body_color"></li>
-					<li id="nav_hover_pointer" class="body_color"></li>
-					<li class="navigation"><button id="nav_item_1">主页</button></li>
-					<li class="navigation"><button id="nav_item_2">资源库</button></li>
-					<li class="navigation"><button id="nav_item_3">资讯</button></li>
-					<li class="navigation"><button id="nav_item_4">关于我们</button></li>
-				</ul>
+			<div id="navigation">
+				<div id="nav_pointer" class="body_color"></div>
+				<div id="nav_hover_pointer" class="body_color"></div>
+				<button class="navigation" id="nav_item_1">主页</button>
+				<button class="navigation" id="nav_item_2">资源库</button>
+				<button class="navigation" id="nav_item_3">资讯</button>
+				<button class="navigation" id="nav_item_4" disabled>关于我们</button>
 			</div>
 		</div>
 		<div id="page_box"></div>
-		<div id="window_board_layer">
-			<div id="window_board">
-				<div id="window_board_top">
-					<p id="window_board_title"></p>
-					<button id="window_board_close"></button>
-				</div>
-				<hr id="window_board_hr">
-				<div id="window_board_content"></div>
-			</div>
-		</div>
 	</body>
 </html>

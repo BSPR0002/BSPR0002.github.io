@@ -150,35 +150,15 @@ function EmptyElement(TargetElement) {
 	Operator.deleteContents();
 }
 
-function getNotificationPermission(callback){
-	if (!Notification) return 0;
-	switch (Notification.permission) {
-		case "default":
-			Notification.requestPermission().then(callback);
-			return 2;
-		case "granted":
-			return 1;
-		default:
-			return 0;
-	}
-}
-
 function NotificationCreater(options) {
-	switch (getNotificationPermission()) {
-		case 2:
-			return 2;
-		case 1:
-			var model={"title":"","message":"","image":"","icon":"","id":"","data":"","dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
-			Object.assign(model,options);
-			var NotificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
-			NotificationInterface.onshow=model.show;
-			NotificationInterface.onclick=model.click;
-			NotificationInterface.onclose=model.close;
-			NotificationInterface.onerror=model.error;
-			return NotificationInterface;
-		default:
-			return false;
-	}
+	var model={"title":"","message":"","image":"","icon":"","id":"","data":"","dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
+	Object.assign(model,options);
+	var notificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});
+	notificationInterface.onshow=model.show;
+	notificationInterface.onclick=model.click;
+	notificationInterface.onclose=model.close;
+	notificationInterface.onerror=model.error;
+	return notificationInterface;
 }
 
 function DetectUA() {
@@ -203,8 +183,9 @@ class MultiThread {
 	shut(){this.core.terminate()}
 }
 
-class ArrayHTML {
-	static decode(ArrayHTML,activeNode=false) {
+ArrayHTML={
+	[Symbol.toStringTag]:"ArrayHTML",
+	decode:function decode(ArrayHTML,activeNode=false) {
 		activeNode=Boolean(activeNode);
 		var getNodes={};
 		var DocumentFragment=document.createDocumentFragment();
@@ -270,8 +251,8 @@ class ArrayHTML {
 		};
 		Operator(ArrayHTML,DocumentFragment);
 		return activeNode?{DocumentFragment,getNodes}:DocumentFragment;
-	}
-	static encode(Node,IncludeOuter=false) {
+	},
+	encode:function encode(Node,IncludeOuter=false) {
 		var ArrayHtml=[];
 		function Transporter(Node,outer) {
 			if (Node.nodeName=="#text") {
@@ -314,7 +295,6 @@ class ArrayHTML {
 		};
 		return ArrayHtml;
 	}
-	constructor(Node,IncludeOuter=false){return this.constructor.encode(...arguments)}
 }
 
 var Cookies={

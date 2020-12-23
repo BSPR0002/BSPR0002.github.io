@@ -77,7 +77,7 @@
 			context.stroke();
 		}
 		function loop() {
-			context.clearRect(-1,0,1024,256);
+			context.clearRect(0,0,1024,256);
 			draw();
 			draw2();
 			requestAnimationFrame(loop)

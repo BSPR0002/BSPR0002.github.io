@@ -11,7 +11,6 @@ for (let i=1;i<5;++i) {
 	item.addEventListener("click",function(){changeSheet(i)});
 }
 
-document.getElementById("window_board_close").addEventListener("click",window_board.hide);
 changeSheet(1); //加载主页
 
 window.addEventListener("load",function() {

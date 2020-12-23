@@ -1,6 +1,7 @@
 var Activity={
-	"ReleaseAgreement":function() {
-		window_board.display(ArrayHTML.decode([
+	"ReleaseAgreement":async function() {
+		var MiniWindow=await import("/javascript/MiniWindow-module.js");
+		MiniWindow.show(ArrayHTML.decode([
 			"您好，欢迎访问蓝天信息工厂！",["BR"],
 			"欢迎您在我们网站的资源库中发布与投放内容。",["BR"],
 			"发布与投放内容需要注意如下事项：",
@@ -21,69 +22,3 @@ var Activity={
 		]),"发布协约");
 	}
 }
-
-var News=(function(){
-	var retry=0;
-	var Data=[];
-	function request() {
-		if (getNotificationPermission(request)===1) AJAX({
-			"url":"/json/news.json","type":"json",
-			"success":play,
-			"fail":function() {
-				if (retry<5) {
-					retry++;
-					request();
-				}
-			}
-		});
-	};
-	function play(data) {
-		Data=data;
-		operator();
-	};
-	function operator() {
-		if (getNotificationPermission()!=0&&Data[0]) {
-			var data=Data.splice(0,1)[0];
-			if ((LogManager(data.ID,data.name)||data.force==true)&&data.unshow!=true) {
-				var model={
-					"title":data.title,"message":data.preview.message,"icon":"/favicon.png","keep":true,
-					"show":function(){LogRecorder(data.ID,data.name)},
-					"close":operator
-				};
-				if (data.preview.image) model.image=data.preview.image;
-				if (data.content) model.click=function(){
-					window.focus();
-					window_board.display(ArrayHTML.decode(data.content),data.title)
-					this.close();
-				};
-				NotificationCreater(model);
-			} else operator();
-		};
-	};
-	function LogManager(NewsID,NewsName) {
-		var data=localStorage.getItem("News_log_ID_"+NewsID);
-		if (data!=null) {
-			try {
-				var log=JSON.parse(data);
-				if (typeof log!="object"||typeof log.have_read!="number"||typeof log.name!="string") throw "推送记录损坏";
-				var pass=Date.now()-log.have_read;
-				if (NewsName!=log.name||pass>259200000||pass<=0) {
-					localStorage.removeItem("News_log_ID_"+NewsID);
-					throw "推送记录过期";
-				};
-				return false;
-			} catch(error) {console.log("异常的推送记录:"+"ID-"+NewsID,error)};
-		}
-		return true;
-	};
-	function LogRecorder(NewsID,NewsName) {
-		if (typeof NewsName!="string") NewsName="";
-		var log={"name":NewsName,"have_read":Date.now()};
-		localStorage.setItem("News_log_ID_"+NewsID,JSON.stringify(log));
-	};
-	return {
-		"request":request,
-		"play":play,
-	};
-})();
-
