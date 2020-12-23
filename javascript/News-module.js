@@ -3,7 +3,7 @@ function getLog(){
 	if (log==null) {
 		let data=localStorage.getItem("BSNewsLog");
 		try {
-			dara=JSON.parse(data);
+			data=JSON.parse(data);
 			if (!(data instanceof Object)) throw "broken";
 			log=data;
 		} catch(none) {
