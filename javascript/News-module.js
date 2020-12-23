@@ -82,7 +82,7 @@ async function operator(list) {
 				if (item.preview.image) model.image=item.preview.image;
 				if (item.preview.message) previewMessage=item.preview.message;
 			}
-			try {showContent=typeof item.content=="string"?item.content:ArrayHTML.decode(item.content)}
+			try {showContent=typeof item.content=="string"?item.content:ArrayHTML.decode(item.content)} catch(none);
 			model.message=previewMessage?previewMessage:(typeof showContent=="string"?showContent:"详情请点击查看。");
 			model.click=function(){
 				window.focus();
