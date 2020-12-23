@@ -75,7 +75,7 @@ async function operator(list) {
 		if (!(LogManager(item.id)||item.force)||item.unshow) continue;
 		await new Promise(function(resolve){
 			var model={
-				"title":item.title,"icon":"/favicon.png","keep":true,
+				"title":item.title,"icon":"/favicon.svg","keep":true,
 				"show":function(){setLog(item.id)},
 				"close":resolve
 			};
