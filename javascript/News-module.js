@@ -29,22 +29,24 @@ function fullCheck(){
 	if (Date.now()-lastFullCheck<60) return;
 	lastFullCheck=Date.now();
 	var log=getLog();
-	for (let index in log) check(index,log[index]);
+	for (let index in log) check(index);
 }
 function LogManager(id) {
-	var log=getLog();
 	setTimeout(fullCheck,0)
 	return check(id);
 }
-function check(id,data) {
+function check(id) {
+	var log=getLog();
+	if (!(id in log)) return true;
+	var lastTime=log[id];
 	try {
-		if (typeof data!="number") throw "推送记录损坏";
-		let pass=Date.now()-data;
+		if (typeof lastTime!="number") throw "推送记录损坏";
+		let pass=Date.now()-lastTime;
 		if (pass>259200000||pass<1) throw "推送记录过期";
 		return true
 	} catch(exception) {
 		removeLog(id);
-		console.warn("异常的推送记录："+exception+"，已删除！\n\tID："+id+"\n\t源数据："+JSON.stringify(data))
+		console.warn("异常的推送记录："+exception+"，已删除！\n\tID："+id+"\n\t原记录："+JSON.stringify(lastTime))
 	}
 	return false
 }
