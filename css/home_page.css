@@ -8,8 +8,9 @@
 	box-sizing:border-box;
 	position:relative;
 	overflow:hidden;
+	display:grid;
+	grid-template-rows:128px 1fr;
 }
-
 #home_box_frame:before {
 	position:absolute;
 	left:0;
@@ -22,20 +23,68 @@
 	background-position:485px 40px;
 	opacity:0.5;
 }
-
 #welcome {
-	position:absolute;
-	left:100px;
-	top:100px;
-	font-size:60px;
-	margin:0;
+	place-self:center;
+	font-size:35px;
+	opacity:0;
+	animation:welcome 1s ease-out 0.5s forwards;
 }
-
-#intro {
-	position:absolute;
-	left:150px;
-	top:300px;
-	font-size:40px;
-	margin:0;
+#service_frame {
+	position:relative;
+	box-sizing:border-box;
+	border:solid rgba(0,0,0,0.4) 1px;
+	border-radius:8px;
+	padding:8px;
+	background-color:rgba(0,128,255,0.2);
+	display:grid;
+	grid-template-rows:64px 1fr;
+	height:0;
+	opacity:0;
+	overflow:hidden;
+	animation:service_frame 0.5s ease-in-out 1s forwards;
 }
-
+#serve {
+	place-self:center;
+	font-size:20px;
+}
+#service {
+	display:flex;
+	justify-content:center;
+}
+.service_item {
+	width:30%;
+	height:100%;
+	margin:0 8px;
+	box-sizing:border-box;
+	border:solid #000080 1px;
+	border-radius:8px;
+	padding:8px;
+	background-color:rgba(0,0,128,0.2);
+	overflow:hidden;
+	opacity:0;
+	animation:service_item 0.5s ease-out 1.5s forwards;
+}
+#service_2{animation-delay:1.75s}
+#service_3{animation-delay:2s}
+.service_item h2{
+	font-size:20px;
+	text-align:center;
+}
+.service_item button {
+	display:block;
+	margin:1em auto
+}
+@keyframes welcome {
+	from{transform:translateX(4em)}
+	to{opacity:1}
+}
+@keyframes service_frame {
+	to {
+		height:100%;
+		opacity:1;
+	}
+}
+@keyframes service_item {
+	from{transform:translateX(2em)}
+	to{opacity:1}
+}

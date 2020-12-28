@@ -5,13 +5,35 @@
 		<link rel="stylesheet" type="text/css" href="/css/home_page.css">
 	</head>
 	<body>
-		<div id=home_box_frame>
-			<p id="welcome">欢迎来到蓝天信息工厂！<br></p>
-			<br>
-			<p id="intro">
-				在这里你可以找到二次元的资源，<br>
-				还可以向我们咨询二次元本土化工程！
-			</p>
+		<div id="home_box_frame">
+			<p id="welcome">您好，欢迎来到蓝天信息工厂！</p>
+			<div id="service_frame">
+				<p id="serve">我们能为您做什么？</p>
+				<div id="service">
+					<div id="service_1" class="service_item">
+						<h2>我想找些二维世界的东西</h2>
+						<p>
+							请点击按钮访问我们的资源仓库。<br>
+							这里应该会有你想要的……<br>
+							<button onclick="changeSheet(2)">转到资源库</button>
+							由于某些原因，我们正在实行隐蔽策略，由本工作组自身负责的资源暂不提供某些渠道，非常抱歉。
+						</p>
+					</div>
+					<div id="service_2" class="service_item">
+						<h2>我想在此处发布我的宝贝</h2>
+						<p>
+							我们可以为您提供一个可供他人查找您的资源的场所，具体细节请您参阅<a href="javascript:import(&quot;/javascript/MiniWindow-module.js&quot;).then(m=&gt;m.show(&quot;抱歉，该协约暂不可用……&quot;))">《发布协议》</a>，若您有意可按照<a href="javascript:import(&quot;/javascript/MiniWindow-module.js&quot;).then(m=&gt;m.show(&quot;抱歉，该页面暂不可用……&quot;))">关于我们</a>页面中的联系方式与我们进行协商与登记。
+						</p>
+					</div>
+					<div id="service_3" class="service_item">
+						<h2>我想加入工作组无所事事</h2>
+						<p>
+							我们是一个以网页开发与ACG为核心的工作小组，若您有兴趣可加入我们，一同探索。<br>
+							<button title="暂不可用" disabled onclick="changeSheet(4)">联系方式</button>
+						</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
