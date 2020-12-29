@@ -14,7 +14,7 @@ var node=ArrayHTML.decode([["DIV",[
 			["BUTTON",null,{id:"MiniWindowClose",title:"关闭",style:"position:relative;border:none;border-radius:4px"},"close"]
 		],{style:"overflow:hidden;display:grid;grid-template-columns:1fr 20px;grid-gap:2px"}],
 		["HR",null,{style:"width:100%;border:solid 1px;border-radius:1px"}],
-		["DIV",null,{id:"MiniWindowContent",style:"word-wrap:break-word;word-break:normal;overflow:auto"},"content"]
+		["DIV",null,{id:"MiniWindowContent",class:"BSIF-default",style:"word-wrap:break-word;word-break:normal;overflow:auto"},"content"]
 	],{id:"MiniWindow",style:"box-sizing:border-box;min-width:256px;min-height:128px;max-width:80%;max-height:80%;overflow:hidden;margin:auto;background-color:#FFFFFF;border-radius:10px;padding:10px;display:grid;grid-template-rows:20px auto 1fr;font-size:15px"},"window"]
 ],{id:"MiniWindowLayer",style:"position:fixed;top:0;bottom:0;left:0;right:0;z-index:1073741823;background-color:rgba(0,0,0,0.7);opacity:0;display:none;transition:opacity 0.5s ease-in-out"},"layer"]],true);
 var manager={

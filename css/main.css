@@ -71,12 +71,8 @@ a:active {color:#4B97C5}
 	transition:background-color 0.2s ease-in-out;
 	background-color:transparent;
 }
-.navigation:hover {
-	background-color:transparent;
-	outline:auto #FFC0D0;
-}
+.navigation:hover {outline:auto #FFC0D0}
 .navigation:active {background-color:rgba(255,192,208,0.5)}
-.navigation:disabled{opacity:1}
 .navigation:disabled:hover{background-color:rgba(255,0,0,0.4)}
 #nav_pointer,#nav_hover_pointer {
 	width:20px;

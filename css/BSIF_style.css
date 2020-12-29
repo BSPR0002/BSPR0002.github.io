@@ -16,12 +16,12 @@ button {
 	border:solid 2px #000000;
 	outline:none;
 	border-radius:4px;
-	background-color:hsl(0 0% 100%);
 }
-button:hover,button:disabled:hover{background-color:hsl(0 0% 90%)}
-button:active{background-color:hsl(0 0% 80%)}
-button:disabled{opacity:0.4}
-button:disabled:hover{background-color:hsl(0 0% 100%)}
+.BSIF-default button{background-color:hsl(0 0% 100%)}
+.BSIF-default button:hover,button:disabled:hover{background-color:hsl(0 0% 90%)}
+.BSIF-default button:active{background-color:hsl(0 0% 80%)}
+.BSIF-default button:disabled{opacity:0.4}
+.BSIF-default button:disabled:hover{background-color:hsl(0 0% 100%)}
 
 button,input[type="radio"] {cursor:pointer}
 
