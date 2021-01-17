@@ -14,22 +14,22 @@
 function AJAX(options) {
 	var model={"method":"get","url":null,"async":true,"username":undefined,"password":undefined,"type":"","timeout":0,"send":null,"cache":true,"success":null,"fail":null,"done":null,"error":null};
 	Object.assign(model,options);
-	var XHR=new XMLHttpRequest();
-	XHR.open(model.method,model.url,model.async,model.username,model.password);
+	var xhr=new XMLHttpRequest();
+	xhr.open(model.method,model.url,model.async,model.username,model.password);
 	if (model.async!==false) {
-		XHR.responseType=model.type;
-		XHR.timeout=model.timeout;
+		xhr.responseType=model.type;
+		xhr.timeout=model.timeout;
 	};
-	if (model.cache===false) XHR.setRequestHeader("If-Modified-Since","0");
-	XHR.onload=function() {
+	if (model.cache===false) xhr.setRequestHeader("If-Modified-Since","0");
+	xhr.onload=function() {
 		if ((this.status>=200&&this.status<300)||this.status==304) {
 			if (typeof model.success=="function") model.success(this.response);
 		} else if (typeof model.fail=="function") model.fail(this.status,this.response);
 		if (typeof model.done=="function") model.done(this.status,this.response)
 	};
-	XHR.onerror=model.error;
-	XHR.send(model.send);
-	return XHR;
+	xhr.onerror=model.error;
+	xhr.send(model.send);
+	return xhr;
 }
 
 function getJSON(url,callback,AllowCache) {
@@ -419,89 +419,3 @@ var Base64={
 		return operator.buffer
 	}
 };
-
-class AudioPlayer {
-	constructor() {
-		var audioContext=new AudioContext;
-		var analyser=audioContext.createAnalyser();
-		var gainNode=audioContext.createGain();
-		analyser.connect(audioContext.destination);
-		gainNode.connect(audioContext.destination);
-		this.audioContext=audioContext;
-		this.analyser=analyser;
-		this.gainNode=gainNode;
-		gainNode.gain.value=0;
-		Object.defineProperty(this,"volume",{
-			"get":function(){return Math.round((gainNode.gain.value+1)*1000)/10},
-			"set":function(value){gainNode.gain.value=value/100-1},
-			"enumerable":true
-		});
-	}
-	get [Symbol.toStringTag](){return "AudioPlayer"}
-	linkAudio(AudioNode) {
-		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new Error("输入的参数不是音频源节点！")
-		AudioNode.connect(this.analyser);
-		AudioNode.connect(this.gainNode);
-		var controller={
-			"audioNode":AudioNode,
-			"start":function(){AudioNode.start()},
-			"stop":function(){AudioNode.stop()}
-		};
-		Object.defineProperty(controller,Symbol.toStringTag,{
-			"value":"AudioPlayerController",
-			"writeable":false,
-			"enumerable":false
-		});
-		Object.defineProperty(controller,"onended",{
-			"get":function(){return AudioNode.onended},
-			"set":function(value){AudioNode.onended=value},
-			"enumerable":true
-		});
-		Object.defineProperty(controller,"detune",{
-			"get":function(){return AudioNode.detune.value},
-			"set":function(value){AudioNode.detune.value=value},
-			"enumerable":true
-		});
-		return controller
-	}
-	linkBuffer(AudioBuffer) {
-		var audioNode=this.audioContext.createBufferSource();
-		audioNode.buffer=AudioBuffer;
-		var controller=this.linkAudio(audioNode)
-		for (let item of ["loop","loopStart","loopEnd"]) {
-			Object.defineProperty(controller,item,{
-				"get":function(){return audioNode[item]},
-				"set":function(value){audioNode[item]=value},
-				"enumerable":true
-			});
-		};
-		Object.defineProperty(controller,"speed",{
-			"get":function(){return Math.round(audioNode.playbackRate.value*100)/100},
-			"set":function(value){audioNode.playbackRate.value=value},
-			"enumerable":true
-		});
-		controller.pause=function(){audioNode.playbackRate.value=0};
-		controller.resume=function(){audioNode.playbackRate.value=1};
-		return controller
-	}
-	play(AudioBuffer,loop=false,loopStart=0,loopEnd=0) {
-		var audio=this.linkBuffer(AudioBuffer);
-		if (loop===true) {
-			audio.loop=true;
-			audio.loopStart=typeof loopStart=="number"?loopStart:0;
-			audio.loopEnd=typeof loopEnd=="number"?loopEnd:0;
-			if (audio.loopStart!=0&&audio.loopEnd<=audio.loopStart) console.warn("设置的循环结束点不晚于循环开始点，音频循环可能会不符合预期效果。");
-		};
-		audio.start();
-		return audio
-	}
-	async playFile(file,loop=false,loopStart=0,loopEnd=0) {
-		if (!(file instanceof Blob)) throw new Error("Failed to execute 'playFile' on AudioPlayer: Argument 'file' is not a binary object.");
-		var buffer=await this.audioContext.decodeAudioData(await file.arrayBuffer());
-		return this.play(buffer,loop,loopStart,loopEnd)
-	}
-	pause(){this.audioContext.suspend()}
-	resume(){this.audioContext.resume()}
-	close(){this.audioContext.close()}
-}
-
