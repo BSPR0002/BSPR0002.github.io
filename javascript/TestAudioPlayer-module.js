@@ -102,8 +102,8 @@ async function play() {
 		audioController=await audioPlayer.playFile(file,true);
 		changeFileName([1,file.name]);
 		nodes.playbackRate.innerText=1;
-	} catch(e) {
-		alert("发生了错误，您可能没有选择正确的音频文件。");
+	} catch(error) {
+		alert("发生了错误，您可能没有选择正确的音频文件。\n"+error.message);
 		changeFileName([0]);
 	};
 	busy=false
