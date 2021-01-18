@@ -1,7 +1,7 @@
 class AudioController {
 	get [Symbol.toStringTag](){return "AudioController"}
 	constructor(AudioNode) {
-		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new Error("输入的参数不是音频源节点！");
+		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new TypeError("输入的参数不是音频源节点！");
 		this.audioNode=AudioNode;
 		switch (true) {
 			case AudioNode instanceof AudioBufferSourceNode:
@@ -11,7 +11,7 @@ class AudioController {
 						set:function(value){this.audioNode[item]=value},
 						enumerable:true
 					});
-				};
+				}
 				Object.defineProperty(this,"speed",{
 					get:function(){return Math.round(this.audioNode.playbackRate.value*100)/100},
 					set:function(value){this.audioNode.playbackRate.value=value},
@@ -32,7 +32,7 @@ class AudioController {
 						set:function(value){this.audioNode[item]=value},
 						enumerable:true
 					});
-				};
+				}
 				break;
 			case AudioNode instanceof ConstantSourceNode:
 				Object.defineProperty(this,"offset",{
@@ -82,7 +82,7 @@ class AudioPlayer {
 		return audio
 	}
 	async playFile(file,loop=false,loopStart=0,loopEnd=0) {
-		if (!(file instanceof Blob)) throw new Error("Failed to execute 'playFile' on AudioPlayer: Argument 'file' is not a binary object.");
+		if (!(file instanceof Blob)) throw new TypeError("Failed to execute 'playFile' on AudioPlayer: Argument 'file' is not a binary object.");
 		var buffer=await this.audioContext.decodeAudioData(await file.arrayBuffer());
 		return this.play(buffer,loop,loopStart,loopEnd)
 	}
@@ -90,7 +90,7 @@ class AudioPlayer {
 	resume(){this.audioContext.resume()}
 	close(){this.audioContext.close()}
 }
-
+export {AudioPlayer};
 var audioPlayer=new AudioPlayer,audioController=null,busy=false,nodes=null,context,fftSizeStatu=false;
 async function play() {
 	if (busy) return alert("尚在加载其他音频，请稍后！");
@@ -180,13 +180,44 @@ function run() {
 		draw2();
 		requestAnimationFrame(loop)
 	}
-	var AH=[["DIV",[["SPAN","BSIF Audio Player",{"style":"grid-area:name"}],["SPAN",[["SPAN","当前文件："],["SPAN","无文件",null,"currentFile"]],{"style":"white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],["DIV",[["STYLE","#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"],["BUTTON","播放",null,"play"],["BUTTON","停止",null,"stop"],["DIV",[["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],["SPAN",["× ",["SPAN","1",null,"playbackRate"]]],["BUTTON","＋",{"class":"controls_speed","title":"+0.1"},"speedUp"]],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:5px;place-items:center;width:100%;height:100%","title":"速度"}]],{"style":"display:grid;grid-template-columns:1fr 1fr 2fr;grid-gap:5px;place-items:center;width:100%;height:100%"}],["INPUT",null,{"type":"file","style":"grid-area:input;width:100%"},"input"]],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"name current\"\"input controls\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]];
+	var AH=[
+		["DIV",[
+			["STYLE",[
+				"#test_audio_player>*{max-width:100%}"+
+				"#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}"+
+				"#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"]
+			],
+			["SPAN",[
+				"当前文件：",["SPAN","无文件",null,"currentFile"]
+			],{"style":"grid-area:current;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],
+			["INPUT",null,{"type":"file","style":"grid-area:input"},"input"],
+			["DIV",[
+				["BUTTON","播放",null,"play"],
+				["BUTTON","停止",null,"stop"],
+				["DIV",[
+					["BUTTON","➖",{"class":"controls_speed","title":"-0.1"},"speedDown"],
+					["SPAN",[
+						"✖ ",
+						["span","1",{"style":"place-self:end"},"playbackRate"]
+					],{"style":"display:grid;grid-template-columns:auto 2em"}],
+					["BUTTON","➕",{"class":"controls_speed","title":"+0.1"},"speedUp"]
+				],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:inherit;place-items:center;height:100%","title":"速度"}]
+			],{"style":"grid-area:controls;display:grid;grid-template-columns:auto auto 1fr;grid-gap:0.5em;place-items:center;height:100%"}],
+			["DIV",[
+				"音量",
+				["SPAN",[["#text",null,null,"volumeDisplay"],"%"]],
+				["INPUT",null,{"type":"range","step":"1","min":"0","max":"100"},"volumeSlide"]
+			],{"style":"grid-area:volume;display:grid;grid-template-columns:auto 3em 1fr;grid-gap:0.5em;place-items:end"}]
+		],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
+	];
 	var toolInterface=ArrayHTML.decode(AH,true);
 	nodes=toolInterface.getNodes;
 	nodes.play.addEventListener("click",play);
 	nodes.stop.addEventListener("click",stop);
 	nodes.speedUp.addEventListener("click",function(){changeSpeed(true)});
 	nodes.speedDown.addEventListener("click",function(){changeSpeed(false)});
+	nodes.volumeSlide.value=nodes.volumeDisplay.textContent=audioPlayer.volume;
+	nodes.volumeSlide.addEventListener("input",function(){audioPlayer.volume=+(nodes.volumeDisplay.textContent=this.value)});
 	document.getElementById("tools_plate").appendChild(toolInterface.DocumentFragment);
 	loop();
 }
