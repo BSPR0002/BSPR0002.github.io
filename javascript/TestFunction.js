@@ -1,209 +1,216 @@
-﻿
-
-/* 玩具
-var robot=new MultiThread("self.onmessage=function(e){self.postMessage(self.eval(e.data))}",function(d){console.log(d)});
-robot.do=function(command){
-	this.send(command);
-}
-*/
-
-class DecimalNumber {
+﻿class DecimalNumber {
 	get [Symbol.toStringTag](){return "DecimalNumber"}
+	static #LIMIT=1;
+	static get LIMIT(){return this.#LIMIT}
+	static set LIMIT(value){
+		switch (value) {
+			case 0:
+			case 1:
+			case 2:
+				return this.#LIMIT=value;
+			default:
+				throw new Error(`Cannot set DecimalNumber.LIMIT to '${value}', this value must be one of the values 0,1,2 (typeof "number").`)
+		}
+	}
 	#sign=false;
 	#integer=0n;
 	#mantissa=new Uint8Array(64);
-	#extreme=0;
 	#notNumber=false;
 	get sign(){return this.#sign}
 	get integer(){return this.#integer}
 	get mantissa(){return new Uint8Array(this.#mantissa)}
-	get extreme(){return this.#extreme}
 	constructor(initial=undefined){
-		if (arguments.length>0) {
-			let input=initial;
-			switch (typeof input) {
-				case "object":
-					if (input instanceof this.constructor) {
-						this.#sign=input.#sign;
-						this.#integer=input.#integer;
-						this.#mantissa=new Uint8Array(input.#mantissa);
-						this.#extreme=input.#extreme;
-						break;
-					};
-					if (input===null) break;
-				case "string":	
-				case "number":
-					if (!isFinite(input)) {
-						this.#notNumber=true;
-						break
-					}
-					if (input==0) break;
-					let translate=input.toString().split(".");
-					let integer=BigInt(translate[0]);
-					this.#integer=(this.#sign=input<0)?-integer:integer;
-					if (translate[1]) {
-						let temp=translate[1],length=temp.length>64?65:temp.length,mantissa=this.#mantissa;
-						for (let i=0,l=(length>63?64:length);i<l;++i) mantissa[i]=parseInt(temp[i]);
-						if (length==65) this.#extreme=parseInt(temp[64])
-					}
+		switch (typeof initial) {
+			case "object":
+				if (initial===null) break;
+				if (initial instanceof this.constructor) {
+					this.#sign=initial.#sign;
+					this.#integer=initial.#integer;
+					this.#mantissa=new Uint8Array(initial.#mantissa);
 					break;
-				case "bigint":
-					this.#integer=input
-				default:
+				};
+			case "string":	
+			case "number":
+				if (!isFinite(initial)) {
+					this.#notNumber=true;
+					break
+				}
+				if (initial==0) break;
+				let translate=initial.toString().split(".");
+				let integer=BigInt(translate[0]);
+				this.#integer=(this.#sign=initial<0)?-integer:integer;
+				if (translate[1]) {
+					let temp=translate[1],length=temp.length>64?65:temp.length,mantissa=this.#mantissa;
+					for (let i=0,l=(length>63?64:length);i<l;++i) mantissa[i]=parseInt(temp[i]);
+				}
+				break;
+			case "bigint":
+				this.#integer=initial;
+				break;
+			case "boolean":
+				if (initial) this.#integer=1n;
+			default:
+		}
+	}
+	#actualPoint() {
+		var array=this.#mantissa;
+		for (var i=63;i>-1;--i) if (array[i]!=0) break;
+		return i+1
+	}
+	#limit() {
+		if (!this.constructor.#LIMIT) return;
+		var mantissa=this.#mantissa,full=true;
+		function check(operator) {
+			for (let i=62;i>-1;--i) {
+				if (operator(mantissa[i])) {
+					full=false;
+					break
+				}
 			}
+		}
+		switch (mantissa[63]) {
+			case 9:
+				check(x=>x!=9);
+				if (full) {
+					this.#mantissa=new Uint8Array(64);
+					++this.#integer
+				}
+				break;
+			case 1:
+				if (this.constructor.#LIMIT<2) return;
+				check(x=>!x);
+				if (full) resultMantissa[63]=0;
+			default:
 		}
 	}
 	toString() {
 		if (this.#notNumber) return "NaN";
-		var fixed=this.plus(0);
+		var fixed=new this.constructor(this);
+		fixed.#limit();
 		var integer=fixed.#integer;
-		var mantissa="";
-		for (let i=63,temp=fixed.#mantissa,first=true;i>-1;--i) {
-			if (first&&temp[i]==0) {continue} else {first=false}
-			mantissa=temp[i]+mantissa;
-		}
+		var mantissa=fixed.#mantissa.slice(0,this.#actualPoint()).join("");
 		return (fixed.#sign&&(integer||mantissa)?"-":"")+(mantissa?integer+"."+mantissa:integer)
 	}
 	isGreater(compare) {
 		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		if (this.#notNumber||compare.#notNumber) return false;
 		if (this.#sign<compare.#sign) return true;
 		var translate=x=>this.#sign?!x:x;
-		{
-			let intGreater=this.#integer>compare.#integer;
-			if (intGreater||this.#integer<compare.#integer) return translate(intGreater);
-		}
+		var intGreater=this.#integer>compare.#integer;
+		if (this.#integer!=compare.#integer) return translate(intGreater);
 		for (let selfMantissa=this.#mantissa,compareMantissa=compare.#mantissa,i=0;i<64;++i) {
 			if (selfMantissa[i]>compareMantissa[i]) return translate(true);
 			if (selfMantissa[i]<compareMantissa[i]) return translate(false);
 		}
-		if (this.#extreme>compare.#extreme) return translate(true);
 		return false
 	}
 	isEqual(compare) {
 		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		if (this.#notNumber||compare.#notNumber) return false;
 		for (let selfMantissa=this.#mantissa,compareMantissa=compare.#mantissa,i=0;i<64;++i) if (selfMantissa[i]!=compareMantissa[i]) return false;
-		if (this.#sign==compare.#sign&&this.#integer==compare.#integer&&this.#extreme==compare.#extreme) return true;
+		if (this.#sign==compare.#sign&&this.#integer==compare.#integer) return true;
 		return false;
 	}
 	isNaN(){return this.#notNumber}
-	add(addend){
+	add(addend) {
 		var result=new this.constructor(this)
-		var resultMantissa=result.#mantissa;
-		var temp=[];
-		for (let item of arguments) temp=temp.concat(item);
-		for (let addend of temp) {
-			addend=new this.constructor(addend);
-			let sub=this.#sign!=addend.#sign,last=0;
-			if (sub) {
-				addend.#sign=!addend.#sign;
-				let isGreater=addend.isGreater(result),minuend=isGreater?addend:result,subtrahend=isGreater?result:addend;
-				if (isGreater) result.#sign=!result.#sign;
-				result.#integer=minuend.#integer-subtrahend.#integer;
-				result.#extreme=minuend.#extreme-subtrahend.#extreme;
-				if (result.#extreme<0) {
-					result.#extreme+=10;
-					last=1;
-				}
-				let minuendMantissa=minuend.#mantissa,subtrahendMantissa=subtrahend.#mantissa;
-				if (result.#extreme==1||result.#extreme==9) {
-					let first=minuendMantissa[63]-subtrahendMantissa[63]-last;
-					if (first<0) first+=10;
-					if (result.#extreme==9) {
-						if (first==9) {
-							result.#extreme=0;
-							last-=1
-						}
-					} else if (first%10==0) result.#extreme=0
-				}
-				for (let i=63;i>-1;--i) {
-					let calc=minuendMantissa[i]-subtrahendMantissa[i]-last;
-					if (calc<0) {
-						calc+=10;
-						last=1;
-					} else last=0;
-					resultMantissa[i]=calc;
-				}
-				if (last) {
-					--result.#integer;
-				}
-				continue;
-			}
-			result.#integer+=addend.#integer
-			result.#extreme+=addend.#extreme;
-			if (result.#extreme>9) {
-				result.#extreme-=10;
-				last=1;
-			}
-			let addendMantissa=addend.#mantissa;
-			if (result.#extreme==1||result.#extreme==9) {
-				let first=resultMantissa[63]+addendMantissa[63]+last;
-				if (first>10) first-=10;
-				if (result.#extreme==9) {
-					if (first==9) {
-						result.#extreme=0;
-						last+=1
-					}
-				} else if (first%10==0) result.#extreme=0
-			}
-			for (let i=63;i>-1;--i) {
-				let calc=resultMantissa[i]+addendMantissa[i]+last;
-				if (calc>9) {
-					calc-=10;
-					last=1;
-				} else last=0;
-				resultMantissa[i]=calc;
-			}
-			if (last) ++result.#integer;
+		addend=new this.constructor(addend);
+		if (this.#notNumber||addend.#notNumber) {
+			result.#notNumber=true;
+			return result
 		}
-		return result;
+		var sub=this.#sign!=addend.#sign,last=0;
+		var operandOne=1,operandTen=-10,carry=x=>x>9;
+		if (sub) {
+			if (addend.#sign=!addend.#sign?addend.isGreater(this):this.isGreater(addend)) {
+				let temp=result;
+				result=addend,addend=temp,result.#sign=!result.#sign;
+			}
+			addend.#integer=-addend.#integer,addend.#mantissa=new Int8Array(addend.#mantissa);
+			for (let i=0;i<64;++i) addend.#mantissa[i]=-addend.#mantissa[i];
+			operandOne=-1,operandTen=10,carry=x=>x<0;
+		}
+		result.#integer+=addend.#integer;
+		var resultMantissa=result.#mantissa,addendMantissa=addend.#mantissa;
+		for (let i=63;i>-1;--i) {
+			let calc=resultMantissa[i]+addendMantissa[i]+last;
+			if (carry(calc)) {
+				calc+=operandTen;
+				last=operandOne;
+			} else last=0;
+			resultMantissa[i]=calc;
+		}
+		if (last) result.#integer+=operandOne;
+		result.#limit();
+		return result
 	}
-	sub(subtrahends) {
-		var temp=[],next=[];
-		for (let item of arguments) temp=temp.concat(item);
-		for (let subtrahend of temp) {
-			if (!(subtrahend instanceof this.constructor)) subtrahend=new this.constructor(subtrahend);
-			subtrahend.#sign=!subtrahend.#sign;
-			next.push(subtrahend)
-		}
-		return this.plus(next)
+	sub(subtrahend) {
+		subtrahend=new this.constructor(subtrahend);
+		subtrahend.#sign=!subtrahend.#sign;
+		return this.add(subtrahend)
 	}
 	multiply(multiplier) {
-		var operand1=new this.constructor(this),operand2=new this.constructor(multiplier);
-		if (operand1.#notNumber||operand2.#notNumber) return this.constructor.notNumber();
-		
-		
-		
-		
-		
-		
+		multiplier=new this.constructor(multiplier);
+		var self=new this.constructor(this),result=new this.constructor;
+		if (self.#notNumber||multiplier.#notNumber) {
+			result.#notNumber=true;
+			return result
+		}
+		result.#sign=Boolean(self.#sign^multiplier.#sign);
+		var mantissaBits=0,bits1=self.#actualPoint(),bits2=multiplier.#actualPoint(),operand1=BigInt(self.#integer+self.#mantissa.slice(0,bits1).join("")),operand2=BigInt(multiplier.#integer+multiplier.#mantissa.slice(0,bits2).join(""));
+		mantissaBits+=bits1+bits2;
+		var temp1=String(operand1*operand2),length1=temp1.length,temp2=temp1.substring(length1-mantissaBits),length2=temp2.length;
+		if (length1>mantissaBits) result.#integer=BigInt(temp1.substring(0,length1-mantissaBits));
+		if (length2+64>mantissaBits) {
+			while (temp2.length<mantissaBits) temp2="0"+temp2;
+			for (let i=0,l=temp2.length<64?temp2.length:64,mantissa=result.#mantissa;i<l;++i) mantissa[i]=+temp2[i];
+		}
+		result.#limit()
+		return result
+	}
+	divide(divisor) {
+		divisor=new this.constructor(divisor);
+		var self=new this.constructor(this),result=new this.constructor;
+		if (self.#notNumber||divisor.#notNumber) {
+			result.#notNumber=true;
+			return result
+		}
+		result.#sign=Boolean(self.#sign^divisor.#sign);
+		var move=self.#actualPoint();
+		{
+			let bits2=divisor.#actualPoint();
+			if (bits2>move) move=bits2
+		}
+		move+=64;
+
+		result.#limit()
+		return result
 	}
 	static notNumber() {
 		var temp=new this;
 		temp.#notNumber=true;
 		return temp
 	}
-	static constructFromData(integer_BigInt,sign_boolean=null,mantissa_Uint8Array=null,extreme_number=null) {
-		var result=new this;
-		if (typeof integer_BigInt!="bigint") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'integer_BigInt' is not a BigInt.");
-		if (integer_BigInt<0) throw new TypeError("Failed to construct DecimalNumber from data: The integer part cannot be negative.");
-		result.#integer=integer_BigInt;
-		if (sign_boolean!=null) {
-			if (typeof sign_boolean!="boolean") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'sign_boolean' is not a boolean.");
-			result.#sign=sign_boolean;
+	static fromData(integer,sign=null,mantissa=null) {
+		var result=new this,mantissaZero=true;
+		if (typeof integer!="bigint") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'integer' is not a BigInt.");
+		if (integer<0) throw new TypeError("Failed to construct DecimalNumber from data: The integer part cannot be negative.");
+		result.#integer=integer;
+		if (sign!=null) {
+			if (typeof sign!="boolean") throw new TypeError("Failed to construct DecimalNumber from data: Argument 'sign' is not a boolean.");
+			result.#sign=sign;
 		}
-		if (mantissa_Uint8Array!=null) {
-			if (!(mantissa_Uint8Array instanceof Uint8Array)) throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'mantissa_Uint8Array' is not a Uint8Array.");
+		if (mantissa!=null) {
+			if (!(mantissa instanceof Uint8Array)) throw new TypeError("Failed to construct DecimalNumber from data: Argument 'mantissa' is not a Uint8Array.");
 			result.#mantissa=new Uint8Array(64);
-			let length=mantissa_Uint8Array.length;
+			let length=mantissa.length;
 			for (let i=0,l=length>63?64:length;i<l;++i) {
-				if (mantissa_Uint8Array[i]>9) throw new TypeError("Failed to construct DecimalNumber from data: One of the mantissa is greater than 9.[at mantissa_Uint8Array["+i+"]]");
-				result.#mantissa=mantissa_Uint8Array[i];
+				if (mantissa[i]>9) throw new TypeError("Failed to construct DecimalNumber from data: One of the mantissa is greater than 9.[at mantissa["+i+"]]");
+				if (result.#mantissa=mantissa[i]) mantissaZero=false;
 			}
 		}
-		if (extreme_number!=null) {
-			if (typeof extreme_number!="number") throw new TypeError("Failed to construct DecimalNumber from data: Parameter 'extreme_number' is not a number.");
-			result.#extreme=extreme_number;
-		}
+		if (!result.integer&&mantissaZero) result.#sign=false;
+		result.#limit()
 		return result
 	}
 }
@@ -255,14 +262,4 @@ class randomStatistician {
 		}
 		return result
 	}
-}
-
-async function dooo(times) {
-	var random=Math.random,tt=new randomStatistician;
-	function infunc(resolve){setTimeout(resolve,random()*100)}
-	for (let i=0;i<times;++i) {
-		await new Promise(infunc);
-		tt.record(random());
-	}
-	console.log("done",tt.analyze())
 }

@@ -1,4 +1,4 @@
-if (DetectUA().Mobile) window.location.href="/Mobile/";
+if (detectUA().Mobile) window.location.href="/Mobile/";
 
 {
 	let sheetList=["home_page","resource_library","information","about_us"];

@@ -32,105 +32,101 @@ function AJAX(options) {
 	return xhr;
 }
 
-function getJSON(url,callback,AllowCache) {
+function getJSON(url,callback,allowCache) {
 	var AJAXModel={"url":url,"type":"json"};
 	if (typeof callback=="function") AJAXModel.success=callback;
-	if (AllowCache===false) AJAXModel.cache=false;
+	if (allowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
-function getXML(url,callback,AllowCache) {
+function getXML(url,callback,allowCache) {
 	var AJAXModel={"url":url,"type":"document"};
 	if (typeof callback=="function") AJAXModel.success=callback;
-	if (AllowCache===false) AJAXModel.cache=false;
+	if (allowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
-function Load(url,TargetElement,AllowCache,fully,onerror) {
+function Load(url,targetElement,allowCache,fully,onerror) {
 	var AJAXModel={"url":url,"onerror":onerror};
-	if (AllowCache===false) AJAXModel.cache=false;
+	if (allowCache===false) AJAXModel.cache=false;
 	if (fully===true) {
-		var FullLoadInterface={"readyState":0,"children":null};
+		var FullLoadInterface={"readyState":0};
 		AJAXModel.success=function(response){
 			FullLoadInterface.readyState=3;
 			var Operator=document.createRange().createContextualFragment(response);
-			var requests={"list":[]};
-			FullLoadInterface.children=requests.list;
-			var count=-1;
-			Object.defineProperty(requests,"number",{
-				"get":function(){return count},
-				"set":function(value){
-					count=value;
-					if (value==0) {
-						FullLoadInterface.abort=function(){};
-						FullLoadInterface.readyState=4;
-						EmptyElement(TargetElement);
-						TargetElement.appendChild(Operator);
-					};
-				},
-				"configrable":true,
-				"enumerable":true,
-			});
+			var requests=[],controllers=[];
 			for (let item of Operator.querySelectorAll("link")) {
 				if (item.getAttribute("rel")=="stylesheet") {
-					requests.list.push(AJAX({
-						"url":item.getAttribute("href"),
-						"cache":AllowCache,
-						"success":function(response){
-							var temp=document.createElement("style");
-							temp.appendChild(document.createTextNode(response));
-							if (item.hasAttributes()==true) {
-								for (let attribute of item.attributes) {
-									if (attribute.name=="href"||attribute.name=="rel") continue;
-									temp.setAttribute(attribute.name,attribute.value)
-								}
-							};
-							item.parentNode.replaceChild(temp,item)
-						},
-						"fail":function(){console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.")},
-						"done":function(){--requests.number},
-						"error":function(){
-							--requests.number;
-							console.warn("The resource \""+item.getAttribute("href")+"\" of FullLoad \""+url+"\" request failed.")
-						}
+					requests.push(new Promise(function(resolve){
+						controllers.push(AJAX({
+							"url":item.getAttribute("href"),
+							"cache":allowCache,
+							"success":function(response){
+								var temp=document.createElement("style");
+								temp.appendChild(document.createTextNode(response));
+								if (item.hasAttributes()) {
+									for (let attribute of item.attributes) {
+										switch (attribute.name) {
+											case "href":
+											case "rel":
+												continue;
+											default:
+												temp.setAttribute(attribute.name,attribute.value)
+										}
+									}
+								};
+								item.parentNode.replaceChild(temp,item)
+							},
+							"fail":function(){console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`)},
+							"done":resolve,
+							"error":function(){
+								console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`);
+								resolve()
+							}
+						}))
 					}))
 				}
 			};
 			for (let item of Operator.querySelectorAll("script")) {
 				if (item.getAttribute("src")) {
-					requests.list.push(AJAX({
-						"url":item.src,
-						"cache":AllowCache,
-						"success":function(response){
-							if (item.type=="module") return;
-							var temp=document.createElement("script");
-							temp.appendChild(document.createTextNode(response));
-							if (item.hasAttributes()==true) {
-								for (let attribute of item.attributes) {
-									if (attribute.name=="src") continue;
-									temp.setAttribute(attribute.name,attribute.value)
-								}
-							};
-							item.parentNode.replaceChild(temp,item)
-						},
-						"fail":function(){console.warn("The resource \""+item.src+"\" request for FullLoad \""+url+"\" failed.")},
-						"done":function(){--requests.number},
-						"error":function(){
-							--requests.number;
-							console.warn("The resource \""+item.src+"\" request for FullLoad \""+url+"\" failed due to a network error.")
-						}
+					requests.push(new Promise(function(resolve){
+						controllers.push(AJAX({
+							"url":item.src,
+							"cache":allowCache,
+							"success":function(response) {
+								if (item.type=="module") return;
+								var temp=document.createElement("script");
+								temp.appendChild(document.createTextNode(response));
+								if (item.hasAttributes()) {
+									for (let attribute of item.attributes) {
+										if (attribute.name=="src") continue;
+										temp.setAttribute(attribute.name,attribute.value)
+									}
+								};
+								item.parentNode.replaceChild(temp,item)
+							},
+							"fail":function(){console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`)},
+							"done":resolve,
+							"error":function() {
+								console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`);
+								resolve()
+							}
+						}))
 					}))
 				}
 			};
-			requests.number=requests.list.length;
 			FullLoadInterface.abort=function(){
-				count=-1;
 				FullLoadInterface.readyState=4;
-				for (let item of requests.list) {
+				for (let item of controllers) {
 					item.abort();
 				};
 				FullLoadInterface.abort=function(){};
 			};
+			Promise.allSettled(requests).then(function(){
+				FullLoadInterface.readyState=4;
+				targetElement.innerHTML="";
+				targetElement.appendChild(Operator);
+			})
 		};
 		FullLoadInterface.AJAX=AJAX(AJAXModel);
 		FullLoadInterface.abort=function(){FullLoadInterface.AJAX.abort()};
@@ -138,15 +134,15 @@ function Load(url,TargetElement,AllowCache,fully,onerror) {
 	};
 	AJAXModel.success=function(response) {
 		var Operator=document.createRange().createContextualFragment(response);
-		EmptyElement(TargetElement);
-		TargetElement.appendChild(Operator);
+		targetElement.innerHTML="";
+		targetElement.appendChild(Operator);
 	};
 	return AJAX(AJAXModel);
 }
 
-function EmptyElement(TargetElement) {
+function EmptyElement(targetElement) {
 	var Operator=document.createRange();
-	Operator.selectNodeContents(TargetElement);
+	Operator.selectNodeContents(targetElement);
 	Operator.deleteContents();
 }
 
@@ -161,29 +157,62 @@ function NotificationCreater(options) {
 	return notificationInterface;
 }
 
-function DetectUA() {
-	var UA={"Desktop":false,"Mobile":false};
-	var Detective=navigator.userAgent;
-	if (Detective.match(/Windows/i)||Detective.match(/Macintosh/i)||Detective.match(/Linux/i)) UA.Desktop=true;
-	if (Detective.match(/Mobile/i)||Detective.match(/Android/i)||Detective.match(/iPhone/i)||Detective.match(/iPad/i)||Detective.match(/iPod/i)) UA.Mobile=true;
+function detectUA() {
+	var UA={"desktop":false,"mobile":false};
+	var detective=navigator.userAgent;
+	if (detective.match(/Windows/i)||detective.match(/Macintosh/i)||detective.match(/Linux/i)) UA.desktop=true;
+	if (detective.match(/Mobile/i)||detective.match(/Android/i)||detective.match(/iPhone/i)||detective.match(/iPad/i)||detective.match(/iPod/i)) UA.mobile=true;
 	return UA;
 }
 
-class MultiThread {
-	constructor(codeString,listener,onerror,name) {
-		var codeFile=URL.createObjectURL(new Blob([codeString],{"type":"application/javascript;charset=utf-8"}));
-		this.core=new Worker(codeFile,{"name":name});
-		if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)};
-		if (typeof onerror=="function") this.core.onerror=onerror;
-		URL.revokeObjectURL(codeFile);
+var Cookies={
+	[Symbol.toStringTag]:"Cookies",
+	"get":function(cookieName) {
+		return Cookies.toObject()[cookieName];
+	},
+	"set":function(name,value,expiresDate,path,domain) {
+		if (expiresDate instanceof Date) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
+		if (typeof path=="string") {path=";Path="+path} else path="";
+		if (typeof domain=="string") {domain=";domain="+domain} else domain="";
+		document.cookie=name+"="+value+expiresDate+path+domain;
+	},
+	"delete":function(cookieName,cookiePath,cookieDomain) {
+		var expires=new Date(0);
+		Cookies.set(cookieName,"",expires,cookiePath,cookieDomain);
+	},
+	"empty":function() {
+		for (var cookie in Cookies.toObject()) {Cookies.delete(cookie)};
+	},
+	"toObject":function() {
+		var Fodder_Box={};
+		if (document.cookie!="") {
+			var Cookies_Box=document.cookie.split("; ");
+			for (var cookie in Cookies_Box) {
+				var pulverizer=Cookies_Box[cookie].split("=");
+				for (var timer=0;timer<pulverizer.length;timer++) {
+					switch (timer) {
+						case 0:
+							Fodder_Box[pulverizer[0]]="";
+							break;
+						case 1:
+							Fodder_Box[pulverizer[0]]=pulverizer[1];
+							break;
+						default:
+							Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
+					};
+				};
+			};
+		};
+		return Fodder_Box;
+	},
+	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
+		var expiresDate=new Date();
+		expiresDate.setFullYear(expiresDate.getFullYear()+1);
+		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
 	}
-	send(data) {this.core.postMessage(data)}
-	transfer(ArrayBuffer) {this.core.postMessage(ArrayBuffer,[ArrayBuffer])}
-	changeListener(listener) {if (typeof listener=="function") this.core.onmessage=function(event){listener(event.data)}}
-	shut(){this.core.terminate()}
-}
+};
 
-ArrayHTML={
+var ArrayHTML={
 	[Symbol.toStringTag]:"ArrayHTML",
 	decode:function decode(ArrayHTML,activeNode=false) {
 		activeNode=Boolean(activeNode);
@@ -297,125 +326,106 @@ ArrayHTML={
 	}
 }
 
-var Cookies={
-	"get":function(cookieName) {
-		return Cookies.toObject()[cookieName];
+var FileIO={
+	[Symbol.toStringTag]:"FileIO",
+	read:function(File,readType){
+		if (arguments.length<2) throw new TypeError("Failed to execute 'read': 2 arguments required, but only "+arguments.length+" present.");
+		if (!(File instanceof Blob)) throw new TypeError("Failed to execute 'read': Argument 'File' is not a binary object.");
+		if (["ArrayBuffer","DataURL","Text"].indexOf(readType)==-1) throw new Error("Failed to execute 'read': The value of argument 'readtype' is not one of \"ArrayBuffer\", \"DataURL\", \"Text\".");
+		return new Promise(function(resolve){
+			var Operator=new FileReader;
+			Operator.onload=function(){resolve(this.result)};
+			Operator["readAs"+readType](File);
+		});
 	},
-	"set":function(name,value,expiresDate,path,domain) {
-		if (expiresDate instanceof Date) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
-		if (typeof path=="string") {path=";Path="+path} else path="";
-		if (typeof domain=="string") {domain=";domain="+domain} else domain="";
-		document.cookie=name+"="+value+expiresDate+path+domain;
-	},
-	"delete":function(cookieName,cookiePath,cookieDomain) {
-		var expires=new Date(0);
-		Cookies.set(cookieName,"",expires,cookiePath,cookieDomain);
-	},
-	"empty":function() {
-		for (var cookie in Cookies.toObject()) {Cookies.delete(cookie)};
-	},
-	"toObject":function() {
-		var Fodder_Box={};
-		if (document.cookie!="") {
-			var Cookies_Box=document.cookie.split("; ");
-			for (var cookie in Cookies_Box) {
-				var pulverizer=Cookies_Box[cookie].split("=");
-				for (var timer=0;timer<pulverizer.length;timer++) {
-					switch (timer) {
-						case 0:
-							Fodder_Box[pulverizer[0]]="";
-							break;
-						case 1:
-							Fodder_Box[pulverizer[0]]=pulverizer[1];
-							break;
-						default:
-							Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
-					};
-				};
-			};
-		};
-		return Fodder_Box;
-	},
-	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
-		var expiresDate=new Date();
-		expiresDate.setFullYear(expiresDate.getFullYear()+1);
-		Cookies.set(cookieName,Cookies.get(cookieName),expiresDate,cookiePath,cookieDomain);
-	}
-};
-
-var FileAPI={
-	"read":function(target,type,callback) {
-		var Operator=new FileReader;
-		if (typeof callback=="function") Operator.onload=function(){callback(this.result)};
-		switch (type) {
-			case 1:
-				Operator.readAsArrayBuffer(target);
-			break;
-			case 2:
-				Operator.readAsBinaryString(target);
-			break;
-			case 3:
-				Operator.readAsDataURL(target);
-			break;
-			default:
-				Operator.readAsText(target);
-		}
-		return Operator;
-	},
-	"save":function(file,saveName){
+	save:function(file,saveName){
 		var obj_URL=URL.createObjectURL(file);
 		var address=document.createElement("a");
 		address.href=obj_URL;
-		if (typeof saveName=="undefined") {
-			address.download="";
-		} else address.download=saveName;
+		address.download=typeof saveName=="string"?saveName:"";
 		address.dispatchEvent(new MouseEvent("click",{"button":0}));
 		URL.revokeObjectURL(obj_URL);
+	},
+	get:function() {
+		return new Promise(function(resolve){
+			var input=document.createElement("input");
+			input.type="file";
+			input.onchange=function(){resolve(this.files[0])};
+			input.dispatchEvent(new MouseEvent("click",{"button":0}));
+		});
 	}
 };
 
-var Base64={
-	"encode":function(data) {
-		if (!(typeof data=="object"&&data instanceof ArrayBuffer)) throw new TypeError("Base64 encoder accepts only ArrayBuffer objects.");
+var Base64={ 
+	[Symbol.toStringTag]:"Base64",
+	encode:function encode(data) {
+		if (!(data instanceof ArrayBuffer)) throw new TypeError("Base64 encoder accepts only ArrayBuffer objects.");
 		var table=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9","+","/"];
 		var operator=new Uint8Array(data);
-		var result="",padding="",bits="";
-		for (let byte=0,bytes=operator.length;byte<bytes;++byte) {
-			let temp=operator[byte].toString(2);
-			for (null;temp.length<8;temp="0"+temp);
-			bits+=temp;
-		};
-		for (let remain=(3-operator.length%3)%3;remain!=0;--remain) {
-			bits+="00";
-			padding+="=";
-		};
-		for (let byte=0,bytes=bits.length/6;byte<bytes;++byte) {
-			result+=table[Number("0b"+bits.substring(byte*6,(byte+1)*6))]
-		};
-		return result+padding;
+		var result="",length=operator.length,remain=length%3,byte=0;
+		{
+			let end=length-remain;
+			while (byte<end) {
+				let bits="";
+				for (let i=0;i<3;++i,++byte) {
+					let temp=operator[byte].toString(2)
+					while (temp.length<8) temp="0"+temp;
+					bits+=temp;
+				}
+				for (let i=0;i<24;result+=table[Number("0b"+bits.substring(i,i+=6))]);
+			}
+		}
+		if (remain) {
+			let bits="",padding="";
+			while (byte<length) {
+				let temp=operator[byte].toString(2);
+				while (temp.length<8) temp="0"+temp;
+				bits+=temp;
+				++byte
+			}
+			do {
+				bits+="00";
+				padding+="=";
+				++remain
+			} while (remain<3);
+			for (let i=0,l=bits.length;i<l;result+=table[Number("0b"+bits.substring(i,i+=6))]);
+			result+=padding
+		}
+		return result
 	},
-	"decode":function(Base64String) {
+	decode:function decode(Base64String) {
 		if (typeof Base64String!="string") throw new TypeError("Base64 decoder accepts only strings.");
 		var length=Base64String.length;
-		if (length%4!=0) throw new SyntaxError("Invalid string, string length is not a multiple of 4.");
+		if (length%4) throw new Error("Invalid string, string length is not a multiple of 4.");
 		var table={"A":"000000","B":"000001","C":"000010","D":"000011","E":"000100","F":"000101","G":"000110","H":"000111","I":"001000","J":"001001","K":"001010","L":"001011","M":"001100","N":"001101","O":"001110","P":"001111","Q":"010000","R":"010001","S":"010010","T":"010011","U":"010100","V":"010101","W":"010110","X":"010111","Y":"011000","Z":"011001","a":"011010","b":"011011","c":"011100","d":"011101","e":"011110","f":"011111","g":"100000","h":"100001","i":"100010","j":"100011","k":"100100","l":"100101","m":"100110","n":"100111","o":"101000","p":"101001","q":"101010","r":"101011","s":"101100","t":"101101","u":"101110","v":"101111","w":"110000","x":"110001","y":"110010","z":"110011","0":"110100","1":"110101","2":"110110","3":"110111","4":"111000","5":"111001","6":"111010","7":"111011","8":"111100","9":"111101","+":"111110","/":"111111"};
 		var padding=0;
 		for (let i=1;i<4;++i) {
 			if (Base64String[length-i]!="=") break;
-			if (i>2) throw new SyntaxError("Invalid string with more than 2 complements(=).");
+			if (i>2) throw new Error("Invalid string with more than 2 complements(=).");
 			++padding;
-		};
-		length-=padding;
-		var bits="";
-		for (let i=0;i<length;++i) {
-			if (typeof table[Base64String[i]]=="undefined") throw new SyntaxError("Invalid string with invalid character \""+Base64String[i]+"\" at ["+i+"].");
-			bits+=table[Base64String[i]];
-		};
-		var bytes=(bits.length-padding*2)/8;
-		var operator=new Uint8Array(bytes);
-		for (let byte=0;byte<bytes;++byte) {
-			operator[byte]=Number("0b"+bits.substring(byte*8,(byte+1)*8))
-		};
+		}
+		var i=0,end=padding?length-4:length,byte=0;
+		var operator=new Uint8Array(length*0.75-padding);
+		while (i<end) {
+			let temp="";
+			for (let bits=0;bits<4;++i,++bits) {
+				let data=table[Base64String[i]];
+				if (!data) throw new Error(`Invalid string with invalid character \"${data}\" at [${i}].`);
+				temp+=data
+			}
+			for (let bit=0;bit<24;operator[byte++]=Number("0b"+temp.substring(bit,bit+=8)));
+		}
+		if (padding) {
+			end+=4-padding;
+			let temp="",byteEnd=byte+(3-padding)%3,bit=0;
+			do {
+				let data=table[Base64String[i]];
+				if (!data) throw new Error(`Invalid string with invalid character \"${data}\" at [${i}].`);
+				temp+=data;
+				++i
+			} while (i<end);
+			do {operator[byte++]=Number("0b"+temp.substring(bit,bit+=8))} while (byte<byteEnd);
+		}
 		return operator.buffer
 	}
 };

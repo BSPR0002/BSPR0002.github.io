@@ -195,12 +195,12 @@ function run() {
 				["BUTTON","播放",null,"play"],
 				["BUTTON","停止",null,"stop"],
 				["DIV",[
-					["BUTTON","➖",{"class":"controls_speed","title":"-0.1"},"speedDown"],
+					["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],
 					["SPAN",[
-						"✖ ",
-						["span","1",{"style":"place-self:end"},"playbackRate"]
+						"× ",
+						["span","1",{"style":"place-self:start "},"playbackRate"]
 					],{"style":"display:grid;grid-template-columns:auto 2em"}],
-					["BUTTON","➕",{"class":"controls_speed","title":"+0.1"},"speedUp"]
+					["BUTTON","＋" ,{"class":"controls_speed","title":"+0.1"},"speedUp"]
 				],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:inherit;place-items:center;height:100%","title":"速度"}]
 			],{"style":"grid-area:controls;display:grid;grid-template-columns:auto auto 1fr;grid-gap:0.5em;place-items:center;height:100%"}],
 			["DIV",[
