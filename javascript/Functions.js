@@ -8,7 +8,7 @@ if (detectUA().Mobile) window.location.href="/Mobile/";
 		movePointer(sheet*200-110);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=Load("/html/"+sheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
+			lastLoad=load("/html/"+sheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
 			currentSheet=sheet;
 		}
 	}

@@ -46,104 +46,99 @@ function getXML(url,callback,allowCache) {
 	return AJAX(AJAXModel);
 }
 
-function Load(url,targetElement,allowCache,fully,onerror) {
-	var AJAXModel={"url":url,"onerror":onerror};
+function load(url,targetElement,allowCache=true,preloadResource=true,onerror=null) {
+	var AJAXModel={url:url,onerror:onerror};
 	if (allowCache===false) AJAXModel.cache=false;
-	if (fully===true) {
-		var FullLoadInterface={"readyState":0};
-		AJAXModel.success=function(response){
-			FullLoadInterface.readyState=3;
-			var Operator=document.createRange().createContextualFragment(response);
+	if (preloadResource) {
+		let loadInterface=new EventTarget,readyState=0,aborted=false;
+		function changeReadyState(value){
+			loadInterface.dispatchEvent(new Event("readyStateChange"));
+			readyState=value
+		}
+		Object.defineProperty(loadInterface,"readyState",{
+			get:function(){return readyState},
+			configurable:false,
+			enumerable:true
+		})
+		AJAXModel.success=async function(response){
+			var operator=document.createRange().createContextualFragment(response);
 			var requests=[],controllers=[];
-			for (let item of Operator.querySelectorAll("link")) {
-				if (item.getAttribute("rel")=="stylesheet") {
-					requests.push(new Promise(function(resolve){
-						controllers.push(AJAX({
-							"url":item.getAttribute("href"),
-							"cache":allowCache,
-							"success":function(response){
-								var temp=document.createElement("style");
-								temp.appendChild(document.createTextNode(response));
-								if (item.hasAttributes()) {
-									for (let attribute of item.attributes) {
-										switch (attribute.name) {
-											case "href":
-											case "rel":
-												continue;
-											default:
-												temp.setAttribute(attribute.name,attribute.value)
-										}
-									}
-								};
-								item.parentNode.replaceChild(temp,item)
-							},
-							"fail":function(){console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`)},
-							"done":resolve,
-							"error":function(){
-								console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`);
-								resolve()
-							}
+			function preloadResource(tagName,rule,getURL,process) {
+				for (let item of operator.querySelectorAll(tagName)) {
+					if (rule(item)) {
+						requests.push(new Promise(function(resolve){
+							controllers.push(AJAX({
+								url:getURL(item),
+								cache:allowCache,
+								success:response=>process(response,item),
+								fail:function(){console.warn(`The resource "${item.getAttribute("href")}" of Load "${url}" request failed.`)},
+								done:resolve,
+								error:function(){
+									console.warn(`The resource "${item.getAttribute("href")}" of Load "${url}" request failed.`);
+									resolve()
+								}
+							}))
 						}))
-					}))
+					}
 				}
-			};
-			for (let item of Operator.querySelectorAll("script")) {
-				if (item.getAttribute("src")) {
-					requests.push(new Promise(function(resolve){
-						controllers.push(AJAX({
-							"url":item.src,
-							"cache":allowCache,
-							"success":function(response) {
-								if (item.type=="module") return;
-								var temp=document.createElement("script");
-								temp.appendChild(document.createTextNode(response));
-								if (item.hasAttributes()) {
-									for (let attribute of item.attributes) {
-										if (attribute.name=="src") continue;
-										temp.setAttribute(attribute.name,attribute.value)
-									}
-								};
-								item.parentNode.replaceChild(temp,item)
-							},
-							"fail":function(){console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`)},
-							"done":resolve,
-							"error":function() {
-								console.warn(`The resource "${item.getAttribute("href")}" of FullLoad "${url}" request failed.`);
-								resolve()
-							}
-						}))
-					}))
-				}
-			};
-			FullLoadInterface.abort=function(){
-				FullLoadInterface.readyState=4;
-				for (let item of controllers) {
-					item.abort();
+			}
+			preloadResource("link",x=>x.getAttribute("rel")=="stylesheet",x=>x.getAttribute("href"),function(response,item){
+				var temp=document.createElement("style");
+				temp.appendChild(document.createTextNode(response));
+				if (item.hasAttributes()) {
+					for (let attribute of item.attributes) {
+						switch (attribute.name) {
+							case "href":
+							case "rel":
+								continue;
+							default:
+								temp.setAttribute(attribute.name,attribute.value)
+						}
+					}
 				};
-				FullLoadInterface.abort=function(){};
-			};
-			Promise.allSettled(requests).then(function(){
-				FullLoadInterface.readyState=4;
-				targetElement.innerHTML="";
-				targetElement.appendChild(Operator);
+				item.parentNode.replaceChild(temp,item)
 			})
+			preloadResource("script",x=>x.getAttribute("src"),x=>x.src,function(response,item){
+				if (item.type=="module") return;
+				var temp=document.createElement("script");
+				temp.appendChild(document.createTextNode(response));
+				if (item.hasAttributes()) {
+					for (let attribute of item.attributes) {
+						if (attribute.name=="src") continue;
+						temp.setAttribute(attribute.name,attribute.value)
+					}
+				};
+				item.parentNode.replaceChild(temp,item)
+			})
+			loadRequest.abort=function(){for (let item of controllers) item.abort()}
+			changeReadyState(3);
+			await Promise.allSettled(requests);
+			changeReadyState(4);
+			targetElement.innerHTML="";
+			targetElement.appendChild(operator);
+			loadInterface.dispatchEvent(new Event("load"));
 		};
-		FullLoadInterface.AJAX=AJAX(AJAXModel);
-		FullLoadInterface.abort=function(){FullLoadInterface.AJAX.abort()};
-		return FullLoadInterface;
+		let loadRequest=AJAX(AJAXModel);
+		loadInterface.abort=function abort() {
+			if (aborted) return;
+			loadRequest.abort();
+			aborted=true;
+			changeReadyState(4);
+		}
+		return loadInterface;
 	};
 	AJAXModel.success=function(response) {
-		var Operator=document.createRange().createContextualFragment(response);
+		var operator=document.createRange().createContextualFragment(response);
 		targetElement.innerHTML="";
-		targetElement.appendChild(Operator);
+		targetElement.appendChild(operator);
 	};
 	return AJAX(AJAXModel);
 }
 
-function EmptyElement(targetElement) {
-	var Operator=document.createRange();
-	Operator.selectNodeContents(targetElement);
-	Operator.deleteContents();
+function emptyElement(targetElement) {
+	var operator=document.createRange();
+	operator.selectNodeContents(targetElement);
+	operator.deleteContents();
 }
 
 function NotificationCreater(options) {
