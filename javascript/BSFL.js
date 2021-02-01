@@ -50,10 +50,10 @@ function load(url,targetElement,allowCache=true,preloadResource=true,onerror=nul
 	var AJAXModel={url:url,onerror:onerror};
 	if (allowCache===false) AJAXModel.cache=false;
 	if (preloadResource) {
-		let loadInterface=new EventTarget,readyState=0,aborted=false;
+		let loadInterface=new EventTarget,readyState=0,done=false;
 		function changeReadyState(value){
-			loadInterface.dispatchEvent(new Event("readyStateChange"));
-			readyState=value
+			readyState=value;
+			loadInterface.dispatchEvent(new Event("readystatechange"))
 		}
 		Object.defineProperty(loadInterface,"readyState",{
 			get:function(){return readyState},
@@ -67,7 +67,7 @@ function load(url,targetElement,allowCache=true,preloadResource=true,onerror=nul
 				for (let item of operator.querySelectorAll(tagName)) {
 					if (rule(item)) {
 						requests.push(new Promise(function(resolve){
-							controllers.push(AJAX({
+							var temp=AJAX({
 								url:getURL(item),
 								cache:allowCache,
 								success:response=>process(response,item),
@@ -77,7 +77,9 @@ function load(url,targetElement,allowCache=true,preloadResource=true,onerror=nul
 									console.warn(`The resource "${item.getAttribute("href")}" of Load "${url}" request failed.`);
 									resolve()
 								}
-							}))
+							});
+							temp.addEventListener("abort",resolve);
+							controllers.push(temp)
 						}))
 					}
 				}
@@ -110,20 +112,22 @@ function load(url,targetElement,allowCache=true,preloadResource=true,onerror=nul
 				};
 				item.parentNode.replaceChild(temp,item)
 			})
-			loadRequest.abort=function(){for (let item of controllers) item.abort()}
+			abort=function(){for (let item of controllers) item.abort()};
 			changeReadyState(3);
-			await Promise.allSettled(requests);
+			await Promise.all(requests);
+			if (done) return;
+			done=true;
 			changeReadyState(4);
 			targetElement.innerHTML="";
 			targetElement.appendChild(operator);
 			loadInterface.dispatchEvent(new Event("load"));
 		};
-		let loadRequest=AJAX(AJAXModel);
+		let loadRequest=AJAX(AJAXModel),abort=loadRequest.abort.bind(loadRequest);
 		loadInterface.abort=function abort() {
-			if (aborted) return;
-			loadRequest.abort();
-			aborted=true;
-			changeReadyState(4);
+			if (done) return;
+			done=true;
+			abort();
+			changeReadyState(0)
 		}
 		return loadInterface;
 	};
