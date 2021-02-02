@@ -1,5 +1,8 @@
+:root {
+	--backgroundColor:#92C1DC;
+}
 body,.body_color {
-	background-color:#92C1DC;
+	background-color:var(--backgroundColor,#92C1DC);
 	color:#000000;
 }
 a {text-decoration:none}

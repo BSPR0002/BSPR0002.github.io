@@ -1,14 +1,12 @@
-{
-	Math.root=function root(x,y) {
-		var evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
-		return solution&&negative&&solution!=Infinity?-solution:solution;
-	}
-	Math.rootM=function rootM(x,y) {
-		var result=[],evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
-		result[0]=solution&&negative&&solution!=Infinity?-solution:solution;
-		if (evenPowerRoot&&solution) result[1]=-solution;
-		return result;
-	}
+Math.root=function root(x,y) {
+	var evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
+	return solution&&negative&&solution!=Infinity?-solution:solution;
+}
+Math.rootM=function rootM(x,y) {
+	var result=[],evenPowerRoot=y>0&&y%2==0,negative=x<0&&!evenPowerRoot,solution=(negative?-x:x)**(1/y);
+	result[0]=solution&&negative&&solution!=Infinity?-solution:solution;
+	if (evenPowerRoot&&solution) result[1]=-solution;
+	return result;
 }
 
 function AJAX(options) {
@@ -71,10 +69,10 @@ function load(url,targetElement,allowCache=true,preloadResource=true,onerror=nul
 								url:getURL(item),
 								cache:allowCache,
 								success:response=>process(response,item),
-								fail:function(){console.warn(`The resource "${item.getAttribute("href")}" of Load "${url}" request failed.`)},
+								fail:function(){console.warn(`The resource "${getURL(item)}" of Load "${url}" request failed.`)},
 								done:resolve,
 								error:function(){
-									console.warn(`The resource "${item.getAttribute("href")}" of Load "${url}" request failed.`);
+									console.warn(`The resource "${getURL(item)}" of Load "${url}" request failed.`);
 									resolve()
 								}
 							});
@@ -271,12 +269,12 @@ var ArrayHTML={
 							break;
 						default:
 							console.warn("AHDecoder 汇报有数据错误：节点树内有无法识别的节点！","\n节点树：",data,"\n出错位置：",item)
-					};
-				};
+					}
+				}
 			} else {
 				throw new Error("AHDecoder 解析失败：接收到非数组的数据！","\n接收内容：",data);
-			};
-		};
+			}
+		}
 		Operator(ArrayHTML,DocumentFragment);
 		return activeNode?{DocumentFragment,getNodes}:DocumentFragment;
 	},
@@ -302,25 +300,25 @@ var ArrayHTML={
 					if (Node.hasChildNodes()==true) {
 						child[1]=[];
 						Transporter(Node,child[1]);
-					};
+					}
 					try {
 						if (Node.hasAttributes()==true) {
 							child[2]={};
 							for (let attribute of Node.attributes) {
 								child[2][attribute.name]=attribute.value;
 							};
-						};
+						}
 					} catch(error) {console.warn("HAEncoder 汇报异常：未能获取到节点的属性！\n异常节点：",Node)}
 					outer.push(child);
 			}
-		};
+		}
 		try {
 			Node=Node.cloneNode(true);
 			if (IncludeOuter==true) {Operator(Node,ArrayHtml)} else Transporter(Node,ArrayHtml);
 		} catch(error) {
 			console.error("HAEncoder 编码失败：输入的不是节点或节点不可编码！");
 			ArrayHtml=false;
-		};
+		}
 		return ArrayHtml;
 	}
 }
