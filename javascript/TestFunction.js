@@ -263,3 +263,33 @@ class randomStatistician {
 		return result
 	}
 }
+
+function byteReader(byteValue) {
+	var temp=byteValue.toString(2);
+	while (temp.length<8) temp="0"+temp;
+	return temp
+}
+
+function flacMetaBlockReader(arrayBuffer) {
+	if (!(arrayBuffer instanceof ArrayBuffer)) throw new Error("invalid input");
+	var temp=new Uint8Array(arrayBuffer),result=[];
+	var last=0,currentIndex=4;
+	while (!last) {
+		let block={},temp1=byteReader(temp[currentIndex++]),length=eval("0b"+Array.from(temp.slice(currentIndex,currentIndex+=3)).map(byteReader).join(""));
+		last=+temp1[0];
+		switch (eval("0b"+temp1.substring(1))) {
+			case 0:block.type="STREAMINFO";break;
+			case 1:block.type="PADDING";break;
+			case 2:block.type="APPLICATION";break;
+			case 3:block.type="SEEKTABLE";break;
+			case 4:block.type="VORBIS_COMMENT";break;
+			case 5:block.type="CUESHEET";break;
+			case 6:block.type="PICTURE";break;
+			case 127:block.type="INVALID";break;
+			default:block.type="RESERVED"
+		}
+		block.data=temp.slice(block.start=currentIndex,block.end=currentIndex+=length);
+		result.push(block);
+	}
+	return result
+}
