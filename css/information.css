@@ -18,7 +18,7 @@
 	grid-template-rows:repeat(4,1fr);
 	grid-template-columns:repeat(4,1fr);
 	grid-gap:10px;
-	grid-template-areas:"large large large .""large large large .""large large large .""applets projects developments more";
+	grid-template-areas:"large large large .""large large large .""large large large .""all projects applets developments";
 }
 .information_box {
 	position:relative;
@@ -30,9 +30,17 @@
 .collection {
 	display:grid;
 	padding:10px;
-	grid-template-rows:2fr 1fr;
+	grid-template-rows:64px 1fr;
 	grid-gap:10px;
+	place-items:center;
 }
+.collection>div {
+	width:64px;
+	height:64px;
+	background-image:url("/images/informations/icons/entrances.svg");
+	background-size:200%;
+}
+.collection>span{font-weight:bold}
 #information_box_large {
 	grid-area:large
 }
@@ -63,19 +71,27 @@
 	transform-origin:center;
 	animation:InformationLoadingCircle 1s linear infinite forwards running;
 }
-#information_applets {
-	background-color:#00FF40;
-	grid-area:applets;
+#information_all_message {
+	background-color:#FFC000;
+	grid-area:all;
 }
+#information_all_message>div{background-position:0 0}
 #information_projects {
 	background-color:#FF4040;
 	grid-area:projects;
+	background-position:0 0;
 }
+#information_projects>div{background-position:-64px 0}
+#information_applets {
+	background-color:#00FF40;
+	grid-area:applets;
+	background-position:0 0;
+}
+#information_applets>div{background-position:0 -64px}
 #information_developments {
 	background-color:#0080FF;
 	grid-area:developments;
+	background-position:0 0;
 }
-#information_more_information {
-	background-color:#FFC000;
-	grid-area:more;
-}
+#information_developments>div{background-position:-64px -64px}
+

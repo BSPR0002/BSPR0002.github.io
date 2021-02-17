@@ -1,4 +1,4 @@
-﻿class DecimalNumber {
+class DecimalNumber {
 	get [Symbol.toStringTag](){return "DecimalNumber"}
 	static #LIMIT=1;
 	static get LIMIT(){return this.#LIMIT}
@@ -19,7 +19,7 @@
 	get sign(){return this.#sign}
 	get integer(){return this.#integer}
 	get mantissa(){return new Uint8Array(this.#mantissa)}
-	constructor(initial=undefined){
+	constructor(initial=undefined) {
 		switch (typeof initial) {
 			case "object":
 				if (initial===null) break;
@@ -171,18 +171,23 @@
 	divide(divisor) {
 		divisor=new this.constructor(divisor);
 		var self=new this.constructor(this),result=new this.constructor;
-		if (self.#notNumber||divisor.#notNumber) {
+		if (self.#notNumber||!(+divisor)) {
 			result.#notNumber=true;
 			return result
 		}
 		result.#sign=Boolean(self.#sign^divisor.#sign);
-		var move=self.#actualPoint();
-		{
-			let bits2=divisor.#actualPoint();
-			if (bits2>move) move=bits2
+		var bits1=self.#actualPoint(),bits2=divisor.#actualPoint(),move=String(self.#integer).length+bits2,temp="",operand1=self.#integer+self.#mantissa.join(""),operand2=BigInt(divisor.#integer+divisor.#mantissa.slice(0,bits2).join(""));
+		for (let i=-String(self.#integer).length,temp1="";i<64;++i) {
+			temp1+=operand1.substring(0,1);
+			operand1=operand1.substring(1);
+			let temp2=BigInt(temp1),temp3=temp2/operand2;
+			temp+=temp3;
+			if (temp3) temp1=String(temp2%operand2);
+			if (!(+temp1||+operand1)) break;
 		}
-		move+=64;
-
+		while (temp.length<move) temp+="0";
+		result.#integer=BigInt(temp.substring(0,move))
+		for (let temp1=temp.substring(move),l=temp1.length,i=0;i<l;i++) result.#mantissa[i]=+temp1[i];
 		result.#limit()
 		return result
 	}
@@ -264,10 +269,48 @@ class randomStatistician {
 	}
 }
 
+BytesOperate={
+	[Symbol.toStringTag]:"BytesOperate",
+	getBits:byteReader,
+	littleEndianNumber,
+	bigEndianNumber,
+	numberToLittleEndian:function numberToLittleEndian(value,size) {
+		var temp=Array.from(value.toString(16)),result=new Uint8Array(size);
+		for (let i=0,l=result.length;temp.length&&i<l;++i) {
+			let data=temp.splice(-2);
+			data.unshift("0x");
+			result[i]=eval(data.join(""))
+		}
+		return result
+	},
+	numberToBigEndian:function numberToBigEndian(value,size) {
+		var temp=Array.from(value.toString(16)),result=new Uint8Array(size);
+		for (let i=result.length-1;temp.length&&i>-1;++i) {
+			let data=temp.splice(-2);
+			data.unshift("0x");
+			result[i]=eval(data.join(""))
+		}
+		return result
+	},
+	toArrayBuffer:data=>new Blob([data]).arrayBuffer()
+}
+
 function byteReader(byteValue) {
 	var temp=byteValue.toString(2);
 	while (temp.length<8) temp="0"+temp;
 	return temp
+}
+
+function littleEndianNumber(array) {
+	var temp="0b";
+	for (let i=array.length-1;i>-1;--i) temp+=byteReader(array[i]);
+	return eval(temp)
+}
+
+function bigEndianNumber(array) {
+	var length=array.length,temp="0b";
+	for (let i=0;i<length;++i) temp+=byteReader(array[i]);
+	return eval(temp)
 }
 
 function flacMetaBlockReader(arrayBuffer) {
@@ -275,7 +318,7 @@ function flacMetaBlockReader(arrayBuffer) {
 	var temp=new Uint8Array(arrayBuffer),result=[];
 	var last=0,currentIndex=4;
 	while (!last) {
-		let block={},temp1=byteReader(temp[currentIndex++]),length=eval("0b"+Array.from(temp.slice(currentIndex,currentIndex+=3)).map(byteReader).join(""));
+		let block={},temp1=byteReader(temp[currentIndex++]),length=bigEndianNumber(temp.slice(currentIndex,currentIndex+=3));
 		last=+temp1[0];
 		switch (eval("0b"+temp1.substring(1))) {
 			case 0:block.type="STREAMINFO";break;
@@ -293,3 +336,31 @@ function flacMetaBlockReader(arrayBuffer) {
 	}
 	return result
 }
+
+async function flacVCdecoder(data) {
+	if (!(data instanceof Uint8Array)) throw new Error("1!");
+	var index=0,temp=littleEndianNumber(data.slice(0,index+=4)),result={};
+	result.vendor=await FileIO.read(new Blob([data.slice(index,index+=temp)]),"Text");
+	for (let i=0,l=littleEndianNumber(data.slice(index,index+=4));i<l;++i) {
+		let temp=littleEndianNumber(data.slice(index,index+=4));
+		temp=(await FileIO.read(new Blob([data.slice(index,index+=temp)]),"Text")).split("=");
+		result[temp.splice(0,1)[0]]=temp.join("=");
+	}
+	return result
+}
+
+function createVCBlock(tags) {
+	var toLittleEndian=BytesOperate.numberToLittleEndian,toBigEndian=BytesOperate.numberToBigEndian;
+	if (!("vendor" in tags)) tags.vendor="reference libFLAC 1.3.1 20141125";
+	var vendor=new Blob([tags.vendor]);
+	var list=0,temp=[];
+	for (let item of ["TITLE","VERSION","ALBUM","TRACKNUMBER","ARTIST","PERFORMER","COPYRIGHT","LICENSE","ORGANIZATION","DESCRIPTION","GENRE","DATE","LOCATION","CONTACT","ISRC"]) {
+		if (!(item in tags)) continue;
+		let data=new Blob([item,"=",tags[item]]),length=toLittleEndian(data.size,4);
+		temp.push(length,data);
+		++list;
+	}
+	temp.unshift(toLittleEndian(vendor.size,4),vendor,toLittleEndian(list,4));
+	return new Blob(temp)
+}
+
