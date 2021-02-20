@@ -2,16 +2,7 @@ class DecimalNumber {
 	get [Symbol.toStringTag](){return "DecimalNumber"}
 	static #LIMIT=1;
 	static get LIMIT(){return this.#LIMIT}
-	static set LIMIT(value){
-		switch (value) {
-			case 0:
-			case 1:
-			case 2:
-				return this.#LIMIT=value;
-			default:
-				throw new Error(`Cannot set DecimalNumber.LIMIT to '${value}', this value must be one of the values 0,1,2 (typeof "number").`)
-		}
-	}
+	static set LIMIT(value){this.#LIMIT=Boolean(value)}
 	#sign=false;
 	#integer=0n;
 	#mantissa=new Uint8Array(64);
@@ -58,30 +49,22 @@ class DecimalNumber {
 		return i+1
 	}
 	#limit() {
-		if (!this.constructor.#LIMIT) return;
-		var mantissa=this.#mantissa,full=true;
-		function check(operator) {
-			for (let i=62;i>-1;--i) {
-				if (operator(mantissa[i])) {
-					full=false;
-					break
-				}
+		var mantissa=this.#mantissa,skip=false,before=mantissa[0];
+		for (let i=1;i<62;++i) {
+			if (mantissa[i]!=before) {
+				skip=true;
+				break
 			}
 		}
-		switch (mantissa[63]) {
-			case 9:
-				check(x=>x!=9);
-				if (full) {
-					this.#mantissa=new Uint8Array(64);
-					++this.#integer
-				}
-				break;
-			case 1:
-				if (this.constructor.#LIMIT<2) return;
-				check(x=>!x);
-				if (full) resultMantissa[63]=0;
-			default:
+		if (skip) return;
+		if (mantissa[63]==before&&before>5) {
+			if (++mantissa[63]==10) {
+				this.#mantissa=new Uint8Array(64);
+				++this.#integer;
+			}
+			return
 		}
+		if (before==0&&mantissa[63]==1&&this.constructor.#LIMIT) mantissa[63]=0;
 	}
 	toString() {
 		if (this.#notNumber) return "NaN";
@@ -92,7 +75,7 @@ class DecimalNumber {
 		return (fixed.#sign&&(integer||mantissa)?"-":"")+(mantissa?integer+"."+mantissa:integer)
 	}
 	isGreater(compare) {
-		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		compare=new this.constructor(compare);
 		if (this.#notNumber||compare.#notNumber) return false;
 		if (this.#sign<compare.#sign) return true;
 		var translate=x=>this.#sign?!x:x;
@@ -105,7 +88,7 @@ class DecimalNumber {
 		return false
 	}
 	isEqual(compare) {
-		if (!(compare instanceof this.constructor)) compare=new this.constructor(compare);
+		compare=new this.constructor(compare);
 		if (this.#notNumber||compare.#notNumber) return false;
 		for (let selfMantissa=this.#mantissa,compareMantissa=compare.#mantissa,i=0;i<64;++i) if (selfMantissa[i]!=compareMantissa[i]) return false;
 		if (this.#sign==compare.#sign&&this.#integer==compare.#integer) return true;
