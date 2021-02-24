@@ -30,26 +30,26 @@ function AJAX(options) {
 	return xhr;
 }
 
-function getJSON(url,callback,allowCache) {
-	var AJAXModel={"url":url,"type":"json"};
+function getJSON(url,callback,allowCache=true,fail=null) {
+	var AJAXModel={url,type:"json",fail,error:fail};
 	if (typeof callback=="function") AJAXModel.success=callback;
 	if (allowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
-function getXML(url,callback,allowCache) {
-	var AJAXModel={"url":url,"type":"document"};
+function getXML(url,callback,allowCache=true,fail=null) {
+	var AJAXModel={url,type:"document",fail,error:fail};
 	if (typeof callback=="function") AJAXModel.success=callback;
 	if (allowCache===false) AJAXModel.cache=false;
 	return AJAX(AJAXModel);
 }
 
-function load(url,targetElement,allowCache=true,preloadResource=true,onerror=null) {
-	var AJAXModel={url:url,onerror:onerror};
+function load(url,targetElement,allowCache=true,preloadResource=true,fail=null) {
+	var AJAXModel={url,fail,error:fail};
 	if (allowCache===false) AJAXModel.cache=false;
 	if (preloadResource) {
 		let loadInterface=new EventTarget,readyState=0,done=false;
-		function changeReadyState(value){
+		let changeReadyState=function changeReadyState(value){
 			readyState=value;
 			loadInterface.dispatchEvent(new Event("readystatechange"))
 		}

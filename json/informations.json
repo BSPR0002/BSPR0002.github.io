@@ -1,19 +1,22 @@
-[
-	{
-		"message":"Example",
-		"image":"image path",
-		"link":[
-			"board/address/none",
-			"content"
-		],
-		"unshow":true
-	},
-	{
-		"message":"ネコぱら Vol.4 将于 2020年11月27日发售！",
-		"image":"/Images/Information/nekopara_vol4.jpg",
-		"link":[
-			"address",
-			"store.steampowered.com/app/1406990/NEKOPARA_Vol_4/"
-		]
-	}
-]
+{
+	"carousel":[
+		{
+			"message":"Example",
+			"image":"image path",
+			"link":[
+				"board/address/none",
+				"content"
+			],
+			"unshow":true
+		},
+		{
+			"message":"銉嶃偝銇便倝 Vol.4 宸插彂鍞紒",
+			"image":"/images/informations/nekopara_vol4.jpg",
+			"link":[
+				"address",
+				"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/"
+			]
+		}
+	],
+	"single":[]
+}

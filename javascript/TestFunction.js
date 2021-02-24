@@ -57,14 +57,17 @@ class DecimalNumber {
 			}
 		}
 		if (skip) return;
-		if (mantissa[63]==before&&before>5) {
-			if (++mantissa[63]==10) {
-				this.#mantissa=new Uint8Array(64);
-				++this.#integer;
-			}
-			return
+		switch (before) {
+			case 0:
+				if (mantissa[63]==1&&this.constructor.#LIMIT) mantissa[63]=0;
+				break;
+			case 9:
+				if (mantissa[63]==9) {
+					this.#mantissa=new Uint8Array(64);
+					++this.#integer;
+				}
+			default:
 		}
-		if (before==0&&mantissa[63]==1&&this.constructor.#LIMIT) mantissa[63]=0;
 	}
 	toString() {
 		if (this.#notNumber) return "NaN";

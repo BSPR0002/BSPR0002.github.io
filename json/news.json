@@ -11,9 +11,12 @@
 		"unshow":true
 	},
 	{
-		"id":"test",
-		"title":"模块化系统测试",
-		"content":"这只是一次内部功能的测试，请不要在意我……😓",
-		"force":true
+		"id":"buyNEKOPARAVol4",
+		"title":"ネコぱら Vol.4",
+		"preview":{
+			"message":"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",
+			"image":"/images/informations/nekopara_vol4.jpg"
+		},
+		"content":[["img",null,{"src":"/images/informations/nekopara_vol4.jpg"}],"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",["br"],["a","https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/",{"href":"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/","target":"_blink"}]]
 	}
 ]

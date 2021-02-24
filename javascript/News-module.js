@@ -26,7 +26,7 @@ function removeLog(id) {
 }
 var lastFullCheck=0;
 function fullCheck(){
-	if (Date.now()-lastFullCheck<60) return;
+	if (Date.now()-lastFullCheck<60000) return;
 	lastFullCheck=Date.now();
 	var log=getLog();
 	for (let index in log) check(index);
@@ -43,12 +43,12 @@ function check(id) {
 		if (typeof lastTime!="number") throw "推送记录损坏";
 		let pass=Date.now()-lastTime;
 		if (pass>259200000||pass<1) throw "推送记录过期";
-		return true
+		return false
 	} catch(exception) {
 		removeLog(id);
 		console.warn("异常的推送记录："+exception+"，已删除！\n\tID："+id+"\n\t原记录："+JSON.stringify(lastTime))
 	}
-	return false
+	return true
 }
 async function show() {
 	if (await Notification.requestPermission()!="granted") return;
