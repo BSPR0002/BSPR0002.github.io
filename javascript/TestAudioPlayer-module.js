@@ -1,5 +1,4 @@
 class AudioController {
-	get [Symbol.toStringTag](){return "AudioController"}
 	constructor(AudioNode) {
 		if (!(AudioNode instanceof AudioScheduledSourceNode)) throw new TypeError("输入的参数不是音频源节点！");
 		this.audioNode=AudioNode;
@@ -50,9 +49,8 @@ class AudioController {
 	get detune(){return this.audioNode.detune}
 	set detune(value){this.audioNode.detune=value}
 }
-
+Object.defineProperty(AudioController.prototype,Symbol.toStringTag,{value:"AudioController",writable:false});
 class AudioPlayer {
-	get [Symbol.toStringTag](){return "AudioPlayer"}
 	constructor() {
 		var audioContext=this.audioContext=new AudioContext;
 		var gainNode=this.gainNode=audioContext.createGain();
@@ -90,6 +88,7 @@ class AudioPlayer {
 	resume(){this.audioContext.resume()}
 	close(){this.audioContext.close()}
 }
+Object.defineProperty(AudioPlayer.prototype,Symbol.toStringTag,{value:"AudioPlayer",writable:false});
 export {AudioPlayer};
 var audioPlayer=new AudioPlayer,audioController=null,busy=false,nodes=null,context,fftSizeStatu=false;
 async function play() {

@@ -88,7 +88,7 @@ async function operator(list) {
 			model.message=previewMessage?previewMessage:(typeof showContent=="string"?showContent:"详情请点击查看。");
 			model.click=function(){
 				window.focus();
-				MiniWindow.show(showContent,item.title);
+				MiniWindow.create(showContent,item.title);
 				this.close();
 			};
 			NotificationCreater(model);

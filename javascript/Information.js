@@ -28,7 +28,7 @@
 		}
 		if (!contents.length) {
 			large.className="none";
-			largeText.innerHTML=`<span class="emoji">💦</span><br>目前没有任何消息`;
+			largeText.innerHTML=`<span class="emoji">💦</span><br>目前没有消息`;
 			show();
 			return;
 		}

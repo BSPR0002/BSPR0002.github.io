@@ -5,11 +5,10 @@ body,.body_color {
 	background-color:var(--backgroundColor,#92C1DC);
 	color:#000000;
 }
-a {text-decoration:none}
-a:link {color:#007FFF}
-a:visited {color:#007FFF}
-a:hover {color:#92C1DC}
-a:active {color:#4B97C5}
+a{text-decoration:none}
+a:link,a:visited{color:#0000FF}
+a:hover{color:#007FFF}
+a:active{color:#4F90CF}
 #top {
 	min-width:1024px;
 	width:100%;
@@ -74,8 +73,8 @@ a:active {color:#4B97C5}
 	transition:background-color 0.2s ease-in-out;
 	background-color:transparent;
 }
-.navigation:hover {outline:auto #FFC0D0}
-.navigation:active {background-color:rgba(255,192,208,0.5)}
+.navigation:hover{outline:auto #FFC0CF}
+.navigation:active{background-color:rgba(255,192,208,0.5)}
 .navigation:disabled:hover{background-color:rgba(255,0,0,0.4)}
 #nav_pointer,#nav_hover_pointer {
 	width:20px;

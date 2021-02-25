@@ -205,7 +205,7 @@ class DecimalNumber {
 		return result
 	}
 }
-
+Object.defineProperty(DecimalNumber.prototype,Symbol.toStringTag,{value:"DecimalNumber",writable:false});
 class WebAudioPlayer {
 	#node=document.createElement("audio");
 	get node(){return this.#node}
