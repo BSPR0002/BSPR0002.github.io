@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="512" height="512">
-	<rect width="256" height="256" fill="#FFC000" />
-	<rect width="256" height="256" fill="#FF4040" x="256" />
-	<rect width="256" height="256" fill="#00FF40" y="256" />
-	<rect width="256" height="256" fill="#0080FF" x="256" y="256" />
 	<g id="all">
 		<path d="M32 50l18 0l0 158l0 -54l156 0l0 54l0 -158l18 0Z" stroke="#FFFFFF" stroke-width="4" fill="transparent" />
 		<path d="M56 58l108 0" stroke="#FFFFFF" stroke-width="4" />
