@@ -95,7 +95,7 @@ async function show() {
 	}
 }
 function closeByScript(instance){
-	if (!(instance instanceof MiniWindow)) throw new Error("");
+	if (!(instance instanceof MiniWindow)) throw new Error("Illegal invoke");
 	var privateVar=instance[privateField];
 	if (privateVar.closed||privateVar.shuting) return;
 	privateVar.closed=true;

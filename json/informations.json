@@ -16,6 +16,11 @@
 				"address",
 				"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/"
 			]
+		},
+		{
+			"message":"测试……😳",
+			"image":"/images/brand.png",
+			"link":"none"
 		}
 	],
 	"single":[]

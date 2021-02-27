@@ -17,6 +17,6 @@
 			"message":"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",
 			"image":"/images/informations/nekopara_vol4.jpg"
 		},
-		"content":[["img",null,{"src":"/images/informations/nekopara_vol4.jpg"}],"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",["br"],["a","https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/",{"href":"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/","target":"_blink"}]]
+		"content":[["img",null,{"src":"/images/informations/nekopara_vol4.jpg"}],"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",["br"],["a","https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/",{"href":"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/","target":"_blank"}]]
 	}
 ]

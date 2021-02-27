@@ -157,16 +157,14 @@ function NotificationCreater(options) {
 function detectUA() {
 	var UA={"desktop":false,"mobile":false};
 	var detective=navigator.userAgent;
-	if (detective.match(/Windows/i)||detective.match(/Macintosh/i)||detective.match(/Linux/i)) UA.desktop=true;
-	if (detective.match(/Mobile/i)||detective.match(/Android/i)||detective.match(/iPhone/i)||detective.match(/iPad/i)||detective.match(/iPod/i)) UA.mobile=true;
+	for (let item of [/Windows/i,/Macintosh/i,/Linux/i]) if (item.test(detective)) {UA.desktop=true;break};
+	for (let item of [/Mobile/i,/Android/i,/iPhone/i,/iPad/i,/iPod/i]) if (item.test(detective)) {UA.mobile=true;break};
 	return UA;
 }
 
 var Cookies={
 	[Symbol.toStringTag]:"Cookies",
-	"get":function(cookieName) {
-		return Cookies.toObject()[cookieName];
-	},
+	"get":function(cookieName){return Cookies.toObject()[cookieName]},
 	"set":function(name,value,expiresDate,path,domain) {
 		if (expiresDate instanceof Date) {expiresDate=";expires="+expiresDate.toUTCString()+";"} else expiresDate="";
 		if (typeof path=="string") {path=";Path="+path} else path="";
@@ -177,9 +175,7 @@ var Cookies={
 		var expires=new Date(0);
 		Cookies.set(cookieName,"",expires,cookiePath,cookieDomain);
 	},
-	"empty":function() {
-		for (var cookie in Cookies.toObject()) {Cookies.delete(cookie)};
-	},
+	"empty":function(){for (var cookie in Cookies.toObject()) Cookies.delete(cookie)},
 	"toObject":function() {
 		var Fodder_Box={};
 		if (document.cookie!="") {

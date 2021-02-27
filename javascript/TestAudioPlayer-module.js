@@ -116,7 +116,7 @@ var AH=[
 			"音量",
 			["SPAN",[["#text",null,null,"volumeDisplay"],"%"]],
 			["INPUT",null,{"type":"range","step":"1","min":"0","max":"100"},"volumeSlide"]
-		],{"style":"grid-area:volume;display:grid;grid-template-columns:auto 3em 1fr;grid-gap:0.5em;place-items:end"}]
+		],{"style":"grid-area:volume;display:grid;grid-template-columns:2em 3em 1fr;grid-gap:0.5em;place-items:end"}]
 	],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
 ];
 var toolInterface=ArrayHTML.decode(AH,true);
