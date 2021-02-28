@@ -1,3 +1,4 @@
+window.onerror=function(message,source,line,col,error){import("/javascript/MiniWindow-module.js").then(mw=>mw.create(`文件：${source}\n行号：${line}\n列号：${col}\n错误信息：${error}`,"发生错误"))};
 class DecimalNumber {
 	get [Symbol.toStringTag](){return "DecimalNumber"}
 	static #LIMIT=1;
