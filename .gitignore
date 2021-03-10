@@ -4,3 +4,4 @@ backup
 unuse
 .vs
 .vscode
+*.code-workspace

@@ -17,7 +17,7 @@ function AJAX(options) {
 	if (model.async!==false) {
 		xhr.responseType=model.type;
 		xhr.timeout=model.timeout;
-	};
+	}
 	if (model.cache===false) xhr.setRequestHeader("If-Modified-Since","0");
 	xhr.onload=function() {
 		if ((this.status>=200&&this.status<300)||this.status==304) {
@@ -95,7 +95,7 @@ function load(url,targetElement,allowCache=true,preloadResource=true,fail=null) 
 								temp.setAttribute(attribute.name,attribute.value)
 						}
 					}
-				};
+				}
 				item.parentNode.replaceChild(temp,item)
 			})
 			preloadResource("script",x=>x.getAttribute("src"),x=>x.src,function(response,item){
@@ -107,7 +107,7 @@ function load(url,targetElement,allowCache=true,preloadResource=true,fail=null) 
 						if (attribute.name=="src") continue;
 						temp.setAttribute(attribute.name,attribute.value)
 					}
-				};
+				}
 				item.parentNode.replaceChild(temp,item)
 			})
 			abort=function(){for (let item of controllers) item.abort()};
@@ -121,14 +121,14 @@ function load(url,targetElement,allowCache=true,preloadResource=true,fail=null) 
 			loadInterface.dispatchEvent(new Event("load"));
 		};
 		let loadRequest=AJAX(AJAXModel),abort=loadRequest.abort.bind(loadRequest);
-		loadInterface.abort=function abort() {
+		loadInterface.abort=function() {
 			if (done) return;
 			done=true;
 			abort();
 			changeReadyState(0)
 		}
 		return loadInterface;
-	};
+	}
 	AJAXModel.success=function(response) {
 		var operator=document.createRange().createContextualFragment(response);
 		targetElement.innerHTML="";
@@ -157,8 +157,8 @@ function NotificationCreater(options) {
 function detectUA() {
 	var UA={"desktop":false,"mobile":false};
 	var detective=navigator.userAgent;
-	for (let item of [/Windows/i,/Macintosh/i,/Linux/i]) if (item.test(detective)) {UA.desktop=true;break};
-	for (let item of [/Mobile/i,/Android/i,/iPhone/i,/iPad/i,/iPod/i]) if (item.test(detective)) {UA.mobile=true;break};
+	for (let item of [/Windows/i,/Macintosh/i,/Linux/i]) if (item.test(detective)) {UA.desktop=true;break}
+	for (let item of [/Mobile/i,/Android/i,/iPhone/i,/iPad/i,/iPod/i]) if (item.test(detective)) {UA.mobile=true;break}
 	return UA;
 }
 
@@ -192,10 +192,10 @@ var Cookies={
 							break;
 						default:
 							Fodder_Box[pulverizer[0]]+=("="+pulverizer[timer]);
-					};
-				};
-			};
-		};
+					}
+				}
+			}
+		}
 		return Fodder_Box;
 	},
 	"keepAlive":function(cookieName,cookiePath,cookieDomain) {
@@ -248,20 +248,20 @@ var ArrayHTML={
 												}
 												Operator(item[1],node);
 											default:
-										};
+										}
 										for (let attribute in item[2]) {
 											try {
 												node.setAttribute(attribute,item[2][attribute])
 											} catch (errorMessage) {
 												console.warn("AHDecoder 汇报有数据错误：为节点添加属性时出错！","\n出错信息："+errorMessage+"\n出错位置：",item,"\n出错值："+attribute+"=\""+item[2][attribute]+"\"")
-											};
+											}
 										}
 								}
 								outer.appendChild(node);
 								if (item[3]&&activeNode) getNodes[item[3]]=node;
 							} catch(error) {
 								console.warn("AHDecoder 汇报有数据错误：发现无效的节点名！","\n节点树：",data,"\n出错位置：",item,"\n该节点已被废弃。");
-							};
+							}
 							break;
 						default:
 							console.warn("AHDecoder 汇报有数据错误：节点树内有无法识别的节点！","\n节点树：",data,"\n出错位置：",item)
@@ -280,9 +280,9 @@ var ArrayHTML={
 			if (Node.nodeName=="#text") {
 				outer.push(Node.textContent);
 			} else {
-				for (let child of Node.childNodes) {Operator(child,outer)};
-			};
-		};
+				for (let child of Node.childNodes) {Operator(child,outer)}
+			}
+		}
 		function Operator(Node,outer) {
 			switch (Node.nodeName) {
 				case "#text":
@@ -302,7 +302,7 @@ var ArrayHTML={
 							child[2]={};
 							for (let attribute of Node.attributes) {
 								child[2][attribute.name]=attribute.value;
-							};
+							}
 						}
 					} catch(error) {console.warn("HAEncoder 汇报异常：未能获取到节点的属性！\n异常节点：",Node)}
 					outer.push(child);
