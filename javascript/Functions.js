@@ -5,10 +5,10 @@ window.onerror=function(message,source,line,col,error){import("/javascript/MiniW
 	let currentSheet=null;
 	let lastLoad={"readyState":4};
 	function changeSheet(sheet) {
-		movePointer(sheet*200-110);
+		movePointer(sheet);
 		if (sheet!=currentSheet) {
 			if (lastLoad.readyState!=4) lastLoad.abort();
-			lastLoad=load("/html/"+sheetList[sheet-1]+".html",document.getElementById("page_box"),true,true);
+			lastLoad=load("/html/"+sheetList[sheet]+".html",document.getElementById("page_box"),true,true);
 			currentSheet=sheet;
 		}
 	}

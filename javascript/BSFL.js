@@ -143,7 +143,7 @@ function emptyElement(targetElement) {
 	operator.deleteContents();
 }
 
-function NotificationCreater(options) {
+function createNotification(options) {
 	var model={"title":"","message":"","image":"","icon":"","id":"","data":"","dir":"auto","badge":"","language":"","vibrate":[],"renotify":false,"silent":false,"sound":"","noscreen":false,"sticky":false,"keep":false,"show":null,"click":null,"close":null,"error":null};
 	Object.assign(model,options);
 	var notificationInterface=new Notification(model.title,{"body":model.message,"image":model.image,"icon":model.icon,"tag":model.id,"data":model.data,"dir":model.dir,"badge":model.badge,"lang":model.language,"vibrate":model.vibrate,"renotify":model.renotify,"silent":model.silent,"sound":model.sound,"noscreen":model.noscreen,"sticky":model.sticky,"requireInteraction":model.keep});

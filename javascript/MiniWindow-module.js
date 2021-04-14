@@ -1,19 +1,23 @@
-try {ArrayHTML.decode(["test"])} catch(none) {throw new Error("缺失依赖：BSFL.ArrayHTML.decode\n请引入脚本或改写模块！")};
+try {ArrayHTML.decode(["test"])} catch(none) {throw new Error("缺失依赖：BSFL.ArrayHTML.decode\n请引入脚本或改写模块！")}
 var node=ArrayHTML.decode([["DIV",[
 	["STYLE",[
 		"#MiniWindowContent>img{max-width:100%;height:auto}",
 		"#MiniWindowTop>button{background-color:rgba(0,0,0,0.2)}",
 		"#MiniWindowTop>button:hover{background-color:rgba(0,128,255,0.5)}",
-		"#MiniWindowTop>button:active{background-color:rgb(0,128,255)}"
+		"#MiniWindowTop>button:active{background-color:rgb(0,128,255)}",
+		"#MiniWindowClose::before,#MiniWindowClose::after{content:\"\";position:absolute;top:0;bottom:0;left:0;right:0;width:2px;height:16px;margin:auto;background-color:#000000;border-radius:1px;transform:rotate(45deg)}",
+		"#MiniWindowClose::before{transform:rotate(-45deg)}"
 	]],
 	["DIV",[
 		["DIV",[
 			["P",null,{},"title"],
 			["BUTTON","0",{id:"MiniWindowQueue",title:"正在排队的弹窗数量\n点击清除所有弹窗",style:"position:relative;box-sizing:border-box;height:inherit;border:2px solid #000000;border-radius:4px;padding:2px;font-size:12px;overflow:hidden"},"queue"],
-			["BUTTON",null,{id:"MiniWindowClose",title:"关闭",style:"height:inherit;border:none;border-radius:4px;background-image:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj48c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjgwIiByeD0iNSIgcnk9IjUiIHg9IjQ1IiB5PSIxMCIgZmlsbD0iIzAwMDAwMCIgdHJhbnNmb3JtPSJyb3RhdGUoNDUgNTAgNTApIi8+PHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjgwIiByeD0iNSIgcnk9IjUiIHg9IjQ1IiB5PSIxMCIgZmlsbD0iIzAwMDAwMCIgdHJhbnNmb3JtPSJyb3RhdGUoLTQ1IDUwIDUwKSIvPjwvc3ZnPg==);background-size:100%"},"close"]
+			["BUTTON",null,{id:"MiniWindowClose",title:"关闭",style:"position:relative;height:inherit;border:none;border-radius:4px;overflow:hidden"},"close"]
 		],{id:"MiniWindowTop",style:"overflow:hidden;display:grid;height:20px;grid-template-columns:1fr 2em 20px;grid-gap:2px"}],
 		["HR",null,{style:"width:100%;border:solid 1px;border-radius:1px;background-color:black"}],
-		["DIV",null,{id:"MiniWindowContent",class:"BSIF-default",style:"word-wrap:break-word;word-break:normal;overflow:auto"},"content"]
+		["DIV",[
+			["DIV",null,{id:"MiniWindowContent",class:"BSIF-default",style:"word-wrap:break-word;word-break:normal;overflow:auto"},"content"]
+		],{id:"MiniWindowContentFrame",style:"position:relative;width:100%;height:100%;overflow:auto"}]
 	],{id:"MiniWindow",style:"box-sizing:border-box;min-width:256px;min-height:128px;max-width:80%;max-height:80%;overflow:hidden;margin:auto;background-color:#FFFFFF;border-radius:10px;padding:10px;display:grid;grid-template-rows:20px auto 1fr;font-size:15px;transition:opacity 0.5s ease-in-out"},"window"]
 ],{id:"MiniWindowLayer",style:"position:fixed;top:0;bottom:0;left:0;right:0;z-index:1073741823;background-color:rgba(0,0,0,0.7);opacity:0;display:none;transition:opacity 0.5s ease-in-out"},"layer"]],true);
 var layer=node.getNodes.layer,windowBody=node.getNodes.window,windowTitle=node.getNodes.title,windowQueue=node.getNodes.queue,windowClose=node.getNodes.close,windowContent=node.getNodes.content;
@@ -71,7 +75,7 @@ async function show() {
 	while (!end) {
 		let item=queue.splice(0,1)[0],data=item.data,itemInterface=item.interface;
 		updateQueueNumber();
-		setContent(data.content,data.title,data.noManualClose,data.boardSize);
+		setContent(data.content,data.title,data.boardSize,data.noManualClose);
 		let close=new Promise(function(resolve){current={id:itemInterface[privateField].id,close:resolve}});
 		itemInterface[privateField].pending=false;
 		if (lock) lock();
@@ -138,11 +142,19 @@ function fadeIn(target) {
 		target.style.opacity="1";
 	})
 }
-function setContent(content,title,noManualClose,boardSize=null) {
+function setContent(content,title,boardSize,noManualClose) {
 	if (boardSize) {
-		windowBody.style.width=boardSize.width?boardSize.width:null;
-		windowBody.style.height=boardSize.height?boardSize.height:null;
-	};
+		if ("window" in boardSize) {
+			let data=boardSize.window;
+			windowBody.style.width=typeof data.width=="string"?data.width:null;
+			windowBody.style.height=typeof data.height=="string"?data.height:null;
+		}
+		if ("content" in boardSize) {
+			let data=boardSize.content;
+			windowContent.style.width=typeof data.width=="string"?data.width:null;
+			windowContent.style.height=typeof data.height=="string"?data.height:null;
+		}
+	}
 	windowClose.style.display=noManualClose?"none":"block";
 	windowTitle.innerText=title?title:"提示";
 	windowContent.innerHTML="";
@@ -153,12 +165,12 @@ function setContent(content,title,noManualClose,boardSize=null) {
 		case "object":
 			windowContent.appendChild(content);
 			break;
-	};
+	}
 }
 function close(){if (current) current.close()}
 function remove(){if (layer.parentNode) layer.parentNode.removeChild(layer)}
 function reload(){document.body.appendChild(layer)}
-function create(content,title="",noManualClose=false,boardSize=null) {
+function create(content,title="",boardSize=null,noManualClose=false) {
 	switch (typeof content) {
 		case "string":
 			break;
@@ -166,11 +178,22 @@ function create(content,title="",noManualClose=false,boardSize=null) {
 			if (content instanceof Node) break;
 		default:
 			throw new TypeError("传入的内容不为字符串或 HTML 节点。");
-	};
+	}
 	if (typeof title!="string") title="";
 	noManualClose=Boolean(noManualClose);
-	if (typeof boardSize!="object") boardSize=null;
-	return queueUp({content,title,noManualClose,boardSize})
+	if (!(boardSize instanceof Object)) {boardSize=null} else {
+		let data={};
+		for (let item of ["window","content"]) {
+			if (boardSize[item] instanceof Object) {
+				let config=boardSize[item];
+				let size=data[item]={};
+				size.width=typeof config.width=="string"?config.width:null;
+				size.height=typeof config.height=="string"?config.height:null;
+			}
+		}
+		boardSize=data;
+	}
+	return queueUp({content,title,boardSize,noManualClose})
 }
 function clear() {
 	if (!confirm("即将清除所有正在排队的弹窗，同时也会关闭当前弹窗。\n你确定要这么做吗？")) return;

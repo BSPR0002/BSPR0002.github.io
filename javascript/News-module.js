@@ -1,98 +1,68 @@
-var log=null;
-function getLog(){
-	if (log==null) {
-		let data=localStorage.getItem("BSNewsLog");
-		try {
-			data=JSON.parse(data);
-			if (!(data instanceof Object)) throw "broken";
-			log=data;
-		} catch(none) {
-			localStorage.setItem("BSNewsLog","{}");
-			log={};
-			console.warn("推送记录损坏，已进行重置！");
-		}
-	}
-	return log
-}
-function setLog(id) {
-	var log=getLog();
-	log[id]=Date.now();
-	localStorage.setItem("BSNewsLog",JSON.stringify(log));
-}
-function removeLog(id) {
-	var log=getLog();
-	delete log[id];
-	localStorage.setItem("BSNewsLog",JSON.stringify(log));
-}
-var lastFullCheck=0;
-function fullCheck(){
-	if (Date.now()-lastFullCheck<60000) return;
-	lastFullCheck=Date.now();
-	var log=getLog();
-	for (let index in log) check(index);
-}
-function LogManager(id) {
-	setTimeout(fullCheck,0)
-	return check(id);
-}
-function check(id) {
-	var log=getLog();
-	if (!(id in log)) return true;
-	var lastTime=log[id];
-	try {
-		if (typeof lastTime!="number") throw "推送记录损坏";
-		let pass=Date.now()-lastTime;
-		if (pass>259200000||pass<1) throw "推送记录过期";
-		return false
-	} catch(exception) {
-		removeLog(id);
-		console.warn("异常的推送记录："+exception+"，已删除！\n\tID："+id+"\n\t原记录："+JSON.stringify(lastTime))
-	}
-	return true
-}
-async function show() {
-	if (await Notification.requestPermission()!="granted") return;
-	var data=await request();
-	if (!data) return;
-	await operator(data);
-}
+import {setting,notificationPermission} from "/javascript/Config.mjs";
+import {create as MiniWindow} from "/javascript/MiniWindow-module.js";
+var permission=setting.getItem("push news");
+if (typeof permission!="boolean") setting.setItem("push news",permission=true);
+var log=localStorage.getItem("BSNewsLog");
 async function request() {
 	for (let trys=0;trys<5;++trys) {
-		let response=await new Promise(function(resolve){
-			AJAX({
-				"url":"/json/news.json","type":"json",
-				"success":resolve,
-				"fail":function(){resolve(false)}
-			});
-		})
+		let response=await new Promise(function(resolve){getJSON("/json/news.json",resolve,false,function(){resolve(false)})})
 		if (response) return response
 	}
 	return false
-};
-async function operator(list) {
-	var MiniWindow=await import("/javascript/MiniWindow-module.js");
+}
+try {
+	let data=JSON.parse(log);
+	if (!(data instanceof Object)) throw "broken";
+	log=data;
+} catch(none) {
+	log={};
+	saveLog()
+}
+const getLog=id=>id in log?log[id]:false;
+const setLog=id=>log[id]=true;
+const removeLog=id=>delete log[id];
+function saveLog(){localStorage.setItem("BSNewsLog",JSON.stringify(log))}
+var data=request();
+async function check(id) {
+	var list=[];
+	try {
+		let temp=await data;
+		if (!temp) return;
+		for (let item of temp) {
+			list.push(item.id);
+		}
+	} catch(none) {return}
+	for (let item in log) if (list.indexOf(item)==-1) removeLog(item);
+}
+async function show() {
+	if (!await notificationPermission()) return;
+	var list=await data;
+	if (!data) return;
+	operator(list);
+}
+function operator(list) {
 	for (let item of list) {
-		if (!(LogManager(item.id)||item.force)||item.unshow) continue;
-		await new Promise(function(resolve){
-			var model={
-				"title":item.title,"icon":"/favicon.png","keep":true,
-				"show":function(){setLog(item.id)},
-				"close":resolve
+		if (item.unshow||(!item.force&&getLog(item.id))) continue;
+		let model={
+			"title":item.title,"icon":"/favicon.png","keep":true,
+			"show":function(){setLog(item.id)},
+		};
+		let previewMessage=null,showContent=null;
+		if (item.preview) {
+			if (item.preview.image) model.image=item.preview.image;
+			if (item.preview.message) previewMessage=item.preview.message;
+		}
+		try {showContent=typeof item.content=="string"?item.content:ArrayHTML.decode(item.content)} catch(none) {}
+		model.message=previewMessage?previewMessage:(typeof showContent=="string"?showContent:"详情请点击查看。");
+		model.click=function(){
+			window.focus();
+			MiniWindow(showContent,item.title).onshow=function(){
+				setLog(item.id);
+				saveLog();
 			};
-			var previewMessage=null,showContent=null;
-			if (item.preview) {
-				if (item.preview.image) model.image=item.preview.image;
-				if (item.preview.message) previewMessage=item.preview.message;
-			}
-			try {showContent=typeof item.content=="string"?item.content:ArrayHTML.decode(item.content)} catch(none) {}
-			model.message=previewMessage?previewMessage:(typeof showContent=="string"?showContent:"详情请点击查看。");
-			model.click=function(){
-				window.focus();
-				MiniWindow.create(showContent,item.title);
-				this.close();
-			};
-			NotificationCreater(model);
-		})
+			this.close();
+		};
+		createNotification(model);
 	}
-};
+}
 export {show}

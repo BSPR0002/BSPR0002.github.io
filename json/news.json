@@ -1,6 +1,7 @@
 [
 	{
-		"id":"示例",
+		"id":"时间戳",
+		"name":"内部名",
 		"title":"标题",
 		"preview":{
 			"message":"简短预览内容",
@@ -11,7 +12,8 @@
 		"unshow":true
 	},
 	{
-		"id":"buyNEKOPARAVol4",
+		"id":"1618406602560",
+		"name":"buyNEKOPARAVol4",
 		"title":"ネコぱら Vol.4",
 		"preview":{
 			"message":"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",

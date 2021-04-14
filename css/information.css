@@ -18,7 +18,7 @@
 	grid-template-rows:repeat(4,1fr);
 	grid-template-columns:repeat(4,1fr);
 	grid-gap:10px;
-	grid-template-areas:"large large large .""large large large .""large large large .""all projects applets developments";
+	grid-template-areas:"large large large .""large large large .""large large large .""notify projects applets developments";
 }
 .information_box {
 	position:relative;
@@ -33,6 +33,15 @@
 	grid-template-rows:64px 1fr;
 	grid-gap:10px;
 	place-items:center;
+	border:none;
+	font-size:16px;
+	transition:background-color 0.2s ease-in-out;
+	background-color:#0080FF;
+}
+.collection:hover{background-color:#00FFC0}
+.collection:active{
+	transition:none;
+	background-color:#ffC0C0
 }
 .collection>div {
 	width:64px;
@@ -68,29 +77,14 @@
 	transform-origin:center;
 	animation:InformationLoadingCircle 1s linear infinite forwards running;
 }
-#information_all_message {
-	background-color:#FFC000;
-	grid-area:all;
-}
-#information_all_message>div{background-position:0 0}
-#information_projects {
-	background-color:#FF4040;
-	grid-area:projects;
-	background-position:0 0;
-}
+#information_notification{grid-area:notify}
+#information_notification>div{background-position:0 0}
+#information_projects {grid-area:projects}
 #information_projects>div{background-position:-64px 0}
-#information_applets {
-	background-color:#00FF40;
-	grid-area:applets;
-	background-position:0 0;
-}
+#information_applets {grid-area:applets}
 #information_applets>div{background-position:0 -64px}
-#information_developments {
-	background-color:#0080FF;
-	grid-area:developments;
-	background-position:0 0;
-}
-#information_developments>div{background-position:-64px -64px}
+#information_settings {grid-area:developments}
+#information_settings>div{background-position:-64px -64px}
 #information_box_large_scroll {
 	display:grid;
 	position:relative;
@@ -118,7 +112,7 @@
 	transition:transform 0.2s ease-in-out;
 }
 .information_box_content:hover>.information_box_image{transform:scale(1.05)}
-.information_box_content:active>.information_box_image{transform:scale(1)}
+.information_box_content:active>.information_box_image{transform:scale(1.025)}
 .information_box_text {
 	box-sizing:border-box;
 	width:100%;

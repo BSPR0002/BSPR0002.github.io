@@ -1,17 +1,17 @@
 {
 	let hoverPointer=document.getElementById("nav_hover_pointer");
 	let pointer=document.getElementById("nav_pointer");
-	function moveHoverPointer(pst){hoverPointer.style.left=pst+"px"}
-	function movePointer(pst){pointer.style.left=pst+"px"}
+	function moveHoverPointer(n){hoverPointer.style.transform=`translateX(${n*200}px)`}
+	function movePointer(n){pointer.style.transform=`translateX(${n*200}px)`}
 }
 
-for (let i=1;i<5;++i) {
-	let item=document.getElementById("nav_item_"+i),pst=i*200-110;
-	item.addEventListener("mouseover",function(){moveHoverPointer(pst)});
+for (let i=0,collection=document.getElementById("navigation").getElementsByClassName("navigation"),l=collection.length;i<l;++i) {
+	let item=collection[i];
+	item.addEventListener("mouseenter",function(){moveHoverPointer(i)});
 	item.addEventListener("click",function(){changeSheet(i)});
 }
 
-changeSheet(1); //加载主页
+changeSheet(0); //加载主页
 
 window.addEventListener("load",function() {
 	import("/javascript/News-module.js").then(News=>News.show());

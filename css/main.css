@@ -84,7 +84,7 @@ a:active{color:#4F90CF}
 	position:absolute;
 	left:90px;
 	bottom:0px;
-	transition-property:height,left;
+	transition-property:height,transform;
 	transition-duration:0.2s;
 	transition-timing-function:ease-in-out;
 }

@@ -8,7 +8,6 @@ var informations=await import("/javascript/Information-module.js");
 var MiniWindow=(await import("/javascript/MiniWindow-module.js")).create;
 var data={all:[],carousel:[],single:[]};
 try {
-	data.all=await informations.getAll();
 	data.carousel=await informations.getCarousel();
 	data.single=await informations.getSingle();
 } catch(none){}
