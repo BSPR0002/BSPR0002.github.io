@@ -58,7 +58,7 @@
 			if (typeof data.title=="string") {
 				boardTitle.appendChild(document.createTextNode(data.title));
 				boardTitle.title=data.title;
-			};
+			}
 			boardContent.appendChild(data.content.cloneNode(true));
 			board.style.left="130px";
 		},
@@ -84,7 +84,7 @@
 					for (let item of obj.AllInOne) {
 						if (allinone!="合集（") allinone=allinone+"、";
 						allinone=allinone+item;
-					};
+					}
 					cardType=allinone+"）";
 					break;
 				case "PC game":
@@ -93,7 +93,7 @@
 				case "game":
 					cardType="游戏";
 				default:
-			};
+			}
 			let template=[["DIV",[["DIV",null,cardIconAttr],["SPAN",cardName,{"class":"card_name","title":cardName}],["SPAN",cardType,{"class":"card_type","title":cardType}],["DIV",null,{"class":"card_link"},"cardLinks"],["DIV",[["DIV",[["DIV",[["DIV",null,{"class":"card_board_title_icon"}],["SPAN",null,{"class":"card_board_title_text"}]],{"class":"card_board_title"}],["DIV",null,{"class":"card_board_content"}],["BUTTON","详细信息",{"class":"card_board_detail"},"cardBoardDetail"],["BUTTON",null,{"class":"card_board_close"},"closeCardBoard"]],{"class":"card_board_frame"}]],{"class":"card_board"}]],{"class":"card","id":"CardID"+obj.ID}]];
 			let card=ArrayHTML.decode(template,true);
 			let cardLinks=card.getNodes.cardLinks;
@@ -109,10 +109,10 @@
 					if (typeof obj.resource.BDND.detail.tips=="string") {
 						let cardBoardDetailTips=["span",[obj.resource.BDND.detail.tips,["br"]],{"class":"CardBoardDetailTips"}];
 						boardContentTemplate.push(cardBoardDetailTips);
-					};
+					}
 					if (Array.isArray(obj.resource.BDND.detail.content)) boardContentTemplate=boardContentTemplate.concat(obj.resource.BDND.detail.content);
-				};
-				boardContent=ArrayHTML.decode(boardContentTemplate);
+				}
+				let boardContent=ArrayHTML.decode(boardContentTemplate);
 				let cardLinkBDNDBoard={
 					"theme":" card_board_BDND",
 					"title":"百度网盘",
@@ -122,15 +122,15 @@
 				button.boardData=cardLinkBDNDBoard;
 				button.addEventListener("click",Cardboard.show);
 				cardLinks.appendChild(cardLinkBDND.DocumentFragment);
-			};
+			}
 			if (typeof obj.resource.Torrent!="undefined"&&obj.resource.Torrent!=null) {
 				let cardLinkTorrentTemplate=[["BUTTON",[["DIV",null,{"class":"card_link_button_icon"}],["SPAN",["磁力链接"],{"class":"card_link_button_text"}]],{"class":"card_link_button card_link_button_Torrent"},"button"]];
 				let cardLinkTorrent=ArrayHTML.decode(cardLinkTorrentTemplate,true);
 				cardLinkTorrent.getNodes.button.addEventListener("click",function(){window.location.href=obj.resource.Torrent});
 				cardLinks.appendChild(cardLinkTorrent.DocumentFragment);
-			};
+			}
 			showBox.appendChild(card.DocumentFragment);
-		};
+		}
 		showArea.innerHTML="";
 		showArea.appendChild(showBox);
 	}
@@ -177,7 +177,7 @@
 				searchIcon.className="loading";
 				load(engine);
 				return;
-			};
+			}
 			wait=false;
 			var input=searchInput.value;
 			var ShowState=searchIcon;
@@ -185,7 +185,7 @@
 				ShowState.className="searching";
 				ShowState.clientTop;
 				var Data=libraryData.slice();
-				keyword=input.trim();
+				var keyword=input.trim();
 				var match_word=[];
 				match_word.push(RegExp(keyword,"i"));
 				var break_word=keyword.split(" ");
@@ -195,9 +195,9 @@
 						if (duplicate_removal.indexOf(word)==-1&&word!="") {
 							duplicate_removal.push(word);
 							match_word.push(RegExp(word,"i"));
-						};
-					};
-				};
+						}
+					}
+				}
 				var result=[];
 				for (let word of match_word) {
 					let resultc=[];
@@ -207,24 +207,24 @@
 							if (name.match(word)) {
 								name_match=true;
 								break;
-							};
-						};
+							}
+						}
 						if (name_match||Data[i].display.match(word)) resultc=Data.splice(i,1).concat(resultc);
-					};
+					}
 					result=result.concat(resultc);
-				};
+				}
 			} else result=libraryData;
 			ShowState.className="";
 			setShowData(spliceData(result));
 			changePage(1)
-		};
+		}
 		return {
 			"auto":function() {
 				if (wait!=true) {
 					wait=true;
 					searchIcon.className="waiting";
 					timeoutID=setTimeout(engine,1000);
-				};
+				}
 			},
 			"manual":function() {
 				clearTimeout(timeoutID);

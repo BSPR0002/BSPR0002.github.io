@@ -1,7 +1,7 @@
 var Activity={
 	"ReleaseAgreement":async function() {
 		var MiniWindow=await import("/javascript/MiniWindow-module.js");
-		MiniWindow.show(ArrayHTML.decode([
+		MiniWindow.create(ArrayHTML.decode([
 			"您好，欢迎访问蓝天信息工厂！",["BR"],
 			"欢迎您在我们网站的资源库中发布与投放内容。",["BR"],
 			"发布与投放内容需要注意如下事项：",

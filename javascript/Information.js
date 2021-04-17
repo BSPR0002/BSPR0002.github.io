@@ -5,7 +5,7 @@ var largeTop=large.querySelector("#information_box_large_pagination");
 var largeTopFloat=largeTop.querySelector("#information_box_large_pagination_float");
 var smalls=document.querySelectorAll(".information_box.small");
 var informations=await import("/javascript/Information-module.js");
-var MiniWindow=(await import("/javascript/MiniWindow-module.js")).create;
+var MiniWindow=(await import("/javascript/MiniWindow.mjs")).create;
 var data={all:[],carousel:[],single:[]};
 try {
 	data.carousel=await informations.getCarousel();
@@ -33,7 +33,7 @@ function constructContent(data) {
 	return main
 }
 largeTop.addEventListener("change",function(){change(+this.elements.information_box_large_pagination.value)})
-var preventBubble=event=>event.stopPropagation();
+const preventBubble=event=>event.stopPropagation();
 var carousel=[],paginations=[];
 for (let i=0,collection=data.carousel,l=collection.length;i<l;++i) {
 	let item=constructContent(collection[i]);
@@ -93,4 +93,8 @@ for (let i=0,single=data.single;i<3;++i) {
 	smalls[i].appendChild(content);
 	show(content).then(function(){smalls[i].classList.remove("loading")});
 }
-})()
+})();
+{
+	let notify=document.getElementById("information_notification");
+	import("/javascript/News.mjs").then(function(News){notify.addEventListener("click",News.boardShow)});
+}

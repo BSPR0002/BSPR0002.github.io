@@ -1,14 +1,25 @@
 :root {
 	--backgroundColor:#92C1DC;
+	--hovorBackgroundColor:#00FFD0;
+	--activeBackgroundColor:#FFC0C0;
+	--contentBackgroundColor:#FFFFFF;
+	--strongEdge:#000000;
+	--softEdge:#808080;
+	--focusColor:#FFD000;
+	--importantColor:#000000;
+	--defaultColor:#404040;
+	--interfaceColor:#0080FF;
+	--hoverColor:#00A0FF;
+	--activeColor:#0060B0;
 }
 body,.body_color {
-	background-color:var(--backgroundColor,#92C1DC);
+	background-color:var(--backgroundColor);
 	color:#000000;
 }
 a{text-decoration:none}
-a:link,a:visited{color:#0000FF}
-a:hover{color:#007FFF}
-a:active{color:#4F90CF}
+a:link,a:visited{color:var(--interfaceColor)}
+a:hover{color:var(--hoverColor)}
+a:active{color:var(--activeColor)}
 #top {
 	min-width:1024px;
 	width:100%;
@@ -69,7 +80,7 @@ a:active{color:#4F90CF}
 	padding:10px 0;
 	font-size:15px;
 	font-weight:bold;
-	color:#000000;
+	color:var(--importantColor);
 	transition:background-color 0.2s ease-in-out;
 	background-color:transparent;
 }

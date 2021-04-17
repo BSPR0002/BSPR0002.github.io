@@ -1,5 +1,5 @@
-import {create as MiniWindow} from "/javascript/MiniWindow-module.js";
-import {AudioPlayer} from "/javascript/AudioPlayer-module.js";
+import {create as MiniWindow} from "/javascript/MiniWindow.mjs";
+import {AudioPlayer} from "/javascript/AudioPlayer.mjs";
 var audioPlayer=new AudioPlayer,audioController=null,busy=false,nodes=null,context,fftSizeStatu=false;
 async function play() {
 	if (busy) return MiniWindow("尚在加载其他音频，请稍后！");
@@ -14,7 +14,7 @@ async function play() {
 	} catch(error) {
 		MiniWindow("发生了错误，您可能没有选择正确的音频文件。\n"+error.message);
 		changeFileName([0]);
-	};
+	}
 	busy=false
 }
 function stop(){
@@ -50,7 +50,7 @@ function changeFileName(option){
 			nodes.currentFile.removeAttribute("title");
 	}
 }
-function fftSizeSwitch(){audioPlayer.analyser.fftSize=(fftSizeStatu=!fftSizeStatu)?8192:2048};
+function fftSizeSwitch(){audioPlayer.analyser.fftSize=(fftSizeStatu=!fftSizeStatu)?8192:2048}
 fftSizeSwitch();
 var toolInterface={play,stop,changeSpeed,fftSizeSwitch,player:audioPlayer};
 Object.defineProperty(toolInterface,"controller",{
@@ -119,13 +119,13 @@ var AH=[
 		],{"style":"grid-area:volume;display:grid;grid-template-columns:2em 3em 1fr;grid-gap:0.5em;place-items:end"}]
 	],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
 ];
-var toolInterface=ArrayHTML.decode(AH,true);
-nodes=toolInterface.getNodes;
+var toolInterfaceUI=ArrayHTML.decode(AH,true);
+nodes=toolInterfaceUI.getNodes;
 nodes.play.addEventListener("click",play);
 nodes.stop.addEventListener("click",stop);
 nodes.speedUp.addEventListener("click",function(){changeSpeed(true)});
 nodes.speedDown.addEventListener("click",function(){changeSpeed(false)});
 nodes.volumeSlide.value=nodes.volumeDisplay.textContent=audioPlayer.volume;
 nodes.volumeSlide.addEventListener("input",function(){audioPlayer.volume=+(nodes.volumeDisplay.textContent=this.value)});
-document.getElementById("tools_plate").appendChild(toolInterface.DocumentFragment);
+document.getElementById("tools_plate").appendChild(toolInterfaceUI.DocumentFragment);
 loop();

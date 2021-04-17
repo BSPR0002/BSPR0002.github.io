@@ -14,5 +14,5 @@ for (let i=0,collection=document.getElementById("navigation").getElementsByClass
 changeSheet(0); //加载主页
 
 window.addEventListener("load",function() {
-	import("/javascript/News-module.js").then(News=>News.show());
+	import("/javascript/News.mjs").then(News=>News.show());
 },{"once":true});

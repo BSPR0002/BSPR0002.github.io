@@ -4,14 +4,19 @@ try {
     if (!(temp instanceof Object)) throw "broken";
     data=temp;
 } catch(none) {
-    localStorage.setItem("BSIF site settings","{}");
     data={};
+    save();
 }
-function getItem(key,defaultValue) {
+function getItem(key,defaultValue=null) {
     if (key in data) return data[key];
     return defaultValue
 }
-function setItem(key,value){return data[key]=value}
+function setItem(key,value){
+    var temp=data[key]=value;
+    save();
+    return temp;
+}
+function save(){localStorage.setItem("BSIF site settings",JSON.stringify(data))}
 const setting={getItem,setItem};
 async function notificationPermission() {
     var permission=Notification.permission;

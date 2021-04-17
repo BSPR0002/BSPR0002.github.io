@@ -24,7 +24,7 @@ async function pullData() {
 		});
 	}
 	return await pulling.operator
-};
+}
 async function getData() {
 	if (libraryData==null) return await pullData();
 	return libraryData;
@@ -44,7 +44,7 @@ async function search(input) {
 				wordsForMatching.push(RegExp(word,"i"));
 			}
 		}
-	};
+	}
 	var results=[];
 	for (let word of wordsForMatching) {
 		let collection=[];
@@ -55,11 +55,11 @@ async function search(input) {
 					nameMatch=true;
 					break;
 				}
-			};
+			}
 			if (nameMatch||word.test(data[i].display)) collection=data.splice(i,1).concat(collection)
-		};
+		}
 		results=results.concat(collection)
-	};
+	}
 	return results
-};
+}
 export {getData,pullData,search}

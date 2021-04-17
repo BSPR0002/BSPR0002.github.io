@@ -1,4 +1,4 @@
-try {ArrayHTML.decode(["test"])} catch(none) {throw new Error("缺失依赖：BSFL.ArrayHTML.decode\n请引入脚本或改写模块！")}
+import {ArrayHTML} from "/javascript/BSFL.mjs";
 var node=ArrayHTML.decode([["DIV",[
 	["STYLE",[
 		"#MiniWindowContent>img{max-width:100%;height:auto}",
@@ -75,7 +75,7 @@ async function show() {
 	while (!end) {
 		let item=queue.splice(0,1)[0],data=item.data,itemInterface=item.interface;
 		updateQueueNumber();
-		setContent(data.content,data.title,data.boardSize,data.noManualClose);
+		setContent(data.content,data.title,data.config,data.noManualClose);
 		let close=new Promise(function(resolve){current={id:itemInterface[privateField].id,close:resolve}});
 		itemInterface[privateField].pending=false;
 		if (lock) lock();
@@ -142,18 +142,12 @@ function fadeIn(target) {
 		target.style.opacity="1";
 	})
 }
-function setContent(content,title,boardSize,noManualClose) {
-	if (boardSize) {
-		if ("window" in boardSize) {
-			let data=boardSize.window;
-			windowBody.style.width=typeof data.width=="string"?data.width:null;
-			windowBody.style.height=typeof data.height=="string"?data.height:null;
-		}
-		if ("content" in boardSize) {
-			let data=boardSize.content;
-			windowContent.style.width=typeof data.width=="string"?data.width:null;
-			windowContent.style.height=typeof data.height=="string"?data.height:null;
-		}
+function setContent(content,title,config,noManualClose) {
+	for (let item of [["window",windowBody],["content",windowContent]]) {
+		let data=config[item[0]];
+		let target=item[1];
+		target.style.width=typeof data.width=="string"?data.width:null;
+		target.style.height=typeof data.height=="string"?data.height:null;
 	}
 	windowClose.style.display=noManualClose?"none":"block";
 	windowTitle.innerText=title?title:"提示";
@@ -181,19 +175,27 @@ function create(content,title="",boardSize=null,noManualClose=false) {
 	}
 	if (typeof title!="string") title="";
 	noManualClose=Boolean(noManualClose);
-	if (!(boardSize instanceof Object)) {boardSize=null} else {
-		let data={};
+	var config={
+		window:{
+			width:null,
+			height:null
+		},
+		content:{
+			width:null,
+			height:null
+		}
+	};
+	if (boardSize instanceof Object) {
 		for (let item of ["window","content"]) {
 			if (boardSize[item] instanceof Object) {
-				let config=boardSize[item];
-				let size=data[item]={};
-				size.width=typeof config.width=="string"?config.width:null;
-				size.height=typeof config.height=="string"?config.height:null;
+				let data=boardSize[item];
+				let size=config[item];
+				size.width=typeof data.width=="string"?data.width:null;
+				size.height=typeof data.height=="string"?data.height:null;
 			}
 		}
-		boardSize=data;
 	}
-	return queueUp({content,title,boardSize,noManualClose})
+	return queueUp({content,title,config,noManualClose})
 }
 function clear() {
 	if (!confirm("即将清除所有正在排队的弹窗，同时也会关闭当前弹窗。\n你确定要这么做吗？")) return;
