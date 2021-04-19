@@ -6,8 +6,8 @@
 	--strongEdge:#000000;
 	--softEdge:#808080;
 	--focusColor:#FFD000;
-	--importantColor:#000000;
-	--defaultColor:#404040;
+	--defaultColor:#000000;
+	--contentColor:#404040;
 	--interfaceColor:#0080FF;
 	--hoverColor:#00A0FF;
 	--activeColor:#0060B0;
@@ -80,7 +80,7 @@ a:active{color:var(--activeColor)}
 	padding:10px 0;
 	font-size:15px;
 	font-weight:bold;
-	color:var(--importantColor);
+	color:var(--defaultColor);
 	transition:background-color 0.2s ease-in-out;
 	background-color:transparent;
 }

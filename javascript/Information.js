@@ -93,8 +93,13 @@ for (let i=0,single=data.single;i<3;++i) {
 	smalls[i].appendChild(content);
 	show(content).then(function(){smalls[i].classList.remove("loading")});
 }
+(async function(){
+	var notify=document.getElementById("information_notification");
+	var newsboard=(await import("/javascript/News.mjs")).boardShow;
+	notify.addEventListener("click",newsboard);
+	await show(notify.firstElementChild);
+	notify.classList.remove("loading");
 })();
-{
-	let notify=document.getElementById("information_notification");
-	import("/javascript/News.mjs").then(function(News){notify.addEventListener("click",News.boardShow)});
-}
+
+})();
+

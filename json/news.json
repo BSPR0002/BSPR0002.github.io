@@ -1,7 +1,6 @@
 [
 	{
 		"id":"时间戳",
-		"name":"内部名",
 		"title":"标题",
 		"preview":{
 			"message":"简短预览内容",
@@ -13,12 +12,19 @@
 	},
 	{
 		"id":"1618406602560",
-		"name":"buyNEKOPARAVol4",
 		"title":"ネコぱら Vol.4",
 		"preview":{
 			"message":"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",
 			"image":"/images/informations/nekopara_vol4.jpg"
 		},
 		"content":[["img",null,{"src":"/images/informations/nekopara_vol4.jpg"}],"ネコぱら Vol.4 已发售！前往 STEAM 购买吧！",["br"],["a","https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/",{"href":"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/","target":"_blank"}]]
+	},
+	{
+		"id":"1618859994974",
+		"title":"「推送通知」功能全新改版！",
+		"preview":{
+			"message":"我们重新设计了「推送通知」功能，快来了解一下吧！"
+		},
+		"content":"我们重新设计了「推送通知」功能。\n现在，您可以通过“咨询”页面查看所有的推送内容，还可以选择是否在访问我们的网站时自动向您推送消息。\n我们优化了通知的弹出逻辑，已经查看过详细信息的非强制性消息不会再自动弹出。"
 	}
 ]

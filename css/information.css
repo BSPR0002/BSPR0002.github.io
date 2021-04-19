@@ -28,28 +28,36 @@
 	box-sizing:border-box;
 	overflow:hidden;
 }
-.collection {
+.information_box.collection {
+	padding:0;
+	border:none;
+}
+.information_box.collection>div {
+	display:grid;
+	height:100%;
+	box-sizing:border-box;
 	padding:10px;
 	grid-template-rows:64px 1fr;
 	grid-gap:10px;
 	place-items:center;
-	border:none;
 	font-size:16px;
-	transition:background-color 0.2s ease-in-out;
+	transition-property:background-color,opacity;
+	transition-duration:0.2s;
+	transition-timing-function:ease-in-out;
 	background-color:#0080FF;
 }
-.collection:hover{background-color:#00FFC0}
-.collection:active{
+.information_box.collection>div:hover{background-color:#00FFC0}
+.information_box.collection>div:active{
 	transition:none;
 	background-color:#ffC0C0
 }
-.collection>div {
+.information_box.collection>div>div {
 	width:64px;
 	height:64px;
 	background-image:url("/images/informations/icons/entrances.svg");
 	background-size:200%;
 }
-.collection>span{font-weight:bold}
+.information_box.collection>div>span{font-weight:bold}
 #information_box_large {
 	grid-area:large
 }
@@ -57,12 +65,15 @@
 	from{background-color:#6F90A0}
 	to{background-color:#D0F0FF}
 }
-.information_box.loading {animation:InformationLoading 2s cubic-bezier(0.5,0,0.5,1) alternate infinite forwards running}
 @keyframes InformationLoadingCircle {
 	from{transform:rotate(0)}
 	to{transform:rotate(1turn)}
 }
-.information_box.loading {background-color:#6F90A0}
+.information_box.loading {
+	background-color:#6F90A0;
+	animation:InformationLoading 2s cubic-bezier(0.5,0,0.5,1) alternate infinite forwards running
+}
+.information_box.loading>*{opacity:0}
 .information_box.loading::before {
 	content:"";
 	position:absolute;
@@ -89,7 +100,6 @@
 	display:grid;
 	position:relative;
 	height:100%;
-	opacity:0;
 	left:0;
 	transition-property:left,opacity;
 	transition-duration:0.4s;
@@ -177,19 +187,25 @@
 	transform:translateX(0);
 }
 #information_box_large_pagination:hover>#information_box_large_pagination_float{top:0.5em}
-#information_box_large_scroll.none,.information_box.small>.none{background-color:#6F90A0}
-#information_box_large_scroll.none>*,.information_box.small>.none>*{display:none}
-#information_box_large_scroll.none::after {
-	content:"目前没有消息";
-	place-self:center;
-}
 .information_box.small>.none {
 	display:grid;
-	opacity:0;
 	transition:opacity 0.4s ease-in-out;
 }
-.information_box.small>.none::before {
+.information_box>.none::before {
 	content:"💦";
 	place-self:center;
 	font-size:32px;
+}
+#information_box_large_scroll.none,.information_box>.none{background-color:#6F90A0}
+#information_box_large_scroll.none>*,.information_box>.none>*{display:none}
+#information_box_large_scroll.none {
+	grid-template-rows:1fr 1fr;
+	grid-gap:8px;
+}
+#information_box_large_scroll.none::before {
+	place-self:end center;
+}
+#information_box_large_scroll.none::after {
+	content:"目前没有消息";
+	place-self:start center;
 }
