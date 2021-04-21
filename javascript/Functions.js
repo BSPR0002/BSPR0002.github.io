@@ -1,5 +1,5 @@
 //if (detectUA().mobile) window.location.href="/Mobile/";
-window.onerror=function(message,source,line,col,error){import("/javascript/MiniWindow.mjs").then(mw=>mw.create(`文件：${source}\n行号：${line}\n列号：${col}\n错误信息：${error}`,"发生错误"))};
+window.onerror=function(message,source,line,col,error){import("/javascript/MiniWindow-module.js").then(mw=>mw.create(`文件：${source}\n行号：${line}\n列号：${col}\n错误信息：${error}`,"发生错误"))};
 {
 	let sheetList=["home_page","resource_library","information"];
 	let currentSheet=null;

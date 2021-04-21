@@ -58,13 +58,11 @@ function showDetail(id,title,content) {
 		showContent="出了点问题，内容回娘家了……😢";
 		exception=true;
 	}
-	var miniWindow=MiniWindow(showContent,title);
-	miniWindow.onshow=function(){
+	MiniWindow(showContent,title).onshow=function(){
 		if (exception) return;
 		setLog(id);
 		saveLog();
 	};
-	return miniWindow;
 }
 function operator(list) {
 	for (let item of list) {
@@ -145,8 +143,7 @@ async function boardShow() {
 			}
 			temp=ArrayHTML.decode(temp,true);
 			temp.getNodes.body.addEventListener("click",function(){
-				showDetail(item.id,item.title,item.content).onclosestart=boardShow;
-				miniWindow.blockSwitch();
+				showDetail(item.id,item.title,item.content);
 				miniWindow.close();
 			});
 			container.appendChild(temp.DocumentFragment);

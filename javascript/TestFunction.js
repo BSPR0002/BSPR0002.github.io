@@ -20,7 +20,7 @@ class DecimalNumber {
 					this.#integer=initial.#integer;
 					this.#mantissa=new Uint8Array(initial.#mantissa);
 					break;
-				}
+				};
 			case "string":	
 			case "number":
 				if (!isFinite(initial)) {
@@ -163,7 +163,7 @@ class DecimalNumber {
 			return result
 		}
 		result.#sign=Boolean(self.#sign^divisor.#sign);
-		var bits2=divisor.#actualPoint(),move=String(self.#integer).length+bits2,temp="",operand1=self.#integer+self.#mantissa.join(""),operand2=BigInt(divisor.#integer+divisor.#mantissa.slice(0,bits2).join(""));
+		var bits1=self.#actualPoint(),bits2=divisor.#actualPoint(),move=String(self.#integer).length+bits2,temp="",operand1=self.#integer+self.#mantissa.join(""),operand2=BigInt(divisor.#integer+divisor.#mantissa.slice(0,bits2).join(""));
 		for (let i=-String(self.#integer).length,temp1="";i<64;++i) {
 			temp1+=operand1.substring(0,1);
 			operand1=operand1.substring(1);
@@ -218,10 +218,10 @@ class WebAudioPlayer {
 					let address=this.#localSrc=URL.createObjectURL(file);
 					this.#node.src=address;
 				}
+			default:
 				break;
 			case "string":
 				this.#node.src=file;
-			default:
 		}
 		if (playImmediately) this.#node.play();
 		if (loop) this.#node.loop=true;
@@ -245,7 +245,7 @@ class randomStatistician {
 	}
 	reset(){this.#data=(new Array(10)).fill(0n)}
 	analyze(){
-		var total=0n,i=0;
+		var total=0n,result="",i=0;
 		for (let item of this.#data) total+=item;
 		var result=[["total",total.toString()]];
 		while (i<10) {
@@ -256,7 +256,7 @@ class randomStatistician {
 	}
 }
 
-var BytesOperate={
+BytesOperate={
 	[Symbol.toStringTag]:"BytesOperate",
 	getBits:byteReader,
 	littleEndianNumber,
@@ -337,7 +337,7 @@ async function flacVCdecoder(data) {
 }
 
 function createVCBlock(tags) {
-	var toLittleEndian=BytesOperate.numberToLittleEndian;
+	var toLittleEndian=BytesOperate.numberToLittleEndian,toBigEndian=BytesOperate.numberToBigEndian;
 	if (!("vendor" in tags)) tags.vendor="reference libFLAC 1.3.1 20141125";
 	var vendor=new Blob([tags.vendor]);
 	var list=0,temp=[];
