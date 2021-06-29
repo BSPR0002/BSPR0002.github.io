@@ -51,7 +51,6 @@ function changeFileName(option){
 	}
 }
 function fftSizeSwitch(){audioPlayer.analyser.fftSize=(fftSizeStatu=!fftSizeStatu)?8192:2048}
-fftSizeSwitch();
 var toolInterface={play,stop,changeSpeed,fftSizeSwitch,player:audioPlayer};
 Object.defineProperty(toolInterface,"controller",{
 	get:function(){return audioController},
