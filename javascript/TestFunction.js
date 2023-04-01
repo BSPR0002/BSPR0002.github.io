@@ -1,0 +1,106 @@
+const moduleConfig = Object.freeze({
+	AJAX: {
+		path: "/javascript/module/AJAX.mjs"
+	},
+	AudioPlayer: {
+		path: "/javascript/module/AudioPlayer.mjs",
+		default: "AudioPlayer"
+	},
+	MiniWindow: {
+		path: "/javascript/module/MiniWindow.mjs",
+		default: "MiniWindow"
+	},
+	UTF8: {
+		path: "/javascript/module/UTF-8.mjs"
+	},
+	FileIO: {
+		path: "/javascript/module/FileIO.mjs"
+	},
+	FLAC: {
+		path: "/javascript/module/FLAC.mjs"
+	},
+	Base64: {
+		path: "/javascript/module/Base64.mjs"
+	},
+	trackList: {
+		path: "/unuse/tracklist.mjs",
+		default: "default"
+	},
+	torrent: {
+		path: "/unuse/torrent.mjs"
+	},
+	BufferContext: {
+		path: "/javascript/module/BufferContext.mjs",
+		default: "default"
+	},
+	BinaryOperate: {
+		path: "/javascript/module/BinaryOperate.mjs"
+	},
+	LocalStorageObject: {
+		path: "/javascript/module/LocalStorageObject.mjs",
+		default: "default"
+	},
+	IndexedDatabase: {
+		path: "/javascript/module/IndexedDatabase.mjs",
+		default: "default"
+	},
+	DynamicIndexedDatabase: {
+		path: "/javascript/module/DynamicIndexedDatabase.mjs",
+		default: "default"
+	},
+	detune: {
+		path: "/unuse/detune.mjs",
+		default: "use"
+	},
+	JSZip: {
+		path: "/javascript/module/JSZip.mjs",
+		default: "default"
+	}
+})
+async function importModule(name, useDefault = true) {
+	const config = moduleConfig[name]
+	const module = await import(config.path);
+	window[name] = useDefault && "default" in config ? module[config.default] : module;
+	console.log("Imported " + name);
+	return module;
+}
+function printArguments() { console.log(arguments) }
+function manual(){ debugger }
+class RandomStatistician {
+	#data = (new Array(10)).fill(0n);
+	get data() { return this.#data.concat() }
+	record(number) {
+		number = Number(number);
+		if (number < 0 || number >= 1) throw new Error("Input out of range.");
+		++this.#data[Math.floor(number * 10)]
+	}
+	reset() { this.#data = (new Array(10)).fill(0n) }
+	analyze() {
+		var total = 0n, i = 0;
+		for (let item of this.#data) total += item;
+		var result = [["total", total.toString()]];
+		while (i < 10) {
+			let starting = i / 10, subscript = i++, quantity = this.#data[subscript];
+			result.push(["[" + starting + "," + i / 10 + ")", quantity.toString(), (total == 0 ? "0" : Number(quantity) * 100 / +Number(total)) + "%"]);
+		}
+		return result
+	}
+}
+class PerSecond {
+	#data = [];
+	record() {
+		this.#data.push(Date.now());
+		this.#check();
+	}
+	#check() {
+		const limit = Date.now() - 1000;
+		for (let i = 0, l = this.#data.length; i < l; ++i) if (this.#data[i] < limit) { this.#data.shift() } else { break };
+	}
+	reset() { this.#data = [] }
+	get times() {
+		this.#check();
+		return this.#data.length;
+	}
+}
+
+const gain = (y, z = 16) => 2 ** (z * (y - 1))

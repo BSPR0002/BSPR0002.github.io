@@ -1,0 +1,48 @@
+#page_box_home {
+	left:0;
+	right:0;
+	margin:0 auto;
+	box-sizing: border-box;
+	max-width: 64em;
+	width: 100%;
+	background-color: white;
+	border-radius: 0.5em;
+	padding: 0.5em;
+}
+#welcome {
+	margin: 1rem;
+	text-align: center;
+	color: black;
+}
+#lead {
+	margin: 0.5rem;
+	text-align: center;
+}
+#guide {
+	display: grid;
+	gap: 0.5em;
+}
+.function {
+	border: 0.0625em solid var(--softEdge);
+	font-size: 1rem;
+	border-radius: 0.5em;
+	padding: 0.5em;
+	display: grid;
+	gap: 0.5em;
+	text-align: start;
+	background-color: #BFEFFF;
+}
+.function:hover{background-color: #60C0FF}
+.function:active{background-color: #80B0FF}
+.function>div {
+	grid-area: icon;
+	background-image: url(/images/system/home_function_icon.svg);
+}
+.function>h1 {
+	grid-area: title;
+	margin: 0;
+}
+.function>p {
+	grid-area: detail;
+	color: var(--contentColor);
+}

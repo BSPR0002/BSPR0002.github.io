@@ -1,0 +1,16 @@
+{
+	"lang":"zh-CN",
+	"name":"Blue Sky Information Factory",
+	"short_name":"BSIF",
+	"start_url":"/",
+	"scope":"/",
+	"display":"standalone",
+	"background_color":"#92C1DC",
+	"theme_color":"#FFFFFF",
+	"description":"ACG resouce, ACG tools and more.",
+	"icons":[{
+		"src":"/favicon.png",
+		"sizes":"192x192",
+		"type":"image/png"
+	}]
+  }

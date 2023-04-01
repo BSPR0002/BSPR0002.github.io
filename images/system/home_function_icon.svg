@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="512" height="512">
+	<g>
+		<defs>
+			<g id="window">
+				<rect width="168" height="168" fill="#FFFFFF" rx="12" ry="12" />
+				<rect width="152" height="16" x="8" y="8" fill="#0080b0" />
+				<rect width="156" height="156" x="6" y="6" stroke="#000000" fill="transparent" stroke-width="4" rx="6" ry="6" />
+			</g>
+			<rect id="textline" width="144" height="8" x="44" fill="#000000" />
+		</defs>
+		<use href="#window" x="32" y="32" />
+		<use href="#textline" y="60" />
+		<use href="#textline" y="72" />
+		<use href="#textline" y="84" />
+		<use href="#textline" y="96" />
+		<use href="#textline" y="108" />
+		<use href="#textline" y="120" />
+		<use href="#window" x="56" y="56"/>
+		<rect width="56" height="16" x="68" y="84" fill="#FF0040" />
+		<rect width="56" height="108" x="68" y="104" fill="#F0E000" />
+		<rect width="84" height="128" x="128" y="84" fill="#00FF80" />
+	</g>
+	<g>
+		<polygon points="352,120 416,120 412,184 356,184" fill="#FFC000" />
+		<polygon points="356,184 412,184 424,224 344,224" fill="#FFA000" />
+		<polygon points="344,224 328,160 352,120 356,184" fill="#FFB000" />
+		<polygon points="424,224 440,160 416,120 412,184" fill="#FFB000" />
+		<polygon points="328,160 288,120 328,96 352,120" fill="#FFD000" />
+		<polygon points="440,160 480,120 440,96 416,120" fill="#FFD000" />
+		<rect x="344" y="64" width="80" height="80" fill="#FF0080" rx="12" ry="12" />
+		<polygon points="328,160 440,160 424,224 344,224" fill="#E08000" />
+	</g>
+	<g>
+		<rect width="168" height="168" x="32" y="288" fill="#FFFFFF" rx="12" ry="12" />
+		<rect width="156" height="156" x="38" y="294" stroke="#000000" fill="transparent" stroke-width="4" rx="6" ry="6" />
+		<rect width="36" height="48" x="56" y="312" fill="#FF0040" />
+		<rect width="36" height="48" x="80" y="380" fill="#F0E000" />
+		<rect width="36" height="48" x="132" y="336" fill="#0080FF" />
+		<rect width="72" height="88" x="152" y="392" fill="#FFFFFF" />
+		<rect width="60" height="76" x="158" y="398" stroke="#000000" fill="transparent" stroke-width="4" />
+		<polygon points="184,416 192,416 192,432 208,432 208,440 192,440 192,456 184,456 184,440 168,440 168,432 184,432" fill="#000000" />
+	</g>
+</svg>

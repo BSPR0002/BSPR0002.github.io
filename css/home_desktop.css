@@ -1,0 +1,39 @@
+#welcome {
+	font-size: 3rem;
+}
+
+#lead {
+	font-size: 1.5rem;
+}
+
+#guide {
+	place-content: start center;
+	grid-auto-columns: minmax(min-content, 18em);
+	grid-auto-flow: column;
+	grid-auto-rows: minmax(15em, min-content);
+}
+
+.function {
+	min-width: 15em;
+	place-content: start center;
+	place-items: center;
+	grid-template-rows: auto auto auto;
+	grid-template-areas: "icon" "title" "detail";
+}
+
+.function>div {
+	height: 8em;
+	width: 8em;
+	background-size: 16em;
+}
+
+.function>h1 {
+	font-size: 1.2rem;
+	margin: 0;
+}
+
+.function>p{font-size: 0.9375rem}
+
+#function_program>div{background-position: 0 0}
+#function_resource>div{background-position: 8em 0}
+#function_share>div{background-position: 0 8em}

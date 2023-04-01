@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	<head>
+		<title>主页</title>
+		<link rel="stylesheet" type="text/css" href="/css/home.css">
+		<link rel="stylesheet" type="text/css" media="all and (min-width:48rem)" href="/css/home_desktop.css">
+		<link rel="stylesheet" type="text/css" media="all and (max-width:47.999rem)" href="/css/home_mobile.css">
+		<script>
+			for (let item of [
+				["program","Applets",function(){this.showBoard()}],
+				["resource","MainController",function(){this.changeTab(2)}],
+				["share","Setting",function(){this.direct(["about"])}]
+			]) {
+				let element=document.getElementById("function_"+item[0]);
+				import(`/javascript/${item[1]}.mjs`).then(function(module){
+					element.addEventListener("click",item[2].bind(module),{passive:true});
+					element.className="function";
+				})
+			}
+		</script>
+	</head>
+	<body>
+		<div id="page_box_home">
+			<p id="welcome">欢迎来访</p>
+			<p id="lead">在这里你可以——</p>
+			<div id="guide">
+				<button id="function_program" class="function bs-loading">
+					<div></div>
+					<h1>使用本网站开发的小工具</h1>
+					<p>
+						本网站具有技术实验性质，会开发一些轻量级程序。您可以在本网站使用我们公开的程序。<br>
+						<span class="strong">点击查看程序列表。</span>
+					</p>
+				</button>
+				<button id="function_resource" class="function bs-loading">
+					<div></div>
+					<h1>获取本网站上记录的资源</h1>
+					<p>
+						本网站经营 ACG 内容，网站上会公开我们收录的内容。您可以免费获取这些内容。<br>
+						<span class="strong">点击转到资源库。</span>
+					</p>
+				</button>
+				<button id="function_share" class="function bs-loading">
+					<div></div>
+					<h1>将您的资源登记到本网站</h1>
+					<p>
+						本网站经营 ACG 内容，如果您有需要分享的内容，可以申请将其添加到本网站的资源库。<br>
+						<span class="strong">点击查看我们的联系方式。</span>
+					</p>
+				</button>
+			</div>
+		</div>
+	</body>
+</html>

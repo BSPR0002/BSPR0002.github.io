@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+	<head>
+		<title>服务</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/css/services.css">
+		<script>
+			for (let item of [
+				["notification","News"],
+				["projects","Projects"],
+				["applets","Applets"],
+				["settings","Setting"]
+			]) {
+				let element=document.getElementById("services_"+item[0]);
+				import(`/javascript/${item[1]}.mjs`).then(function(module){
+					element.addEventListener("click",module.showBoard);
+					element.className="services";
+				})
+			}
+		</script>
+	</head>
+	<body>
+		<div id="page_box_services">
+			<div class="bs-loading" id="services_notification">
+				<div class="services_icon"></div>
+				<span>推送通知</span>
+			</div>
+			<div class="bs-loading" id="services_projects">
+				<div class="services_icon"></div>
+				<span>工程项目</span>
+			</div>
+			<div class="bs-loading" id="services_applets">
+				<div class="services_icon"></div>
+				<span>在线应用</span>
+			</div>
+			<div class="bs-loading" id="services_settings">
+				<div class="services_icon"></div>
+				<span>网站设置</span>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,232 @@
+#page_box_resource {
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	display: grid;
+	max-width: 64em;
+	width: 100%;
+	height: 100%;
+	grid-template-rows: 2.25em 1fr;
+	gap: 0.25em;
+	overflow: hidden;
+}
+#resource_search {
+	box-sizing: border-box;
+	width: 100%;
+	border-radius: 0.5em;
+	background-color: #FFFFFF;
+	position: relative;
+	padding: 0.25em;
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25em;
+}
+#resource_search>* {height: 100%}
+#resource_search_button {
+	position: relative;
+	border: none;
+	border-radius: 0.3125rem;
+	overflow: hidden;
+	font-size: 0.875rem;
+	background-color: #92C1DC;
+	transition: background-color 0.2s ease-in-out;
+}
+#resource_search_button:hover {background-color: #87CEFA}
+#resource_search_button:active {
+	transition: all 0s;
+	background-color: #80C4ED
+}
+#resource_search_button>* {vertical-align: middle}
+#resource_search_state {
+	display: inline-block;
+	width: 1.25rem;
+	height: 1.25rem;
+	position: relative;
+	margin-right: 0.125rem;
+}
+#resource_search_state:before {
+	content: "";
+	display: block;
+	background-color: #000000;
+	width: 0.5625rem;
+	height: 0.125rem;
+	border-radius: 0 0.0625rem 0.0625rem 0;
+	transform: rotateZ(45deg);
+	position: absolute;
+	right: 0.0625rem;
+	bottom: 0;
+	transform-origin: right center;
+}
+#resource_search_state:after {
+	content: "";
+	display: block;
+	width: 1rem;
+	height: 1rem;
+	position: absolute;
+	background-color: transparent;
+	box-sizing: border-box;
+	border: solid 0.125rem #000000;
+	border-radius: 50%;
+}
+#resource_search_state.waiting:after {background-color: #FFFF00}
+#resource_search_state.searching:after {background-color: #00FF00}
+#resource_search_input {
+	border: solid 0.0625rem;
+	border-radius: 0.25rem;
+	padding: 0.25rem;
+}
+#resource_show_box {
+	width: 100%;
+	display: grid;
+	grid-template-rows: 1fr;
+	gap: 0.25em;
+	overflow: hidden;
+}
+#resource_show_box.multiPage {grid-template-rows: 2.25em 1fr}
+#resource_show_box.multiPage>#resource_show_pagination {display: grid}
+#resource_show_pagination {
+	box-sizing: border-box;
+	width: 100%;
+	border-radius: 0.5em;
+	background-color: #FFFFFF;
+	position: relative;
+	padding: 0.25em;
+	overflow: hidden;
+	display: none;
+	justify-content: center;
+	grid-template-columns: repeat(3, auto);
+	gap: 0.25em;
+}
+#resource_show_pagination>* {height: 100%}
+#resource_show_pagination>button {
+	position: relative;
+	box-sizing: border-box;
+	border-radius: 0.25em;
+	border: none;
+	overflow: hidden;
+	background-color: #92C1DC;
+	transition: background-color 0.2s ease-in-out;
+}
+#resource_show_pagination>button:hover {background-color: #87CEFA}
+#resource_show_pagination>button:active {
+	transition: all 0s;
+	background-color: #80C4ED
+}
+#resource_pagination_display {
+	display: grid;
+	grid-template-columns: repeat(5, auto);
+	place-content: center;
+	place-items: center;
+	font-size: 0.9375rem
+}
+#resource_pagination_select {
+	width: 3em;
+	border: solid 0.0625rem var(--softEdge);
+	border-radius: 0.25rem;
+	text-align: center;
+}
+#resource_pagination_select::-webkit-inner-spin-button {-webkit-appearance: none}
+#resource_show_area_frame {overflow: hidden auto}
+#resource_show_area {
+	display: grid;
+	grid-auto-rows: 8.25em;
+	grid-template-columns: repeat(auto-fit, minmax(17em, 1fr));
+	gap: 0.25em;
+}
+@media all and (min-width:768px) {
+	#resource_show_area {grid-template-columns: repeat(2, 1fr)}
+}
+#resource_show_area::before {
+	font-size: 0.875rem;
+	place-self: start center;
+	margin-top: 2rem;
+	background-color: rgba(255, 255, 255, 0.5);
+	color: var(--contentColor);
+	border-radius: 0.125rem;
+	padding: 0.125rem 0.5rem;
+}
+#resource_show_area.loading>*,
+#resource_show_area.empty {grid-template-columns: 1fr}
+#resource_show_area.empty>* {display: none}
+#resource_show_area.loading::before {content: "正在加载……"}
+#resource_show_area.empty::before {content: "没有找到资源……"}
+.resource_card {
+	box-sizing: border-box;
+	border-radius: 0.5em;
+	padding: 1em;
+	display: grid;
+	grid-template-columns: 6.25em 1fr;
+	column-gap: 1em;
+	grid-template-rows: 1.25em 1.125em 1.125em 2em;
+	row-gap: 0.25em;
+	grid-auto-flow: column;
+	grid-template-areas: "icon name" "icon media" "icon content" "icon detail";
+	background-color: #FFFFFF;
+	user-select: text;
+}
+.resource_card_icon {
+	grid-area: icon;
+	background-color: var(--backgroundColor);
+	background-size: 100%;
+	background-repeat: no-repeat;
+	border-radius: 0.25em;
+	overflow: hidden;
+}
+.resource_card_icon.none:before {
+	content: "No Image";
+	display: flex;
+	width: 100%;
+	height: 100%;
+	place-content: center;
+	place-items: center;
+	color: #FFFFFF;
+	font-size: 1.25em;
+	font-weight: bold;
+}
+.resource_card_name {
+	font-size: 1em;
+	font-weight: bold;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.resource_card_media,
+.resource_card_content {
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: 0.75rem;
+}
+.resource_card_tag {
+	box-sizing: border-box;
+	display: inline-block;
+	height: 100%;
+	margin-inline-end: 0.25rem;
+	border-radius: 0.125rem;
+	padding: 0.125rem;
+	color: var(--contentColor);
+	background-color: #C0E0F0;
+	overflow: hidden;
+}
+.resource_card_detail {
+	place-self: start;
+	position: relative;
+	background-color: #4080FF;
+	color: #FFFFFF;
+	height: 100%;
+	padding: 0.25rem 2rem;
+	border-radius: 0.5rem;
+	border: none;
+	overflow: hidden;
+	white-space: nowrap;
+	transition: background-color 0.2s ease-in-out;
+}
+.resource_card_detail:hover {
+	background-color: #60A0FF;
+}
+.resource_card_detail:active {
+	transition-duration: 0s;
+	background-color: #3F7FEF;
+}

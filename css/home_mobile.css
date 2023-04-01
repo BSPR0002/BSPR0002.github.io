@@ -1,0 +1,27 @@
+#welcome {
+	font-size: 1.5rem;
+	font-weight: bold;
+}
+
+.function {
+	grid-template-columns: 4em 1fr;
+	grid-template-rows: auto auto;
+	grid-template-areas: "icon title" "icon detail";
+}
+
+.function>div {
+	height: 4em;
+	width: 4em;
+	background-size: 8em;
+}
+
+.function>h1 {
+	font-size: 1rem;
+	margin: 0;
+}
+
+.function>p{font-size: 0.9375rem}
+
+#function_program>div{background-position: 0 0}
+#function_resource>div{background-position: 4em 0}
+#function_share>div{background-position: 0 4em}

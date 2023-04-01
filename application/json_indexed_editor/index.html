@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset=UTF-8">
+		<title>JSON 索引编辑工具</title>
+		<link rel="icon" type="image/png" href="icon.png">
+		<link rel="stylesheet" type="text/css" href="editor_style.css">
+		<script src="/javascript/BSFL.js"></script>
+		<script src="./Functions.js" defer></script>
+	</head>
+	<body>
+		<header id="top">
+			<h1>JSON 索引编辑工具</h1>
+		</header>
+		<div id="work_place">
+			<div id="open">
+				<div id="select_file">
+					<h2>请打开 json 文件</h2><br>
+					<br>
+					点击此框，或将文件拖拽到此处
+					<input id="input_file" type="file" accept="application/json">
+				</div>
+			</div>
+			<div id="editor">
+				<div id="editor_frame">
+					<h3>预览</h3>
+					<div id="preview"><div id="preview_frame"></div></div>
+					<h3>编辑器</h3>
+					<div id="console">
+						<div id="file_SC">
+							<button id="file_S">保存文件</button>
+							<button id="file_C">关闭文件</button>
+							<button id="filter_S">保存方案</button>
+							<button id="filter_C">清除方案</button>
+						</div>
+						<div id="editor_counter">
+							索引编号
+							<input id="index_set" type="number" value="0" max="9999999" min="-9999999">
+						</div>
+						<div id="filter">
+							<div id="filter_add">索引器<button id="filter_add_button">+</button></div>
+							<div id="filter_list">
+								<div id="filter_list_frame">
+									<div id="filter_0" class="filter">
+										<div class="filter_title"><input id="filter_0_title" class="filter_title_input" type="text" value="索引器"></div>
+										<div class="filter_path"><p>索引路径</p><input id="filter_0_path" class="filter_path_input" type="search" placeholder="索引编号占位符 ${i}"></div>
+										<input id="filter_0_edit" class="filter_edit" type="text">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="window_board_layer">
+			<div id="window_board">
+				<div id="window_board_top">
+					<p id="window_board_title"></p>
+					<button id="window_board_close"></button>
+				</div>
+				<hr id="window_board_hr">
+				<div id="window_board_content"></div>
+			</div>
+		</div>
+	</body>
+</html>

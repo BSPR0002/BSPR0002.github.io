@@ -1,0 +1,101 @@
+:root {
+	user-select: none;
+	/*预设颜色*/
+	--backgroundColor:#92C1DC;
+	--contentBackgroundColor:#FFFFFB;
+	--strongEdge:#000000;
+	--softEdge:#808080;
+	--strongColor:#000000;
+	--contentColor:#404040;
+	--interfaceColor:#0080FF;
+	--hoverColor:#00A0FF;
+	--activeColor:#FFD000;
+	--focusColor:#FFC0C0;
+}
+body {
+	font-family:Arial,"Microsoft YaHei UI",SimHei,sans-serif,serif,"Segoe UI Emoji";
+	margin:0;
+}
+p,h1,h2,h3,h4,h5,h6 {margin:0}
+hr {
+	border:solid 0.0625rem var(--strongEdge);
+	border-radius:0.0625rem;
+	background-color:var(--strongEdge);
+}
+button {
+	color:inherit;
+	font-family:inherit;
+	border:solid 0.125rem var(--strongEdge);
+	outline:none;
+	border-radius:0.25rem;
+	user-select: none;
+}
+button,input{font-size:0.833333rem}
+a,button,input[type="radio"]{cursor:pointer}
+button:disabled{
+	opacity:0.4;
+	cursor: not-allowed;
+}
+.bs-content {
+	background-color:var(--contentBackgroundColor);
+	cursor: initial;
+	user-select: text;
+}
+.bs-content button{background-color:var(--contentBackgroundColor)}
+.bs-content button:hover{background-color:hsl(0 0% 90%)}
+.bs-content button:active{background-color:hsl(0 0% 80%)}
+.bs-content button:disabled{background-color:var(--contentBackgroundColor)}
+.strong{
+	font-weight: bold;
+	color: var(--strongColor);
+}
+.bs-loading{position:relative}
+.bs-loading>*{opacity:0!important}
+@keyframes bs-loading {
+	from{transform:rotate(0)}
+	to{transform:rotate(1turn)}
+}
+.bs-loading::before {
+	content:"";
+	position:absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	margin:auto;
+	display:block;
+	width:2rem;
+	height:2rem;
+	box-sizing:border-box;
+	background-color:transparent;
+	border:solid 0.125rem;
+	border-color:#0080FF #0080FF transparent transparent;
+	border-radius:50%;
+	animation:bs-loading 1s linear infinite forwards running;
+}
+details {
+	border: 0.0625rem solid var(--strongEdge);
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+details>summary {
+	margin: -0.5rem;
+	padding: 0.5rem;
+	user-select: none;
+}
+details[open]>summary {
+	border-bottom: 0.0625rem solid var(--strongEdge);
+	margin-bottom: 0.5rem;
+}
+a {word-break: break-all}
+/* 鼠标样式
+body {
+	cursor:url();
+}
+*/
+
+/* 文字换行
+	word-wrap:break-word;
+	word-break:normal;
+*/

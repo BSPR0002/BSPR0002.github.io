@@ -1,0 +1,7 @@
+*.bak
+同步文件.bat
+backup
+unuse
+.vs
+.vscode
+*.code-workspace

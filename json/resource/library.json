@@ -1,0 +1,22 @@
+[
+	{
+		"id":1,
+		"display":"ネコぱら",
+		"name":["Nekopara","猫娘乐园","巧克力与香子兰"],
+		"icon":"/images/resource_icon/ID00000001.png",
+		"media":["game","animation"],
+		"content":["ct01","ct11"],
+		"artists":["さより"],
+		"producer":"NEKO WORKs"
+	},
+	{
+		"id":2,
+		"display":"サノバウィッチ",
+		"name":["魔女的夜宴","魔女夜宴","SabbatOfTheWitch","SaNoBaWicChi"],
+		"icon":"/images/resource_icon/ID00000002.png",
+		"media":["game"],
+		"content":["ct01","ct12"],
+		"artists":["天宫りつ"],
+		"producer":"ゆずソフト"
+	}
+]
