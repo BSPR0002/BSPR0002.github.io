@@ -1,8 +1,8 @@
-import { CacheJSON } from "./module/CacheJSON.mjs";
-import { decode, decodeAndGetNodes } from "./module/ArrayHTML.mjs";
-import MiniWindow from "./module/MiniWindow.mjs";
-import initialStore from "./SiteDatabase.mjs";
-import { getJSON } from "./module/AJAX.mjs";
+import { CacheJSON } from "/javascript/module/CacheJSON.mjs";
+import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import MiniWindow from "/javascript/module/MiniWindow.mjs";
+import initialStore from "/javascript/SiteDatabase.mjs";
+import { getJSON } from "/javascript/module/AJAX.mjs";
 const favDb = await initialStore("FavoriteApplets", function (upgrader) {
 	upgrader.createObjectStore("FavoriteApplets", { keyPath: "id" }).createIndex("id", "id", { unique: true })
 }), json = new CacheJSON("/json/applets.json", true);
@@ -15,15 +15,15 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 			"#applets_search_button{position:relative;overflow:hidden;font-size:0.875rem;padding:0 0.25rem!important}",
 			"#applets_search_button>*{vertical-align:middle}",
 			"#applets_search_state{display:inline-block;width:1.25rem;height:1.25rem;position:relative}",
-			"#applets_search_state:before{content:\"\";display:block;background-color:#000000;width:0.5625rem;height:0.125rem;border-radius:0 0.0625rem 0.0625rem 0;transform:rotateZ(45deg);position:absolute;right:0.0625rem;bottom:0;transform-origin:right center}",
-			"#applets_search_state:after{content:\"\";display:block;width:1rem;height:1rem;position:absolute;background-color:transparent;box-sizing:border-box;border:solid 0.125rem #000000;border-radius:50%}",
+			"#applets_search_state:before{content:\"\";display:block;background-color:var(--MiniWindow_buttonTextColor);width:0.5625rem;height:0.125rem;border-radius:0 0.0625rem 0.0625rem 0;transform:rotateZ(45deg);position:absolute;right:0.0625rem;bottom:0;transform-origin:right center}",
+			"#applets_search_state:after{content:\"\";display:block;width:1rem;height:1rem;position:absolute;background-color:transparent;box-sizing:border-box;border:solid 0.125rem var(--MiniWindow_buttonTextColor);border-radius:50%}",
 			"#applets_search_text{margin-left:0.125rem}",
-			"#applets_search_button:active>#applets_search_state:before{background-color:#FFFFFF}",
-			"#applets_search_button:active>#applets_search_state:after,#applets_top:active>div{border-color:#FFFFFF}",
+			"#applets_search_button:active>#applets_search_state:before{background-color:var(--MiniWindow_buttonActiveTextColor)}",
+			"#applets_search_button:active>#applets_search_state:after,#applets_top:active>div{border-color:var(--MiniWindow_buttonActiveTextColor)}",
 			"#applets_search_state.waiting:after{background-color:#FFFF00}",
 			"#applets_search_state.searching:after{background-color:#00FF00}",
 			"#applets_search_input{border:solid 0.0625rem;border-radius:0.25rem;padding:0.25rem}",
-			"#applets_search_input:focus{outline-color:var(--interfaceColor)}",
+			"#applets_search_input:focus{outline-color:var(--focusColor)}",
 			"#applets_list_frame{overflow:hidden auto}",
 			"#applets_top{position:relative;transition:opacity 0.2s linear}",
 			"#applets_top:disabled{pointer-events:none}",
@@ -36,9 +36,9 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 			".applets_item_name{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}",
 			".applets_item_start{background-color:#FFFFFF!important;padding:0.25rem!important}",
 			".applets_item_start:hover{background-color:#00FF00!important}",
-			".applets_item_start:active{background-color:var(--interfaceColor)!important}",
+			".applets_item_start:active{background-color:var(--activeColor)!important}",
 			".applets_item_start::before{content:\"\";display:inline-block;height:1em;width:0.85em;background-color:#000000;vertical-align:middle;clip-path:polygon(0 0, 100% 50%, 0 100%)}",
-			".applets_item_start:active::before{background-color:#FFFFFF}",
+			".applets_item_start:active::after{color:var(--MiniWindow_buttonTextColor)}",
 			".applets_item_icon{border-radius:0.25rem;width:100%;height:100%;background-position:center;background-repeat:no-repeat;background-size:contain;background-color:#FFFFFF}",
 			".applets_item_icon.none{display:grid;place-content:center}",
 			".applets_item_icon.none::before{content:\"?\";font-weight:bold;color:#000000;font-size:4rem}",
@@ -94,15 +94,16 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 		"#applets_detail_icon.none::before{content:\"?\";font-weight:bold;font-size:4rem}",
 		"#applets_detail_fav,#applets_detail_start{padding:0.375rem!important;max-width:6rem;box-sizing:border-box;width:100%;display:grid;grid-template-columns:auto 1fr;place-items:center;background-color:#FFFFFF!important;border-radius:0.375rem!important}",
 		"#applets_detail_name{grid-area:name;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}",
-		"#applets_detail_fav:hover{background-color:#FFDD00!important}",
+		"#applets_detail_fav:hover{background-color:var(--hoverColor)!important}",
+		"#applets_detail_fav:active{background-color:var(--activeColor)!important}",
 		"#applets_detail_fav::after{content:\"标记\"}",
 		"#applets_detail_fav:has(:checked)::after{content:\"已标记\"}",
 		"#applets_detail_start{grid-area:start;font-size:0.9375rem}",
 		"#applets_detail_start:hover{background-color:#00FF00!important}",
-		"#applets_detail_start:active{background-color:var(--interfaceColor)!important}",
+		"#applets_detail_start:active{background-color:var(--activeColor)!important}",
 		"#applets_detail_start::before{content:\"\";display:inline-block;height:1em;width:0.85em;background-color:#000000;vertical-align:middle;clip-path:polygon(0 0, 100% 50%, 0 100%)}",
 		"#applets_detail_start::after{content:\"启动\";margin-left:0.125rem;vertical-align:middle}",
-		"#applets_detail_start:active::before{background-color:#FFFFFF}",
+		"#applets_detail_start:active::after{color:var(--MiniWindow_buttonTextColor)}",
 		"#applets_detail_info{display:grid;gap:0.25rem;min-height:3rem}",
 		"#applets_detail_info.error::before{content:\"无法获取应用信息\";place-self:center}",
 		"#applets_detail_info.load{background-color:var(--backgroundColor);box-sizing:border-box;padding:0.5rem;border-radius:0.5rem;}",
@@ -234,18 +235,18 @@ async function showDetail(directory, iconName, name, id) {
 	start.addEventListener("click", function () { window.open(directory + "index.html", "_blank") });
 	new MiniWindow(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
 	miniWindow.close();
-	var data;
 	try {
-		data = await new Promise(function (resolve, reject) { getJSON(directory + "info.json", resolve, true, reject) });
+		const data = await new Promise(function (resolve, reject) { getJSON(directory + "info.json", resolve, true, reject) });
 		info.appendChild(decode([
 			["span", ["版本：", data.version ?? "不明"]],
 			["span", ["开发：", data.developer ?? "不明"]],
-			["span", ["更新日期：", data.release ?? "不明"]]
+			["span", ["更新日期：", parseDate(data.release)]]
 		]));
 		info.className = "load";
 		if ("description" in data) frame.appendChild(decode(data.description))
 	} catch (_ignore) { info.className = "error" }
 }
+function parseDate(timestamp) { return typeof timestamp == "number" ? new Date(timestamp).toLocaleDateString() : "不明" }
 searchInput.addEventListener("input", searchAuto);
 searchInput.addEventListener("keypress", function (event) { if (event.key == "Enter") searchManual() });
 searchButton.addEventListener("click", searchManual);

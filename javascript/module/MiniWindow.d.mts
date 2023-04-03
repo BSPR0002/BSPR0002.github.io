@@ -25,7 +25,7 @@ declare class MiniWindow extends EventTarget {
 	readonly active: boolean;
 	readonly closed: boolean;
 	readonly blocked: boolean;
-	constructor(content: string | Node, title: "", options: MiniWindowOptions);
+	constructor(content: string | Node, title = "", options?: MiniWindowOptions);
 	blockSwitch(toState?: boolean): boolean;
 	close(): void;
 	alert(message: string): Promise<true>;

@@ -29,7 +29,7 @@
 	overflow: hidden;
 }
 #navigation_switch:hover {background-color: var(--hoverColor)}
-#navigation_switch:active {background-color: var(--interfaceColor)}
+#navigation_switch:active {background-color: var(--activeColor)}
 #navigation_switch>div {
 	position: absolute;
 	left: 0.25rem;
@@ -95,6 +95,6 @@
 }
 .navigation:hover {background-color: rgba(0,0,0,0.625)}
 .navigation.current {
-	color: var(--activeColor);
+	color: var(--hoverColor);
 	background-color: rgba(0,0,0,0.75);
 }

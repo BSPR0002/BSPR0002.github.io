@@ -9,7 +9,7 @@ async function showBoard() {
 			"#projects_frame.empty::after{place-self:center;content:\"目前没有项目\"}",
 			".projects_item{padding:0.5rem;border-radius:0.5rem;box-sizing:border-box;border:var(--softEdge) 0.0625rem solid}",
 			".projects_item>*{border-radius:0.25rem}",
-			".projects_item summary{border:none;background-color:#0080FF;color:#FFFFFF"
+			".projects_item summary{border:none;background-color:var(--interfaceColor);color:var(--interfaceContentColor)"
 		]],
 		["div", null, { id: "projects_frame", class: "bs-loading" }, "frame"]
 	]);

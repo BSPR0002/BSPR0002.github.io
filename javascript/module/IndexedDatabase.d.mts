@@ -19,7 +19,7 @@ declare class IndexedDatabase {
 	clear(objectStoreName: string): Promise<void>;
 	update(objectStoreName: string, content: any, key?: IDBValidKey): Promise<IDBValidKey>;
 	get(objectStoreName: string, key: IDBValidKey | IDBKeyRange): Promise<any>;
-	getAll(objectStoreName: string, query: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
+	getAll(objectStoreName: string, query?: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
 	getByIndex(objectStoreName: string, indexName: string, key: IDBValidKey | IDBKeyRange): Promise<any>;
 	getAllByIndex(objectStoreName: string, indexName: string, query: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
 	getObjectStoreDetail(objectStoreName: string): ObjectStoreDetail;

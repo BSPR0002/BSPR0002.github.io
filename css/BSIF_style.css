@@ -7,10 +7,11 @@
 	--softEdge:#808080;
 	--strongColor:#000000;
 	--contentColor:#404040;
-	--interfaceColor:#0080FF;
-	--hoverColor:#00A0FF;
-	--activeColor:#FFD000;
-	--focusColor:#FFC0C0;
+	--interfaceColor:#00C0FF;
+	--interfaceContentColor: #FFFFFF;
+	--hoverColor:#FFD000;
+	--activeColor:#FFC0C0;
+	--focusColor:#0080FF;
 }
 body {
 	font-family:Arial,"Microsoft YaHei UI",SimHei,sans-serif,serif,"Segoe UI Emoji";
@@ -31,7 +32,7 @@ button {
 	user-select: none;
 }
 button,input{font-size:0.833333rem}
-a,button,input[type="radio"]{cursor:pointer}
+a,button,input[type="radio"],label{cursor:pointer}
 button:disabled{
 	opacity:0.4;
 	cursor: not-allowed;
@@ -49,25 +50,30 @@ button:disabled{
 	font-weight: bold;
 	color: var(--strongColor);
 }
-.bs-loading{position:relative}
-.bs-loading>*{opacity:0!important}
+.bs-loading{
+	position:relative;
+	pointer-events:none;
+}
+.bs-loading>*{visibility:hidden}
 @keyframes bs-loading {
 	from{transform:rotate(0)}
 	to{transform:rotate(1turn)}
 }
-.bs-loading::before {
+.bs-loading::before,.bs-loading::after{
 	content:"";
 	position:absolute;
 	top:0;
 	bottom:0;
 	left:0;
 	right:0;
-	margin:auto;
 	display:block;
+	background-color:transparent;
+}
+.bs-loading::before {
+	margin:auto;
 	width:2rem;
 	height:2rem;
 	box-sizing:border-box;
-	background-color:transparent;
 	border:solid 0.125rem;
 	border-color:#0080FF #0080FF transparent transparent;
 	border-radius:50%;

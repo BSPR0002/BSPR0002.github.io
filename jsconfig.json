@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"checkJs": false,
+		"module": "ESNext",
+		"baseUrl": "./",
+		"paths": {
+			"/*":["./*"]
+		}
+	}
+}

@@ -36,7 +36,7 @@
 	font-size: 1rem;
 }
 .navigation:hover {background-color: var(--hoverColor)}
-.navigation:active {background-color: var(--interfaceColor)}
+.navigation:active {background-color: var(--activeColor)}
 .navigation::before {
 	transition: height 0.1s ease-in;
 	content:"";
@@ -62,14 +62,13 @@
 	width: 0%;
 	height: 0.25em;
 	transition: width 0.1s ease-in;
-	background-color: var(--focusColor);
+	background-color: var(--interfaceColor);
 	border-radius: 0.125em;
 }
 .navigation:hover::after {width: 25%}
-
 .navigation.current::after {
 	width: 80%;
-	background-color: var(--activeColor);
+	background-color: var(--focusColor);
 }
 .navigation>span {
 	position: relative;
