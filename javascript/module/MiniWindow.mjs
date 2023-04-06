@@ -72,7 +72,7 @@ const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent,
 	], null, "confirmStyle"]
 ]).nodes;
 const queue = [], windowStyle = windowBody.style;
-var pending = false, closeCurrent = null;
+var pending = false, closeCurrent = null, unshiftMode = false;
 function preventBubble(event) { event.stopPropagation() }
 const STYLE_NAMES = ["backgroundColor", "textColor", "buttonBackgroundColor", "buttonHoverBackgroundColor", "buttonActiveBackgroundColor", "buttonTextColor", "buttonHoverTextColor", "buttonActiveTextColor"];
 class QueueItem {
@@ -177,10 +177,10 @@ class MiniWindow extends EventTarget {
 	get active() { return this.#controller.active }
 	get closed() { return this.#controller.closed }
 	get blocked() { return this.#controller.blocked }
-	constructor(content, title = "", options = null) {
+	constructor(content, title = undefined, options = null) {
 		if (arguments.length < 1) throw new TypeError("Failed to construct 'MiniWindow': 1 argument required, but only 0 present.");
 		if (typeof content != "string" && !(content instanceof Node)) throw new TypeError("Failed to construct 'MiniWindow': Argument 'content' is not a string or HTML node.");
-		if (typeof title != "string") title = "";
+		if (typeof options != "object") throw new TypeError("Failed to construct 'MiniWindow': Argument 'options' is not an object.");
 		super();
 		const queueItem = new QueueItem(this, { content, title, options });
 		this.#controller = queueItem.controller;
@@ -193,6 +193,17 @@ class MiniWindow extends EventTarget {
 	close() {
 		MiniWindow.#checkInstance(this);
 		closeInstance(this.#controller);
+	}
+	after(content, title = undefined, options = null) {
+		MiniWindow.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'after' on 'MiniWindow': 1 argument required, but only 0 present.");
+		if (typeof content != "string" && !(content instanceof Node)) throw new TypeError("Failed to execute 'after' on 'MiniWindow': Argument 'content' is not a string or HTML node.");
+		if (typeof options != "object") throw new TypeError("Failed to execute 'after' on 'MiniWindow': Argument 'options' is not an object.");
+		if (!this.#controller.active) throw new Error("Failed to execute 'after' on 'MiniWindow': The instance is not active.");
+		unshiftMode = true;
+		const temp = new MiniWindow(content, title, options);
+		unshiftMode = false;
+		return temp;
 	}
 	#subWindowCheck() {
 		if (!this.#controller.active) throw new Error(`Failed to execute 'subWindowCheck' on 'MiniWindow': The instance is not active.`);
@@ -311,7 +322,7 @@ function setSize(data) {
 }
 function setContent(data) {
 	const { content, title, options } = data;
-	windowTitle.innerText = title ? title : "提示";
+	windowTitle.innerText = title ?? "提示";
 	windowContent.innerHTML = "";
 	switch (typeof content) {
 		case "string":
@@ -321,7 +332,7 @@ function setContent(data) {
 			windowContent.appendChild(content);
 			break;
 	}
-	if (!(options instanceof Object)) return;
+	if (!options) return;
 	if (options.noManualClose) windowClose.style.display = "none";
 	if ("size" in options) setSize(options.size);
 	if ("style" in options) setStyle(options.style);
@@ -378,6 +389,11 @@ async function show() {
 }
 function updateQueueNumber() { windowQueue.innerText = queue.length > 99 ? "99+" : queue.length }
 function queueUp(queueItem) {
+	if (unshiftMode) {
+		queue.unshift(queueItem);
+		updateQueueNumber();
+		return;
+	}
 	queue.push(queueItem);
 	updateQueueNumber();
 	if (pending) return;
