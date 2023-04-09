@@ -233,7 +233,7 @@ async function showDetail(directory, iconName, name, id) {
 	fav.checked = (await favorite).includes(id);
 	fav.addEventListener("change", function () { favChange(id, this.checked) });
 	start.addEventListener("click", function () { window.open(directory + "index.html", "_blank") });
-	new MiniWindow(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
+	miniWindow.after(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
 	miniWindow.close();
 	try {
 		const data = await new Promise(function (resolve, reject) { getJSON(directory + "info.json", resolve, true, reject) });

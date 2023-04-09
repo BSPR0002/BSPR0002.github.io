@@ -6,7 +6,7 @@ declare function read<T = readableTypes>(file: Blob, readType: T): Promise<readT
 declare function downloadSave(file: Blob, saveName?: string): void;
 declare function get(options?: openFileOptions): Promise<File | File[]>;
 declare function save(data: saveTypes, options?: saveFileOptions): Promise<boolean>;
-declare function open(options?: openFileOptions): Promise<FileSystemFileHandle>;
+declare function open(options?: openFileOptions): Promise<FileSystemFileHandle | FileSystemFileHandle[]>;
 declare function openDirectory(options?: openDirectoryOptions): Promise<FileSystemDirectoryHandle>;
 export { get, open, openDirectory, save, downloadSave, read, readableTypes }
 //dom.d.ts

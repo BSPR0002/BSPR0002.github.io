@@ -1,10 +1,13 @@
-const moduleConfig = Object.freeze({
+const moduleConfig = {
 	AJAX: {
 		path: "/javascript/module/AJAX.mjs"
 	},
 	AudioPlayer: {
 		path: "/javascript/module/AudioPlayer.mjs",
 		default: "AudioPlayer"
+	},
+	ArrayHTML: {
+		path: "/javascript/module/ArrayHTML.mjs"
 	},
 	MiniWindow: {
 		path: "/javascript/module/MiniWindow.mjs",
@@ -56,7 +59,9 @@ const moduleConfig = Object.freeze({
 		path: "/javascript/module/JSZip.mjs",
 		default: "default"
 	}
-})
+};
+for (let i in moduleConfig) moduleConfig[i].name = i;
+Object.freeze(moduleConfig);
 async function importModule(name, useDefault = true) {
 	const config = moduleConfig[name]
 	const module = await import(config.path);
@@ -65,7 +70,7 @@ async function importModule(name, useDefault = true) {
 	return module;
 }
 function printArguments() { console.log(arguments) }
-function manual(){ debugger }
+function manual() { debugger }
 class RandomStatistician {
 	#data = (new Array(10)).fill(0n);
 	get data() { return this.#data.concat() }

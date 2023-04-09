@@ -25,7 +25,11 @@ async function get(options) {
 	temp = await Promise.all(temp.map(fileHandleMap));
 	return options?.multiple ? temp : temp[0];
 }
-const open = showOpenFilePicker.bind(window), openDirectory = showDirectoryPicker.bind(window);
+async function open(options) {
+	const result = await showOpenFilePicker(options);
+	return options?.multiple ? result : result[0];
+}
+const openDirectory = showDirectoryPicker.bind(window);
 async function save(data, options) {
 	if (arguments.length < 1) throw new TypeError("Failed to execute 'save': 1 argument required, but only 0 present.");
 	if (!(data instanceof TypedArray || data instanceof Blob || data instanceof DataView || data instanceof ArrayBuffer || typeof data == "string")) throw new TypeError("Failed to execute 'save': Argument 'data' is not valid type.");
