@@ -338,7 +338,7 @@ class Indexor {
 	static async loadSet() {
 		if (pending) return;
 		pending = true;
-		const last = await indexorStorage.get("org.BSIF.JSONIndexedEditor", "indexor");
+		const last = await indexorStorage.get("indexor");
 		if (last) {
 			if (await MiniWindow.confirm(buildIndexorData("当前的索引器方案将会丢失。\n确定要加载如下方案吗？", last))) {
 				Indexor.#removeAll();
@@ -468,6 +468,7 @@ function calcRoute(pathString) {
 	}
 	return route;
 }
+class Expression extends String { };
 function findE(context) {
 	const { pathString, index: startIndex } = context;
 	var length = context.length, inner = null;
@@ -485,7 +486,7 @@ function findE(context) {
 	try {
 		if (inner) {
 			if (inner == "i") {
-				context.route.push({ expression: "i" });
+				context.route.push(new Expression("i"));
 				context.index = length;
 				return;
 			}
@@ -496,11 +497,12 @@ function findE(context) {
 				return
 			}
 		}
-	} catch (e) { throw new Error("Not invalid expression") }
+	} catch (e) { }
+	throw new Error("Not invalid expression");
 }
 const regexp = /^[A-Za-z_]\w*/;
 function findK(context) {
-	const { pathString, index: startIndex } = context, found = pathString.substring(startIndex).match(regexp);
+	const found = context.pathString.substring(context.index).match(regexp);
 	if (found) {
 		const result = found[0];
 		context.route.push(result);
@@ -511,8 +513,8 @@ function getNode(route) {
 	if (!route) return
 	var target = tree;
 	for (let key of route) if (target instanceof TreeCollectionNode) {
-		if (typeof key == "object") {
-			if (key?.expression == "i") { target = target.get(Indexor.index) } else return;
+		if (key instanceof Expression) {
+			if (key.valueOf() == "i") { target = target.get(Indexor.index) } else return;
 		} else target = target.get(key);
 	} else return;
 	return target;
@@ -540,7 +542,7 @@ function buildIndexorData(message, data) {
 function loadIndexorMapper(item) { Indexor.newInstance(item.title, item.path) }
 function loadIndexor(data) { data.map(loadIndexorMapper) }
 {
-	const last = await indexorStorage.get("org.BSIF.JSONIndexedEditor", "indexor");
+	const last = await indexorStorage.get("indexor");
 	if (last?.length) { loadIndexor(last) } else Indexor.newInstance();
 }
 //菜单部分
@@ -598,8 +600,8 @@ buildMenu([
 				async action() {
 					if (pending) return;
 					pending = true;
-					const last = await indexorStorage.get("org.BSIF.JSONIndexedEditor", "indexor");
-					if (!last || await MiniWindow.confirm(buildIndexorData("之前已保存了如下方案，要覆盖吗？", last))) indexorStorage.update("org.BSIF.JSONIndexedEditor", Indexor.export(), "indexor");
+					const last = await indexorStorage.get("indexor");
+					if (!last || await MiniWindow.confirm(buildIndexorData("之前已保存了如下方案，要覆盖吗？", last))) indexorStorage.update(Indexor.export(), "indexor");
 					pending = false;
 				}
 			},
@@ -612,9 +614,9 @@ buildMenu([
 				async action() {
 					if (pending) return;
 					pending = true;
-					const last = await indexorStorage.get("org.BSIF.JSONIndexedEditor", "indexor");
+					const last = await indexorStorage.get("indexor");
 					if (last) {
-						if (await MiniWindow.confirm(buildIndexorData("确定要删除如下已保存方案吗？", last))) indexorStorage.delete("org.BSIF.JSONIndexedEditor", "indexor");
+						if (await MiniWindow.confirm(buildIndexorData("确定要删除如下已保存方案吗？", last))) indexorStorage.delete("indexor");
 					} else new MiniWindow("没有已保存的索引器方案。");
 					pending = false;
 				}

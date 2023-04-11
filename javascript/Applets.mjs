@@ -3,9 +3,7 @@ import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import initialStore from "/javascript/SiteDatabase.mjs";
 import { getJSON } from "/javascript/module/AJAX.mjs";
-const favDb = await initialStore("FavoriteApplets", function (upgrader) {
-	upgrader.createObjectStore("FavoriteApplets", { keyPath: "id" }).createIndex("id", "id", { unique: true })
-}), json = new CacheJSON("/json/applets.json", true);
+const favStore = await initialStore("FavoriteApplets", function (upgrader) { upgrader.createObjectStore("FavoriteApplets") }), json = new CacheJSON("/json/applets.json", true);
 const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop, list, partFav, listFav, listAll, detailStyle } = decodeAndGetNodes([
 	["div", [
 		["style", [
@@ -111,20 +109,18 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 ]).nodes;
 listFrame.addEventListener("scroll", function () { backTop.disabled = !listFrame.scrollTop }, { passive: true });
 backTop.addEventListener("click", function () { listFrame.scrollTo({ top: 0, behavior: "smooth" }) });
+var searchSuspended = false,
+	searchTimeoutId = null,
+	searching = false,
+	favorite;
 async function updateFavList() {
-	const fav = await (favorite = getFavList());
+	const fav = await (favorite = favStore.getAllKeys());
 	partFav.style.display = fav.length ? null : "none";
 	if (!json.loaded) await json.fetch();
 	const data = json.data.filter(item => fav.includes(item.id));
 	listFav.innerHTML = "";
 	listFav.appendChild(buildList(data, true));
 }
-async function getFavList() { return (await favDb.getAll("FavoriteApplets")).map(favListMap) }
-function favListMap(item) { return item.id }
-var searchSuspended = false,
-	searchTimeoutId = null,
-	searching = false,
-	favorite;
 updateFavList();
 async function search(keyword) {
 	if (!json.loaded) await json.fetch();
@@ -214,7 +210,7 @@ function searchManual() {
 	searchAction();
 }
 function favChange(id, state) {
-	if (state) { favDb.update("FavoriteApplets", { id }) } else favDb.delete("FavoriteApplets", id);
+	if (state) { favStore.update(Date.now(), id) } else favStore.delete(id);
 	updateFavList();
 }
 async function showDetail(directory, iconName, name, id) {
@@ -256,7 +252,7 @@ function showBoard() { (miniWindow = new MiniWindow(frame, "应用列表", { siz
 function clearWindow() { miniWindow = null }
 queueMicrotask(async function () {
 	if (!json.loaded) await json.fetch();
-	const temp = json.data.map(favListMap), fav = await getFavList();
-	for (let item of fav.filter(item => !temp.includes(item))) favDb.delete("FavoriteApplets", item);
+	const temp = json.data.map(item => item.id);
+	for (let item of (await favorite).filter(item => !temp.includes(item))) favStore.delete(item);
 })
 export { showBoard }

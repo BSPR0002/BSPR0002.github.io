@@ -150,11 +150,25 @@ class IndexedDatabase {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': 1 argument required, but only 0 present.");
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
-		if (arguments.length > 2 && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
 		await this.#restarting;
 		const { transaction, commit } = this.#getTransaction(objectStoreName);
 		return new Promise(function (resolve, reject) {
 			const request = transaction.objectStore(objectStoreName).getAll(query, count);
+			request.addEventListener("success", function (event) { resolve(event.target.result) });
+			request.addEventListener("error", function (event) { reject(event.target.error) });
+			if (commit) transaction.commit();
+		});
+	}
+	async getAllKeys(objectStoreName, query = undefined, count = undefined) {
+		IndexedDatabase.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabase': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
+		await this.#restarting;
+		const { transaction, commit } = this.#getTransaction(objectStoreName);
+		return new Promise(function (resolve, reject) {
+			const request = transaction.objectStore(objectStoreName).getAllKeys(query, count);
 			request.addEventListener("success", function (event) { resolve(event.target.result) });
 			request.addEventListener("error", function (event) { reject(event.target.error) });
 			if (commit) transaction.commit();
@@ -182,7 +196,7 @@ class IndexedDatabase {
 		if (arguments.length < 3) throw new TypeError(`Failed to execute 'getAllByIndex' on 'IndexedDatabase': 3 arguments required, but only ${arguments.length} present.`);
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		if (typeof indexName != "string") throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'indexName' is not a string.");
-		if (arguments.length > 3 && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
 		await this.#restarting;
 		const { transaction, commit } = this.#getTransaction(objectStoreName);
 		var operator = transaction.objectStore(objectStoreName);
@@ -194,6 +208,12 @@ class IndexedDatabase {
 			request.addEventListener("error", function (event) { reject(event.target.error) });
 			if (commit) transaction.commit();
 		});
+	}
+	getObjectStore(objectStoreName) {
+		IndexedDatabase.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabase': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
+		return new IndexedDatabaseObjectStore(this, objectStoreName);
 	}
 	getObjectStoreDetail(objectStoreName) {
 		IndexedDatabase.#checkInstance(this);
@@ -360,5 +380,75 @@ class IndexDetail {
 	}
 }
 
+class IndexedDatabaseObjectStore {
+	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
+	#db;
+	#name;
+	get indexedDatabase() { return this.#db }
+	get name() { return this.#name }
+	constructor(db, name) {
+		if (arguments.length < 2) throw new TypeError(`Failed to construct 'IndexedDatabaseObjectStore': 2 arguments required, but only ${arguments.length} present.`);
+		if (!(db instanceof IndexedDatabase)) throw new TypeError("Failed to construct 'IndexedDatabaseObjectStore': Argument 'db' is not type of IndexedDatabase.");
+		if (typeof name != "string") throw new TypeError("Failed to construct 'IndexedDatabaseObjectStore': Argument 'name' is not a string.");
+		if (!db.objectStoreNames.contains(name)) throw new Error(`Failed to construct 'IndexedDatabaseObjectStore': The database does not exist object store named '${name}'.`);
+		this.#db = db;
+		this.#name = name;
+	}
+	add(content, key) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'add' on 'IndexedDatabaseObjectStore': 1 argument required, but only 0 present.");
+		return this.#db.add(this.#name, content, key);
+	}
+	delete(query) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'delete' on 'IndexedDatabaseObjectStore': 1 argument required, but only 0 present.");
+		return this.#db.delete(this.#name, query);
+	}
+	clear() {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		return this.#db.clear(this.#name);
+	}
+	update(content, key) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'update' on 'IndexedDatabaseObjectStore': 1 argument required, but only 0 present.");
+		return this.#db.update(this.#name, content, key);
+	}
+	get(key) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'get' on 'IndexedDatabaseObjectStore': 1 argument required, but only 0 present.");
+		return this.#db.get(this.#name, key);
+	}
+	getAll(query, count) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		return this.#db.getAll(this.#name, query, count);
+	}
+	getAllKeys(query, count) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		return this.#db.getAllKeys(this.#name, query, count);
+	}
+	getByIndex(indexName, key) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'getByIndex' on 'IndexedDatabaseObjectStore': 2 arguments required, but only ${arguments.length} present.`);
+		return this.#db.getByIndex(this.#name, indexName, key);
+	}
+	getAllByIndex(indexName, query, count) {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'getAllByIndex' on 'IndexedDatabaseObjectStore': 2 arguments required, but only ${arguments.length} present.`);
+		return this.#db.getAllByIndex(this.#name, indexName, query, count);
+	}
+	getDetail() {
+		IndexedDatabaseObjectStore.#checkInstance(this);
+		return this.#db.getObjectStoreDetail(this.#name);
+	}
+	static {
+		Object.defineProperty(this.prototype, Symbol.toStringTag, {
+			value: this.name,
+			writable: false,
+			configurable: true,
+			enumerable: false
+		});
+	}
+}
+
 export default IndexedDatabase;
-export { IndexedDatabase };
+export { IndexedDatabase, IndexedDatabaseObjectStore };

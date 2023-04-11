@@ -1,5 +1,5 @@
-import IndexedDatabase from "../IndexedDatabase.mjs";
-function upgrade(dbUpgrader) { dbUpgrader.createObjectStore("BSIF.Setting", { keyPath: "path" }).createIndex("path", "path", { unique: true }) }
+import { IndexedDatabase, IndexedDatabaseObjectStore } from "../IndexedDatabase.mjs";
+function upgrade(dbUpgrader) { dbUpgrader.createObjectStore(storeName) }
 const types = ["array", "object", "number", "string", "bigint", "boolean", "any"];
 function typeCheck(type, value) {
 	const id = types.indexOf(type);
@@ -23,11 +23,11 @@ function typeCheck(type, value) {
 	throw new Error("Value doesn't match given type.");
 }
 class SettingStorage {
-	#db;
+	#store;
 	#tree;
-	constructor(db, tree) {
-		if (!(db instanceof IndexedDatabase)) throw new TypeError;
-		this.#db = db;
+	constructor(store, tree) {
+		if (!(store instanceof IndexedDatabaseObjectStore)) throw new TypeError;
+		this.#store = store;
 		this.#tree = tree;
 	}
 	async get(path) {
@@ -35,7 +35,7 @@ class SettingStorage {
 		if (typeof path != "string") throw new TypeError("Failed to execute 'get' on 'SettingStorage': Argument 'path' is not a string.");
 		const data = this.#tree[path];
 		if (!(data instanceof Object)) throw new Error(`Failed to execute 'get' on 'SettingStorage': Invalid data for path '${path}' in tree.`);
-		const result = (await this.#db.get("BSIF.Setting", path))?.value ?? data.default;
+		const result = (await this.#store.get(path)) ?? data.default;
 		typeCheck(data.type, result);
 		return result;
 	}
@@ -45,7 +45,7 @@ class SettingStorage {
 		const data = this.#tree[path];
 		if (!(data instanceof Object)) throw new Error(`Failed to execute 'set' on 'SettingStorage': Invalid data for path '${path}' in tree.`);
 		typeCheck(data.type, value);
-		return await this.#db.update("BSIF.Setting", { path, value });
+		return await this.#store.update(value, path);
 	}
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
@@ -58,9 +58,9 @@ class SettingStorage {
 }
 async function getStorage(source, tree) {
 	if (arguments.length < 2) throw new TypeError(`Failed to execute 'getStorage': 2 arguments required, but only ${arguments.length} present.`);
-	if (!(typeof source == "string" || source instanceof IndexedDatabase)) throw new TypeError("Failed to execute 'getStorage': Argument 'source' is not a string or not type of IndexedDatabase.");
+	if (!(typeof source == "string" || source instanceof IndexedDatabaseObjectStore)) throw new TypeError("Failed to execute 'getStorage': Argument 'source' is not a string or not type of IndexedDatabaseObjectStore.");
 	if (!(tree instanceof Object)) throw new TypeError("Failed to execute 'getStorage': Argument 'tree' is not an object.");
-	return new SettingStorage(typeof source == "string" ? await IndexedDatabase.open(source, 1, upgrade) : source, tree);
+	return new SettingStorage(typeof source == "string" ? (await IndexedDatabase.open(source, 1, upgrade)).getObjectStore(storeName) : source, tree);
 }
 const storeName = "BSIF.Setting";
 export default getStorage;

@@ -1,4 +1,3 @@
-
 import MiniWindow from "./module/MiniWindow.mjs";
 import Setting from "./module/setting/Setting.mjs";
 import initialStore from "./SiteDatabase.mjs";

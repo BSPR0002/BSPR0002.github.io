@@ -1,5 +1,5 @@
 import getStorage from "./SettingStorage.mjs";
-import IndexedDatabase from "../IndexedDatabase.mjs";
+import { IndexedDatabaseObjectStore } from "../IndexedDatabase.mjs";
 import { decodeAndGetNodes, decode } from "../ArrayHTML.mjs";
 const style = document.createElement("STYLE");
 style.textContent = [
@@ -156,7 +156,7 @@ class Setting {
 	}
 	static async open(storageSource, structure) {
 		if (arguments.length < 2) throw new TypeError(`Failed to execute 'open': 2 arguments required, but only ${arguments.length} present.`);
-		if (!(typeof storageSource == "string" || storageSource instanceof IndexedDatabase)) throw new TypeError("Failed to execute 'open': Argument 'storageSource' is not a string or not type of IndexedDatabase.");
+		if (!(typeof storageSource == "string" || storageSource instanceof IndexedDatabaseObjectStore)) throw new TypeError("Failed to execute 'open': Argument 'storageSource' is not a string or not type of IndexedDatabaseObjectStore.");
 		if (!(structure instanceof Object)) throw new TypeError("Failed to execute 'open': Argument 'structure' is not an object.");
 		const { tree, storage } = structure;
 		if (!Array.isArray(tree)) throw new TypeError("Failed to execute 'open': 'structure.tree' is not an Array.");

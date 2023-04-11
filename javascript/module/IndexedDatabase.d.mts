@@ -20,8 +20,10 @@ declare class IndexedDatabase {
 	update(objectStoreName: string, content: any, key?: IDBValidKey): Promise<IDBValidKey>;
 	get(objectStoreName: string, key: IDBValidKey | IDBKeyRange): Promise<any>;
 	getAll(objectStoreName: string, query?: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
+	getAllKeys(objectStoreName: string, query?: IDBValidKey | IDBKeyRange, count?: number): Promise<IDBValidKey[]>;
 	getByIndex(objectStoreName: string, indexName: string, key: IDBValidKey | IDBKeyRange): Promise<any>;
 	getAllByIndex(objectStoreName: string, indexName: string, query: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
+	getObjectStore(objectStoreName: string): IndexedDatabaseObjectStore;
 	getObjectStoreDetail(objectStoreName: string): ObjectStoreDetail;
 	close(): void;
 	restart(version?: number, onUpgradeNeeded?: (upgrader: IndexedDatabaseUpgrader) => void, onBlocked?: () => void): Promise<void>;
@@ -52,5 +54,28 @@ declare class IndexDetail {
 	readonly keyPath: string | string[];
 	readonly multiEntry: boolean;
 }
+
+declare class IndexedDatabaseObjectStore {
+	readonly indexedDatabase: IndexedDatabase;
+	readonly name: string;
+	constructor(db: IndexedDatabase, name: string);
+	add(content: any, key?: IDBValidKey): Promise<IDBValidKey>;
+	delete(query: IDBValidKey | IDBKeyRange): Promise<void>;
+	clear(): Promise<void>;
+	update(content: any, key?: IDBValidKey): Promise<IDBValidKey>;
+	get(key: IDBValidKey | IDBKeyRange): Promise<any>;
+	getAll(query?: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
+	getAllKeys(query?: IDBValidKey | IDBKeyRange, count?: number): Promise<IDBValidKey[]>;
+	getByIndex(indexName: string, key: IDBValidKey | IDBKeyRange): Promise<any>;
+	getAllByIndex(indexName: string, query: IDBValidKey | IDBKeyRange, count?: number): Promise<any[]>;
+	static {
+		Object.defineProperty(this.prototype, Symbol.toStringTag, {
+			value: this.name,
+			writable: false,
+			configurable: true,
+			enumerable: false
+		});
+	}
+}
 export default IndexedDatabase;
-export { IndexedDatabase };
+export { IndexedDatabase, IndexedDatabaseObjectStore };
