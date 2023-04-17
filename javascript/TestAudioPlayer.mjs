@@ -121,7 +121,7 @@ function draw2() {
 function loop() {
 	analyser.getByteFrequencyData(data);
 	analyser.getByteTimeDomainData(data2);
-	context.clearRect(-1,0,1024,256);
+	context.clearRect(0,0,1024,256);
 	draw2();
 	draw1();
 	requestAnimationFrame(loop)

@@ -58,6 +58,10 @@ const moduleConfig = {
 	JSZip: {
 		path: "/javascript/module/JSZip.mjs",
 		default: "default"
+	},
+	Rational: {
+		path: "/javascript/module/Rational.mjs",
+		default: "default"
 	}
 };
 for (let i in moduleConfig) moduleConfig[i].name = i;
