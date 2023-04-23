@@ -99,7 +99,8 @@ function showDetail(data) {
 	]), miniWindow = new MiniWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
 	const xhr = getJSON(
 		`/json/resource/${data.id}.json`,
-		function (response) { displayDetails(response, nodes.showArea) }
+		function (response) { displayDetails(response, nodes.showArea) },
+		false
 	);
 	miniWindow.onclosed = xhr.abort.bind(xhr);
 }
