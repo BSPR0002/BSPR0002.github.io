@@ -22,6 +22,6 @@ declare class Enum {
 	values(): IterableIterator<any>;
 	forEach(callbackfn: (value: any, index: number, array: readonly any[]) => void, thisArg?: any): void
 }
-declare function simpleEnum(array: string[], uppercase = true): string[];
+declare function simpleEnum(array: string[], uppercase = false): string[];
 export { Enum, simpleEnum }
 export default Enum;

@@ -86,9 +86,7 @@ class QueueItem {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: "QueueItem",
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -103,9 +101,7 @@ class MiniWindowController {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -125,9 +121,7 @@ class SubWindowController {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -266,9 +260,7 @@ class MiniWindow extends EventTarget {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 	static confirm(content, title = "确认") {

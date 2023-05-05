@@ -257,9 +257,7 @@ class IndexedDatabase {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -292,9 +290,7 @@ class IndexedDatabaseUpgrader extends IndexedDatabase {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -320,9 +316,7 @@ class ObjectStoreDetail {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -352,9 +346,7 @@ class ObjectStoreUpgrader extends ObjectStoreDetail {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -373,9 +365,7 @@ class IndexDetail {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
@@ -443,9 +433,7 @@ class IndexedDatabaseObjectStore {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }

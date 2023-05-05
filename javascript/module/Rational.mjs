@@ -3,15 +3,12 @@ class DivideByZeroError extends Error {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 		Object.defineProperty(this.prototype, "name", {
 			value: this.name,
 			writable: true,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		})
 	}
 }
@@ -103,9 +100,7 @@ class Rational {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }

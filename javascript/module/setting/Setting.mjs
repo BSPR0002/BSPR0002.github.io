@@ -166,9 +166,7 @@ class Setting {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			configurable: true,
-			writable: false,
-			enumerable: false
+			configurable: true
 		});
 	}
 }

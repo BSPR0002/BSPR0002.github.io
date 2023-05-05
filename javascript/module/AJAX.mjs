@@ -219,13 +219,10 @@ class LoadRequest extends XMLHttpRequest {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 		Object.defineProperty(this, "subLoads", {
 			value: subLoads,
-			writable: false,
 			configurable: true,
 			enumerable: true
 		});

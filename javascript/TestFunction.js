@@ -20,7 +20,7 @@ const moduleConfig = {
 		path: "/javascript/module/FileIO.mjs"
 	},
 	FLAC: {
-		path: "/javascript/module/FLAC.mjs"
+		path: "/javascript/module/FLAC/FLAC.mjs"
 	},
 	Base64: {
 		path: "/javascript/module/Base64.mjs"
@@ -102,8 +102,8 @@ class PerSecond {
 		this.#check();
 	}
 	#check() {
-		const limit = Date.now() - 1000;
-		for (let i = 0, l = this.#data.length; i < l; ++i) if (this.#data[i] < limit) { this.#data.shift() } else { break };
+		const limit = Date.now() - 1000, data = this.#data;
+		for (let i = data.length; i; --i) if (data[0] < limit) { data.shift() } else break;
 	}
 	reset() { this.#data = [] }
 	get times() {

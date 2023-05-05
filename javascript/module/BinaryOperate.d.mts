@@ -1,5 +1,5 @@
 type TypedArray = Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array | Uint8ClampedArray;
-declare function splitBytes(data: TypedArray, splitLength: number[]): number;
+declare function splitBytes(data: TypedArray, splitLength: number[]): number[];
 declare function littleEndianToNumber(data: Uint8Array): number;
 declare function littleEndianToBigInt(data: Uint8Array): bigint;
 declare function bigEndianToNumber(data: Uint8Array): number;

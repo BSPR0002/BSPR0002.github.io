@@ -35,20 +35,17 @@ class Enum {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 		Object.defineProperties(this.prototype, Symbol.iterator, {
 			value: this.prototype.entries,
 			writable: true,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
 	}
 }
 const regexp = /^[A-Za-z_]\w*$/;
-function simpleEnum(array, uppercase = true) {
+function simpleEnum(array, uppercase = false) {
 	if (!Array.isArray(array)) throw new TypeError("Failed to execute 'simpleEnum': Argument 'array' is not an array.");
 	const result = [];
 	for (let i = 0, l = array.length; i < l; ++i) {

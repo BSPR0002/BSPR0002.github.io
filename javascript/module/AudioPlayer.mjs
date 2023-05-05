@@ -114,11 +114,9 @@ class AudioController {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: "AudioController",
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		});
-		for (let item of ["AUDIO_BUFFER_SOURCE_NODE", "OSCILLATOR_NODE", "CONSTANT_SOURCE_NODE"]) Object.defineProperty(this, item, { writable: false, configurable: false, enumerable: true });
+		for (let item of ["AUDIO_BUFFER_SOURCE_NODE", "OSCILLATOR_NODE", "CONSTANT_SOURCE_NODE"]) Object.defineProperty(this, item, { enumerable: true });
 	}
 }
 class AudioPlayer {
@@ -199,9 +197,7 @@ class AudioPlayer {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: "AudioPlayer",
-			writable: false,
-			configurable: true,
-			enumerable: false
+			configurable: true
 		})
 	}
 }
