@@ -1,4 +1,4 @@
-import {AudioPlayer} from "/javascript/module/AudioPlayer.mjs";
+import {AudioAnalyser, AudioPlayer} from "/javascript/module/AudioPlayer.mjs";
 import {decodeAndGetNodes as ArrayHTML} from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 //交互托盘
@@ -31,9 +31,10 @@ const toolInterface=ArrayHTML([
 			["INPUT",null,{"type":"range","step":"1","min":"0","max":"100"},"volumeSlide"]
 		],{"style":"box-sizing:border-box;border:solid 2px #FFFFFF;background-color:#000;height:100%;width:100%;border-radius:2em;grid-area:volume;display:grid;grid-template-columns:2em 3em auto;grid-gap:0.5em;place-items:end;place-content:center;"}]
 	],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
-],true),nodes=toolInterface.nodes;
+]),nodes=toolInterface.nodes;
 //控制逻辑
-const audioPlayer=new AudioPlayer,analyser=audioPlayer.setAnalyser(false);
+const audioPlayer=new AudioPlayer,analyser=new AudioAnalyser(audioPlayer.context);
+analyser.insertToChain(audioPlayer);
 var audioController=null,busy=false;
 async function play() {
 	if (busy) return new MiniWindow("尚在加载其他音频，请稍后！");

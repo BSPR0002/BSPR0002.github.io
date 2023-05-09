@@ -2,6 +2,7 @@ import { RESERVED } from "./Const.mjs";
 import { decode as decodeValue } from "../UTF-8.mjs";
 import { bigEndianToNumber, splitBytes } from "../BinaryOperate.mjs";
 import { simpleEnum } from "../Enum.mjs";
+const { defineProperty, defineProperties, freeze } = Object;
 function offsetRead(context, bits) {
 	const { array, data } = context;
 	var { remain, temp } = data, result = 0;
@@ -10,7 +11,7 @@ function offsetRead(context, bits) {
 			temp = array[context.current];
 			remain = 8;
 		}
-		if (remain - bits < 1) {
+		if (bits >= remain) {
 			bits -= remain;
 			result <<= remain;
 			result |= temp;
@@ -27,7 +28,7 @@ function offsetRead(context, bits) {
 	data.temp = temp;
 	return result;
 }
-const FrameHeader = Object.defineProperty({}, Symbol.toStringTag, { value: "FrameHeader", configurable: true });
+const FrameHeader = defineProperty({}, Symbol.toStringTag, { value: "FrameHeader", configurable: true });
 const frameHeaderSplitter = [15, 1, 4, 4, 4, 3, 1];
 function decodeFrameHeader(context, streamInfo) {
 	const array = context.array,
@@ -35,7 +36,7 @@ function decodeFrameHeader(context, streamInfo) {
 	if (syncCode != 32764) throw new Error("Wrong starting position.");
 	const idStart = context.current, id = decodeValue(context);
 	if (!blockingStrategy && context.current - idStart > 6) throw new Error("Unexpected data length.");
-	return Object.defineProperties(Object.create(FrameHeader), {
+	return defineProperties(Object.create(FrameHeader), {
 		blockingStrategy: { value: blockingStrategy, enumerable: true },
 		id: { value: id, enumerable: true },
 		blockSize: { value: getBlockSize(blockSizeCode, context), enumerable: true },
@@ -115,10 +116,10 @@ function getChannels(code) {
 }
 const subFrameTypes = simpleEnum(["constant", "verbatim", "fixed", "lpc"]);
 class SubFrame {
-	constructor(wastedBits) { Object.defineProperty(this, "wastedBits", { value: wastedBits, enumerable: true }) }
+	constructor(wastedBits) { defineProperty(this, "wastedBits", { value: wastedBits, enumerable: true }) }
 	get typeName() { return subFrameTypes[this.type] }
 	static {
-		Object.defineProperties(this.prototype, {
+		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
 			type: { value: RESERVED, configurable: true, enumerable: true }
 		});
@@ -127,10 +128,10 @@ class SubFrame {
 class ConstantSubFrame extends SubFrame {
 	constructor(wastedBits, context, frameInfo) {
 		super(wastedBits);
-		Object.defineProperty(this, "sample", { value: offsetRead(context, frameInfo.sampleSize), enumerable: true });
+		defineProperty(this, "sample", { value: offsetRead(context, frameInfo.sampleSize), enumerable: true });
 	}
 	static {
-		Object.defineProperties(this.prototype, {
+		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
 			type: { value: 0, configurable: true, enumerable: true }
 		});
@@ -141,10 +142,10 @@ class VerbatimSubFrame extends SubFrame {
 		super(wastedBits);
 		const { blockSize, sampleSize } = frameInfo, samples = new Array(blockSize);
 		for (let i = 0; i < blockSize; ++i) samples[i] = offsetRead(context, sampleSize);
-		Object.defineProperty(this, "samples", { value: Object.freeze(samples), enumerable: true });
+		defineProperty(this, "samples", { value: freeze(samples), enumerable: true });
 	}
 	static {
-		Object.defineProperties(this.prototype, {
+		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
 			type: { value: 1, configurable: true, enumerable: true }
 		});
@@ -153,14 +154,14 @@ class VerbatimSubFrame extends SubFrame {
 class PredictorSubFrame extends SubFrame {
 	constructor(wastedBits, order, warmUpSamples, residual) {
 		super(wastedBits);
-		Object.defineProperties(this, {
+		defineProperties(this, {
 			order: { value: order, enumerable: true },
-			warmUpSamples: { value: Object.freeze(warmUpSamples), enumerable: true },
-			residual: { value: Object.freeze(residual), enumerable: true }
+			warmUpSamples: { value: freeze(warmUpSamples), enumerable: true },
+			residual: { value: freeze(residual), enumerable: true }
 		});
 	}
 	static {
-		Object.defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true });
+		defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true });
 	}
 }
 function decodeRice(context, codingMethod, samples) {
@@ -208,7 +209,7 @@ class FixedSubFrame extends PredictorSubFrame {
 		super(wastedBits, order, warmUpSamples, decodeResidual(context, blockSize, order));
 	}
 	static {
-		Object.defineProperties(this.prototype, {
+		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
 			type: { value: 2, configurable: true, enumerable: true }
 		});
@@ -223,14 +224,14 @@ class LPCSubFrame extends PredictorSubFrame {
 		const coefficientsShift = offsetRead(context, 5);
 		for (let i = 0; i < order; ++i) coefficients[i] = offsetRead(context, coefficientsPrecision);
 		super(wastedBits, order, warmUpSamples, decodeResidual(context, blockSize, order));
-		Object.defineProperties(this, {
+		defineProperties(this, {
 			coefficientsPrecision: { value: coefficientsPrecision, enumerable: true },
 			coefficientsShift: { value: coefficientsShift, enumerable: true },
-			coefficients: { value: Object.freeze(coefficients), enumerable: true }
+			coefficients: { value: freeze(coefficients), enumerable: true }
 		});
 	}
 	static {
-		Object.defineProperties(this.prototype, {
+		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
 			type: { value: 3, configurable: true, enumerable: true }
 		});
@@ -248,16 +249,16 @@ function decodeSubFrame(context, frameInfo) {
 	if (typeCode > 31) return new LPCSubFrame(wastedBits, context, frameInfo, typeCode - 31);
 	return new SubFrame(wastedBits);
 }
-const Frame = Object.defineProperty({}, Symbol.toStringTag, { value: "Frame", configurable: true });
+const Frame = defineProperty({}, Symbol.toStringTag, { value: "Frame", configurable: true });
 function decodeFrame(context, streamInfo) {
 	const array = context.array, start = context.current, header = decodeFrameHeader(context, streamInfo), channels = header.channels.length, subFrames = new Array(channels), bitOffset = context.data = { remain: 8, temp: array[context.current] };
 	for (let i = 0; i < channels; ++i) subFrames[i] = decodeSubFrame(context, header);
 	context.data = undefined;
 	if (bitOffset.remain) ++context.current;
-	return Object.defineProperties(Object.create(Frame), {
+	return defineProperties(Object.create(Frame), {
 		start: { value: start, enumerable: true },
 		header: { value: header, enumerable: true },
-		subFrames: { value: Object.freeze(subFrames), enumerable: true },
+		subFrames: { value: freeze(subFrames), enumerable: true },
 		CRC16: { value: bigEndianToNumber(array.subarray(context.current, context.current += 2)), enumerable: true },
 		end: { value: context.current, enumerable: true }
 	});

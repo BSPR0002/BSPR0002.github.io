@@ -23,7 +23,7 @@ function splitBytes(data, splitLength) {
 				temp = data[currentByte];
 				byteRemainBits = bitsPerElement;
 			}
-			if (byteRemainBits - length < 1) {
+			if (length >= byteRemainBits) {
 				length -= byteRemainBits;
 				value *= 1 << byteRemainBits;
 				value += temp;
