@@ -31,6 +31,7 @@ declare class AudioController extends ChainBase {
 	disconnect(): void;
 	destroy(): void;
 	readonly sourceType = NaN;
+	static readonly sourceTypes = sourceTypes;
 }
 declare class BufferSourceController extends AudioController {
 	loop: boolean;
