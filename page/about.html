@@ -1,22 +1,86 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
-	<head>
-		<title>蓝天信息工厂</title>
-		<meta charset="utf-8">
-	</head>
-	<body>
-		<div id="about_box_frame">
-
-		志向于分享与搬运二次元内容，
-		并提供民间本土化服务（试行）。
-
-		如果您有本土化工程需求或正在寻求工程协助，您可以向我们咨询
-		如果您有想要分享或发布的内容，您可以放到我们的资源库中
-		本人正在组建一个兴趣工作组。
-		如果你懂得汉化工作，浏览器前端开发，日语翻译，软件编程，并且有用爱发电的热情，那么我诚恳地邀请您成为 BSIF 的一员!
-
-		<a href="http://tieba.baidu.com/home/main?un=BSPR0002&from=tieba" target="_blank">BSPR0002</a>
-		<a href="https://jq.qq.com/?_wv=1027&k=5Ad5ek3" target="_blank">BSIF</a>
+<head>
+	<meta charset="utf-8">
+	<title>蓝天信息工厂</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+	<style>
+		body {
+			display: grid;
+			gap: 1rem;
+			grid-template-columns: 100%;
+		}
+		#brand {
+			font-size: 1.5rem;
+			color: #92C1DC;
+			text-align: center;
+		}
+		#brand>* {vertical-align: middle}
+		#contact {
+			background-color: #92C1DC;
+			place-items: center;
+		}
+		#contact,#contact_list {
+			display: grid;
+			gap: 0.5rem;
+		}
+		#contact_list {
+			width: 100%;
+			place-content: center;
+			grid-template-columns: repeat(auto-fit, 9.5rem);
+		}
+		#contact,.contact {
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+		}
+		.contact {
+			display: grid;
+			background-color: #FFFFFF;
+			column-gap: 0.25rem;
+			grid-template-areas: "img type""img name";
+			grid-template-columns: auto 1fr;
+		}
+		.contact>img {
+			grid-area: img;
+			height: 3rem;
+			border: solid 0.0125rem #C0C0C0;
+			border-radius: 50%;
+		}
+		p {
+			text-indent: 2rem;
+			margin: 0;
+		}
+		a {color: #00C0FF}
+	</style>
+</head>
+<body>
+	<div id="brand"><img src="/images/logo.svg" alt="logo" style="width:2rem;"><span>蓝天信息工厂</span></div>
+	<div>
+		<p>我们志向于分享与搬运二次元内容，偶尔也客串本土化翻译工作。</p>
+		<p>如果您有想要分享或发布的内容，您可以放到我们的资源库中，或委托我们管理发布。</p>
+		<p>如果您需要某作品的本土化翻译，您可以向我们提议尝试。如果您有某项本土化工程需要人手，我们也可以提供某些协助。</p>
+	</div>
+	<div id="contact">
+		<span>联系方式</span>
+		<div id="contact_list">
+			<div class="contact">
+				<img src="https://gss0.baidu.com/7Ls0a8Sm2Q5IlBGlnYG/sys/portrait/item/tb.1.dc0db162.iOgZpEODCDuAWjev7aoPWQ?t=1487590120" alt="贴吧头像">
+				百度贴吧
+				<a href="http://tieba.baidu.com/home/main?un=BSPR0002" target="_blank">BSPR0002</a>
+			</div>
+			<div class="contact">
+				<img src="https://p.qlogo.cn/gh/981827930/981827930/" alt="QQ群头像">
+				QQ群
+				<a href="https://jq.qq.com/?_wv=1027&k=5Ad5ek3" target="_blank">BSIF</a>
+			</div>
 		</div>
-	</body>
+		
+		
+	</div>
+	<p>
+		如果你懂得汉化工作、浏览器前端开发、日语翻译、软件编程，并且闲到想搞事情，那么您可以考虑加入我们的兴趣小组，我们一起来搞事情！
+	</p>
+</body>
+
 </html>

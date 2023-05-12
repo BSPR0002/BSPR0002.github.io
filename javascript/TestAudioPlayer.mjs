@@ -19,7 +19,7 @@ const toolInterface=ArrayHTML([
 			["DIV",[
 				["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],
 				["SPAN",[
-					"× ",
+					"×",
 					["span","1",{"style":"place-self:start "},"playbackRate"]
 				],{"style":"display:grid;grid-template-columns:auto 2em"}],
 				["BUTTON","＋" ,{"class":"controls_speed","title":"+0.1"},"speedUp"]
