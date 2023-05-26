@@ -1,6 +1,6 @@
 import { endWork } from "./main.mjs";
 import initialStore from "/javascript/AppletsDataStorage.mjs";
-import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { parse as parseAH, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import { save } from "/javascript/module/FileIO.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 const { stringify, parse } = JSON, ROOT = Symbol("ROOT"),
@@ -261,7 +261,7 @@ function buildItem(key, keyTitle, data, parent, top) {
 	) : buildNative(key, keyTitle, type, data, parent, top);
 }
 function buildNative(key, keyTitle, type, value, parent, top) {
-	const { node, content } = decodeAndGetNodes([
+	const { node, content } = parseAndGetNodes([
 		["div", [
 			keyTitle,
 			["span", stringify(value), { class: "preview_value " + type }, "content"]
@@ -270,7 +270,7 @@ function buildNative(key, keyTitle, type, value, parent, top) {
 	return new TreeNode(key, type, parent, node, content, top);
 }
 function buildObject(keyTitle, isArray, value, parent, top) {
-	const { node, content } = decodeAndGetNodes([
+	const { node, content } = parseAndGetNodes([
 		["details", [
 			["summary", [
 				keyTitle,
@@ -296,12 +296,12 @@ function buildSubObject(value, parent) {
 	const { children: sub, entries } = parent, keys = Object.keys(value), length = parent.toggleHeight = keys.length;
 	for (let i = 0; i < length; ++i) {
 		const key = keys[i];
-		sub.push(entries[key] = buildItem(key, decode([["span", stringify(key), { class: "preview_key" }]]), value[key], parent, i));
+		sub.push(entries[key] = buildItem(key, parseAH([["span", stringify(key), { class: "preview_key" }]]), value[key], parent, i));
 	};
 }
 function buildSubArray(value, parent) {
 	const sub = parent.children, length = parent.toggleHeight = value.length;
-	for (let i = 0; i < length; ++i) sub.push(buildItem(i, decode([["span", i, { class: "preview_key" }]]), value[i], parent, i));
+	for (let i = 0; i < length; ++i) sub.push(buildItem(i, parseAH([["span", i, { class: "preview_key" }]]), value[i], parent, i));
 }
 //索引器部分
 function indexorMapper(item) { return { title: item.title, path: item.path } }
@@ -363,8 +363,6 @@ class Indexor {
 	#route = [];
 	#path = "";
 	#content;
-	get title() { return this.#titleElement.value }
-	set title(value) { this.#titleElement.value = value }
 	get path() { return this.#path }
 	set path(value) {
 		if (typeof value != "string") throw new TypeError("invalid type");
@@ -382,7 +380,7 @@ class Indexor {
 		setContent(this.#node, this.#contentElement.value = this.#content = value.trim())
 	}
 	constructor() {
-		const nodes = decodeAndGetNodes([["div", [
+		const nodes = parseAndGetNodes([["div", [
 			["input", null, { class: "indexor_title", spellcheck: "false", placeholder: "索引器标题" }, "title"],
 			["button", null, { class: "indexor_remove", title: "移除索引器" }, "remove"],
 			["span", ["索引路径："], { class: "indexor_path_d" }],
@@ -534,7 +532,7 @@ function setContent(node, content) {
 }
 function indexorDataMapper(item) { return ["div", [["span", ["名称：", item.title]], ["br"], ["span", ["路径：", item.path]]]] }
 function buildIndexorData(message, data) {
-	return decode([["div", [
+	return parseAH([["div", [
 		["span", message],
 		["div", data.length ? data.map(indexorDataMapper) : "空", { class: "indexor_data" }]
 	], { class: "indexor_data_frame" }]])
@@ -546,14 +544,14 @@ function loadIndexor(data) { data.map(loadIndexorMapper) }
 	if (last?.length) { loadIndexor(last) } else Indexor.newInstance();
 }
 //菜单部分
-function buildMenu(array) { menu.appendChild(decode(array.map(menuMapper1))) }
+function buildMenu(array) { menu.appendChild(parseAH(array.map(menuMapper1))) }
 function focusMenu() { if (menu.contains(document.activeElement)) this.focus() }
 function clickOption(event) {
 	const target = event.srcElement;
 	if (target != this) target.blur();
 }
 function menuMapper1(item, tabindex) {
-	const element = decodeAndGetNodes([["div", [
+	const element = parseAndGetNodes([["div", [
 		item.title,
 		["div", item.options.map(menuMapper2), { class: "menu_expand" }]
 	], { class: "menu_item", tabindex }, "element"]]).nodes.element;
@@ -562,7 +560,7 @@ function menuMapper1(item, tabindex) {
 	return element;
 }
 function menuMapper2(item) {
-	const element = decodeAndGetNodes([["button", item.title, { class: "menu_option" }, "option"]]).nodes.option;
+	const element = parseAndGetNodes([["button", item.title, { class: "menu_option" }, "option"]]).nodes.option;
 	element.addEventListener("click", item.action);
 	return element;
 }

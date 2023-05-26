@@ -13,6 +13,7 @@ type AJAXOptions = {
 	fail?: statusCallback,
 	done?: statusCallback,
 	error?: eventCallback,
+	abort?: eventCallback,
 	type?: XMLHttpRequestResponseType,
 	data?: sendType,
 	timeout?: number,

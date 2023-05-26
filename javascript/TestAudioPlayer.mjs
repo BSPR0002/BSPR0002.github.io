@@ -1,5 +1,5 @@
 import {AudioAnalyser, AudioPlayer} from "/javascript/module/AudioPlayer.mjs";
-import {decodeAndGetNodes as ArrayHTML} from "/javascript/module/ArrayHTML.mjs";
+import {parseAndGetNodes as ArrayHTML} from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 //交互托盘
 const toolInterface=ArrayHTML([
@@ -28,7 +28,7 @@ const toolInterface=ArrayHTML([
 		["DIV",[
 			"音量",
 			["SPAN",[["#text",null,null,"volumeDisplay"],"%"]],
-			["INPUT",null,{"type":"range","step":"1","min":"0","max":"100"},"volumeSlide"]
+			["INPUT",null,{type:"range",step:1,min:0,max:100},"volumeSlide"]
 		],{"style":"box-sizing:border-box;border:solid 2px #FFFFFF;background-color:#000;height:100%;width:100%;border-radius:2em;grid-area:volume;display:grid;grid-template-columns:2em 3em auto;grid-gap:0.5em;place-items:end;place-content:center;"}]
 	],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
 ]),nodes=toolInterface.nodes;

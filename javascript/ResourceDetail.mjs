@@ -1,5 +1,5 @@
 import { getJSON } from "/javascript/module/AJAX.mjs";
-import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
 const detailStyle = document.createElement("STYLE");
@@ -68,10 +68,10 @@ function displayDetails(data, showArea) {
 	if ("introduction" in data) arrayHTML.push(buildDetailsPart("简介", data.introduction));
 	if ("release" in data) arrayHTML.push(buildRelease(data.release));
 	showArea.className = "";
-	showArea.appendChild(decode(arrayHTML));
+	showArea.appendChild(parse(arrayHTML));
 }
 function showDetail(data) {
-	const { documentFragment, nodes } = decodeAndGetNodes([
+	const { documentFragment, nodes } = parseAndGetNodes([
 		detailStyle.cloneNode(true),
 		["DIV", [
 			["DIV", [

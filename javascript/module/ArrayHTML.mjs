@@ -1,5 +1,5 @@
-function decodeCollection(data,outer,collector) {
-	if (!Array.isArray(data)) throw new TypeError("Decode error: Detected non-Array object");
+function parseCollection(data,outer,collector) {
+	if (!Array.isArray(data)) throw new TypeError("Parse error: Detected non-Array object");
 	for (let item of data) {
 		switch (typeof item) {
 			case "string":
@@ -14,20 +14,20 @@ function decodeCollection(data,outer,collector) {
 					outer.appendChild(item);
 					break;
 				}
-				decodeNode(item,outer,collector)
+				parseNode(item,outer,collector)
 			default:
 		}
 	}
 }
-function decodeStyleObject(node,object) {
+function parseStyleObject(node,object) {
 	const styleObject=node.style;
 	for (let index in object) styleObject[index]=[object[index]];
 }
-function decodeAttribute(node,attributeName,data) {
+function parseAttribute(node,attributeName,data) {
 	switch (attributeName) {
 		case "style":
 			if (data instanceof Object) {
-				decodeStyleObject(node,data);
+				parseStyleObject(node,data);
 				return;
 			}
 			break;
@@ -38,7 +38,7 @@ function decodeAttribute(node,attributeName,data) {
 	}
 	node.setAttribute(attributeName,data)
 }
-function decodeContent(node,content,collector) {
+function parseContent(node,content,collector) {
 	switch (typeof content) {
 		case "string":
 		case "number":
@@ -52,12 +52,12 @@ function decodeContent(node,content,collector) {
 				node.appendChild(content);
 				return;
 			}
-			try {decodeCollection(content,node,collector)} catch(error){console.warn(error)}
+			try {parseCollection(content,node,collector)} catch(error){console.warn(error)}
 		default:
 	}
 }
-function decodeNode(data,outer,collector) {
-	if (!Array.isArray(data)) throw new TypeError("Decode error: Detected non-Array object");
+function parseNode(data,outer,collector) {
+	if (!Array.isArray(data)) throw new TypeError("Parse error: Detected non-Array object");
 	var content=data[1],node;
 	switch (data[0]) {
 		case "#comment":
@@ -71,38 +71,38 @@ function decodeNode(data,outer,collector) {
 				if (!(outer instanceof Element)) throw new TypeError("Container is not an Element.")
 				node=outer.attachShadow(data[2])
 			} catch(error) {
-				console.warn("Decode error: Failed to attach shadow DOM\n",data,"\non",outer,`\n${error.name}: ${error.message}`);
+				console.warn("Parse error: Failed to attach shadow DOM\n",data,"\non",outer,`\n${error.name}: ${error.message}`);
 				return;
 			}
-			decodeContent(node,content,collector);
+			parseContent(node,content,collector);
 			break;
 		default:
 			outer.appendChild(node=document.createElement(data[0]));
 			if (data[2] instanceof Object) {
-				for (let attribute in data[2]) try {decodeAttribute(node,attribute,data[2][attribute])} catch (error) {console.warn("Decode error: Failed to set attribute",attribute,"to",data[2][attribute],"on",node,`\n${error.name}: ${error.message}`)}
+				for (let attribute in data[2]) try {parseAttribute(node,attribute,data[2][attribute])} catch (error) {console.warn("Parse error: Failed to set attribute",attribute,"to",data[2][attribute],"on",node,`\n${error.name}: ${error.message}`)}
 			}
-			decodeContent(node,content,collector);
+			parseContent(node,content,collector);
 	}
 	if (collector&&(3 in data)) collector[data[3]]=node;
 }
-function decode(ArrayHTML) {
+function parse(ArrayHTML) {
 	const documentFragment=document.createDocumentFragment();
-	decodeCollection(ArrayHTML,documentFragment);
+	parseCollection(ArrayHTML,documentFragment);
 	return documentFragment;
 }
-function decodeAndGetNodes(ArrayHTML) {
+function parseAndGetNodes(ArrayHTML) {
 	const nodes={},documentFragment=document.createDocumentFragment();
-	decodeCollection(ArrayHTML,documentFragment,nodes);
+	parseCollection(ArrayHTML,documentFragment,nodes);
 	return {documentFragment,nodes};
 }
-function encodeIterator(node,outer) {
+function serializeIterator(node,outer) {
 	if (node.nodeName=="#text") {
 		outer.push(node.textContent);
 	} else {
-		for (let child of node.childNodes) {encodeNode(child,outer)}
+		for (let child of node.childNodes) {serializeNode(child,outer)}
 	}
 }
-function encodeNode(node,outer){
+function serializeNode(node,outer){
 	switch (node.nodeName) {
 		case "#text":
 			outer.push(node.textContent);
@@ -111,7 +111,7 @@ function encodeNode(node,outer){
 			outer.push(["#comment",node.textContent]);
 			break;
 		case "#document":
-			encodeIterator(node,outer);
+			serializeIterator(node,outer);
 		case "html":
 			break;
 		default:
@@ -123,17 +123,17 @@ function encodeNode(node,outer){
 						child[2][attribute.name]=attribute.value;
 					}
 				}
-			} catch(error) {console.warn("Encode exception: Failed to get attributes of node",node)}
+			} catch(error) {console.warn("Serialize exception: Failed to get attributes of node",node)}
 			if (node.hasChildNodes()) {
-				encodeIterator(node,child[1]=[]);
+				serializeIterator(node,child[1]=[]);
 			}
 			outer.push(child);
 	}
 }
-function encode(node,onlyChildren=true) {
-	if (!(node instanceof Node)) throw new TypeError("Encode failed: Argument 'node' is not type of Node");
+function serialize(node,onlyChildren=true) {
+	if (!(node instanceof Node)) throw new TypeError("Serialize failed: Argument 'node' is not type of Node");
 	const ArrayHtml=[];
-	if (onlyChildren) {encodeIterator(node,ArrayHtml)} else {encodeNode(node,ArrayHtml)}
+	if (onlyChildren) {serializeIterator(node,ArrayHtml)} else {serializeNode(node,ArrayHtml)}
 	return ArrayHtml;
 }
-export {decode,encode,decodeAndGetNodes}
+export {parse,serialize,parseAndGetNodes}

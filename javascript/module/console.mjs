@@ -1,5 +1,5 @@
-import { decodeAndGetNodes } from "./ArrayHTML.mjs";
-const { documentFragment, nodes } = decodeAndGetNodes([
+import { parseAndGetNodes } from "./ArrayHTML.mjs";
+const { documentFragment, nodes } = parseAndGetNodes([
 	["DIV", [
 
 	], { id: "BSIF_console_emulator" }],

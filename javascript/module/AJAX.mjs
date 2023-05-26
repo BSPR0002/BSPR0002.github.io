@@ -10,7 +10,8 @@ function buildRequest(request, options) {
 		if ("timeout" in options) request.timeout = options.timeout;
 	}
 	if ("cache" in options && !options.cache) request.setRequestHeader("If-Modified-Since", "0");
-	request.ontimeout = request.onabort = function () { callHandler(this, fail, this.status) };
+	request.ontimeout = function () { callHandler(this, fail, this.status) };
+	request.onabort = options.abort;
 	request.onerror = options.error;
 	request.onload = function () {
 		const status = this.status;
@@ -47,12 +48,14 @@ function loadSubResource(element, allowCache, loader, processor) {
 	return { promise: subLoadProcessor(element, allowCache, loader, processor, function (handler) { abort = handler }), abort() { if (typeof abort == "function") abort() } };
 }
 function downloader(url, allowCache, onfinish, abortHandlerSetter) {
+	function onReject() { onfinish(false) }
 	const xhr = ajax({
 		url,
 		cache: allowCache,
 		success: onfinish,
-		fail() { onfinish(false) },
-		error() { onfinish(false) }
+		fail: onReject,
+		error: onReject,
+		abort: onReject
 	});
 	abortHandlerSetter(xhr.abort.bind(xhr));
 }

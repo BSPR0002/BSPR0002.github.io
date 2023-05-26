@@ -1,4 +1,4 @@
-import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import {storage} from "/javascript/Setting.mjs";
 import {requestPermission} from "/javascript/module/WebPermissions.mjs";
@@ -24,7 +24,7 @@ async function notice() {
 }
 function showDetail(id,title,content) {
 	try {
-		new MiniWindow(typeof content=="string"?content:decode(content),title,{size:{width:"25rem"}}).addEventListener("show",function(){log[id]=Date.now()});
+		new MiniWindow(typeof content=="string"?content:parse(content),title,{size:{width:"25rem"}}).addEventListener("show",function(){log[id]=Date.now()});
 	} catch(none) {
 		new MiniWindow("出了点问题，内容出不来了……😢","出错了",{size:{width:"25rem"}});
 	}
@@ -56,7 +56,7 @@ async function operator(list) {
 		});
 	}
 }
-const boardStyle=decodeAndGetNodes([["STYLE",[
+const boardStyle=parseAndGetNodes([["STYLE",[
 	"#bs-News{display:grid;height:100%;grid-template-rows:auto 1fr}",
 	"#bs-News_setting{display:grid;height:2rem;grid-template-columns:1fr 3rem;gap:1em;place-items:center start;border-bottom:dashed 1px var(--strongEdge)}",
 	"#bs-News_setting>span{font-weight:bold;white-space:nowrap;overflow:hidden}",
@@ -78,7 +78,7 @@ const boardStyle=decodeAndGetNodes([["STYLE",[
 ],null,"style"]]).nodes.style;
 function createWindow(content){return new MiniWindow(content,"推送通知",{size:{width:"25rem",height:"100%"}})}
 async function showBoard() {
-	const {auto,container,frame}=decodeAndGetNodes([
+	const {auto,container,frame}=parseAndGetNodes([
 		["DIV",[
 			boardStyle,
 			["LABEL",[
@@ -111,7 +111,7 @@ async function showBoard() {
 				["SPAN",previewMessage??typeof content=="string"?content:"详情请点击查看。",{class:"bs-News_item_message"}]
 			];
 			if (previewImage) temp.push(["img",null,{src:previewImage,class:"bs-News_item_image"}]);
-			let itemBody=decodeAndGetNodes([["DIV",temp,{class:"bs-News_item"},"body"]]).nodes.body;
+			let itemBody=parseAndGetNodes([["DIV",temp,{class:"bs-News_item"},"body"]]).nodes.body;
 			itemBody.addEventListener("click",function(){showDetail(item.id,item.title,item.content)});
 			container.appendChild(itemBody);
 		}

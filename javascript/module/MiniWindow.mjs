@@ -1,4 +1,4 @@
-import { decodeAndGetNodes as ArrayHTML } from "./ArrayHTML.mjs";
+import { parseAndGetNodes as ArrayHTML } from "./ArrayHTML.mjs";
 const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent, contentFrame, confirmStyle, subLayer, subTitle, subFrame, subBody } = ArrayHTML([
 	["DIV", [
 		["STYLE", [

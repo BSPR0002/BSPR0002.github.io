@@ -2,7 +2,8 @@ import { simpleEnum } from "./Enum.mjs";
 const sourceTypes = simpleEnum(["AUDIO_BUFFER_SOURCE_NODE", "OSCILLATOR_NODE", "CONSTANT_SOURCE_NODE"]),
 	typeofAudioBufferSourceNode = AudioBufferSourceNode.prototype,
 	typeofOscillatorNode = OscillatorNode.prototype,
-	typeofConstantSourceNode = ConstantSourceNode.prototype;
+	typeofConstantSourceNode = ConstantSourceNode.prototype,
+	changeSourceNode = Symbol("protected changeSourceNode");
 class ChainBase {
 	#input;
 	#output;
@@ -48,10 +49,10 @@ class ChainBase {
 	}
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true });
-		changeSourceNode = function changeSourceNode(instance, newSource) {
-			const nextNode = instance.#chain[0] ?? instance.#output;
-			instance.#input.disconnect(nextNode);
-			(instance.#input = newSource).connect(nextNode);
+		this.prototype[changeSourceNode] = function (newSource) {
+			const nextNode = this.#chain[0] ?? this.#output;
+			this.#input.disconnect(nextNode);
+			(this.#input = newSource).connect(nextNode);
 		}
 	}
 }
@@ -163,9 +164,9 @@ class AudioController extends ChainBase {
 			sourceType: { value: NaN, configurable: true, enumerable: true }
 		});
 		Object.defineProperty(this, "sourceTypes", { value: sourceTypes, enumerable: true });
+		this.prototype[changeSourceNode] = function (newSource) { ChainBase.prototype[changeSourceNode].call(this, this.#sourceNode = newSource) }
 	}
 }
-var changeSourceNode;
 class BufferSourceController extends AudioController {
 	#sourceNode;
 	get loop() { return this.#sourceNode.loop }
@@ -211,7 +212,7 @@ class BufferSourceController extends AudioController {
 		if (duration !== undefined && (typeof duration != "number" || !Number.isFinite(duration) || duration < 0)) throw new TypeError("Failed to execute 'restart' on 'BufferSourceController': Argument 'duration' must be an finite number that equal or greater than 0.");
 		const sourceNode = this.#sourceNode, context = sourceNode.context, currentTime = context.currentTime, newSource = this.#sourceNode = context.createBufferSource();
 		newSource.buffer = sourceNode.buffer;
-		changeSourceNode(this, newSource);
+		AudioController.prototype[changeSourceNode].call(this, newSource);
 		newSource.loop = sourceNode.loop;
 		newSource.loopStart = sourceNode.loopStart;
 		newSource.loopEnd = sourceNode.loopEnd;

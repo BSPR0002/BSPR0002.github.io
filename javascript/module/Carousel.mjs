@@ -1,4 +1,4 @@
-import { decode as ArrayHTML } from "./ArrayHTML.mjs";
+import { parse as ArrayHTML } from "./ArrayHTML.mjs";
 document.head.appendChild(ArrayHTML([["STYLE", [
 	".bs-carousel_box{box-sizing:border-box;width:100%;height:100%;border:1px solid black;position:relative;border-radius:1rem;background-color:black;overflow:hidden;transition:none 0.4s ease-in-out}",
 	".bs-carousel_scroll,.bs-carousel_item{width:100%;height:100%}",

@@ -1,7 +1,7 @@
 import MiniWindow from "./MiniWindow.mjs";
-import { decode as decodeAH, decodeAndGetNodes as decodeAHNode } from "./ArrayHTML.mjs";
+import { parse as parseAH, parseAndGetNodes as parseAHNode } from "./ArrayHTML.mjs";
 import { LocalStorageObject } from "./LocalStorageObject.mjs";
-const style = decodeAHNode([["STYLE", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]], true).nodes.style;
+const style = parseAHNode([["STYLE", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]], true).nodes.style;
 const permissions = {
 	notification: {
 		localName: "通知",
@@ -21,7 +21,7 @@ async function alertRequest(permissionName, reason) {
 	}
 	if (!requestCount.chance) return false;
 	--requestCount.chance;
-	const documentFragment = decodeAH([
+	const documentFragment = parseAH([
 		style,
 		["DIV", [
 			["H1", `此网站请求${permissions[permissionName].localName}权限`, { id: "bs-requestPermission_title" }],

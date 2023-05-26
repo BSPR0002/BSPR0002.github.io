@@ -9,10 +9,10 @@ type ArrayHTMLNode = [
 	string?
 ];
 type ArrayHTMLCollection = (ArrayHTMLNode | string | boolean | number | bigint | Node)[];
-declare function encode(node: Node, onlyChildren = true): ArrayHTMLCollection;
-declare function decode(ArrayHTML: ArrayHTMLCollection): DocumentFragment;
-declare function decodeAndGetNodes(ArrayHTML: ArrayHTMLCollection): {
+declare function serialize(node: Node, onlyChildren = true): ArrayHTMLCollection;
+declare function parse(ArrayHTML: ArrayHTMLCollection): DocumentFragment;
+declare function parseAndGetNodes(ArrayHTML: ArrayHTMLCollection): {
 	documentFragment: DocumentFragment,
 	nodes: { [key: string]: HTMLElementTagNameMap[keyof HTMLElementTagNameMap] | Comment | Text | ShadowRoot };
 };
-export { decode, encode, decodeAndGetNodes }
+export { parse, serialize, parseAndGetNodes }

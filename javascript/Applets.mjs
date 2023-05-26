@@ -1,10 +1,10 @@
 import { CacheJSON } from "/javascript/module/CacheJSON.mjs";
-import { decode, decodeAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import initialStore from "/javascript/SiteDatabase.mjs";
 import { getJSON } from "/javascript/module/AJAX.mjs";
 const favStore = await initialStore("FavoriteApplets", function (upgrader) { upgrader.createObjectStore("FavoriteApplets") }), json = new CacheJSON("/json/applets.json", true);
-const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop, list, partFav, listFav, listAll, detailStyle } = decodeAndGetNodes([
+const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop, list, partFav, listFav, listAll, detailStyle } = parseAndGetNodes([
 	["div", [
 		["style", [
 			"#applets_frame{display:grid;width:100%;height:100%;grid-template-rows:1.75rem 1fr;gap:0.5rem;overflow:hidden}",
@@ -141,7 +141,7 @@ async function search(keyword) {
 }
 function buildItem(data) {
 	const { directory, iconName, name, id } = data;
-	const { item } = decodeAndGetNodes([["button", [
+	const { item } = parseAndGetNodes([["button", [
 		["div", null, iconName ? { style: `background-image:url("${directory + iconName}")`, class: "applets_item_icon" } : { class: "applets_item_icon none" }],
 		["span", name, { class: "applets_item_name" }]
 	], { class: "applets_item", title: name }, "item"]]).nodes;
@@ -150,7 +150,7 @@ function buildItem(data) {
 }
 function buildFavItem(data) {
 	const temp = buildItem(data);
-	const { start } = decodeAndGetNodes([["button", null, { class: "applets_item_start", title: "启动此应用" }, "start"]]).nodes;
+	const { start } = parseAndGetNodes([["button", null, { class: "applets_item_start", title: "启动此应用" }, "start"]]).nodes;
 	start.addEventListener("click", function (event) {
 		event.stopPropagation();
 		window.open(data.directory + "index.html", "_blank");
@@ -214,7 +214,7 @@ function favChange(id, state) {
 	updateFavList();
 }
 async function showDetail(directory, iconName, name, id) {
-	const { frame, fav, start, info } = decodeAndGetNodes([["div", [
+	const { frame, fav, start, info } = parseAndGetNodes([["div", [
 		detailStyle.cloneNode(true),
 		["div", [
 			["div", null, iconName ? { id: "applets_detail_icon", style: `background-image:url("${directory + iconName}")` } : { id: "applets_detail_icon", class: "none" }],
@@ -233,13 +233,13 @@ async function showDetail(directory, iconName, name, id) {
 	miniWindow.close();
 	try {
 		const data = await new Promise(function (resolve, reject) { getJSON(directory + "info.json", resolve, true, reject) });
-		info.appendChild(decode([
+		info.appendChild(parse([
 			["span", ["版本：", data.version ?? "不明"]],
 			["span", ["开发：", data.developer ?? "不明"]],
 			["span", ["更新日期：", parseDate(data.release)]]
 		]));
 		info.className = "load";
-		if ("description" in data) frame.appendChild(decode(data.description))
+		if ("description" in data) frame.appendChild(parse(data.description))
 	} catch (_ignore) { info.className = "error" }
 }
 function parseDate(timestamp) { return typeof timestamp == "number" ? new Date(timestamp).toLocaleDateString() : "不明" }

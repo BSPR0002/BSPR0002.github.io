@@ -1,6 +1,6 @@
 import getStorage from "./SettingStorage.mjs";
 import { IndexedDatabaseObjectStore } from "../IndexedDatabase.mjs";
-import { decodeAndGetNodes, decode } from "../ArrayHTML.mjs";
+import { parseAndGetNodes, parse } from "../ArrayHTML.mjs";
 const style = document.createElement("STYLE");
 style.textContent = [
 	".bs-setting_frame,.bs-setting_frame_sub{width:100%;height:100%;background-color:#FFFFFF;overflow:hidden;display:grid;grid-template-rows:2.5rem 1fr;box-sizing:border-box}",
@@ -48,17 +48,17 @@ async function buildItem(instance, data, root) {
 	}
 }
 function buildCollection(instance, data, root) {
-	const element = decodeAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
 	element.addEventListener("click", async function () { createSub(data.title, await buildList(instance, data.sub, root), root) });
 	return element;
 }
 function buildAction(instance, data) {
-	const element = decodeAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item" }, "element"]]).nodes.element;
 	element.addEventListener("click", function () { data.action(instance) });
 	return element;
 }
 async function buildSwitch(instance, data) {
-	const { element, switch: input } = decodeAndGetNodes([["label", [
+	const { element, switch: input } = parseAndGetNodes([["label", [
 		["span", data.title, { class: "bs-setting_item_title" }],
 		["input", null, { class: "bs-setting_switch", type: "checkbox" }, "switch"]
 	], { class: "bs-setting_item switch" }, "element"]]).nodes, { storage } = instance;
@@ -67,13 +67,13 @@ async function buildSwitch(instance, data) {
 	return element;
 }
 function buildInfo(data, root) {
-	const element = decodeAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
 	element.addEventListener("click", function () { createSub(data.title, buildLoad(data.source), root) });
 	return element;
 }
-function buildLoad(address) { return ["iframe", null, { src: address, class: "bs-setting_page bs-loading" }, "element"] }
+function buildLoad(address) { return ["iframe", null, { src: address, class: "bs-setting_page" }, "element"] }
 function createSub(title, content, root) {
-	const { frame, back } = decodeAndGetNodes([
+	const { frame, back } = parseAndGetNodes([
 		["div", [
 			["div", [
 				["button", "< 返回", { class: "bs-setting_frame_back" }, "back"],
@@ -107,11 +107,11 @@ class Setting {
 	}
 	async home() {
 		Setting.#checkInstance(this);
-		const { documentFragment, nodes: { root } } = decodeAndGetNodes([
+		const { documentFragment, nodes: { root } } = parseAndGetNodes([
 			style,
 			["div", null, { class: "bs-setting_frame" }, "root"]
 		]);
-		root.appendChild(decode([
+		root.appendChild(parse([
 			["div", [["span", "主菜单", { class: "bs-setting_title" }]], { class: "bs-setting_frame_title" }],
 			await buildList(this, this.#tree, root)
 		]));
@@ -133,7 +133,7 @@ class Setting {
 			if (!found) throw new Error("Failed to execute 'direct' on 'Setting': Invalid path.");
 			list = target.sub;
 		}
-		const { documentFragment, nodes: { root } } = decodeAndGetNodes([
+		const { documentFragment, nodes: { root } } = parseAndGetNodes([
 			style,
 			["div", null, { class: "bs-setting_frame" }, "root"]
 		]);
@@ -148,7 +148,7 @@ class Setting {
 			default:
 				throw new Error("Failed to execute 'direct' on 'Setting': Invalid path");
 		}
-		root.appendChild(decode([
+		root.appendChild(parse([
 			["div", [["span", target.title, { class: "bs-setting_title" }]], { class: "bs-setting_frame_title" }],
 			page
 		]));

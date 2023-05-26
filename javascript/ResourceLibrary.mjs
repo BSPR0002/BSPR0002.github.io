@@ -1,4 +1,4 @@
-import { decodeAndGetNodes as ArrayHTML } from "/javascript/module/ArrayHTML.mjs";
+import { parseAndGetNodes as ArrayHTML } from "/javascript/module/ArrayHTML.mjs";
 import { search, abortMission as abortEngine } from "/javascript/ResourceEngine.mjs";
 import { buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
 import { showDetail } from "/javascript/ResourceDetail.mjs";

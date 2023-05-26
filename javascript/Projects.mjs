@@ -1,9 +1,9 @@
-import { decode, decodeAndGetNodes } from "./module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "./module/ArrayHTML.mjs";
 import { CacheJSON } from "./module/CacheJSON.mjs";
 import MiniWindow from "./module/MiniWindow.mjs"
 const json = new CacheJSON("/json/projects.json", true);
 async function showBoard() {
-	const { nodes: { frame }, documentFragment } = decodeAndGetNodes([
+	const { nodes: { frame }, documentFragment } = parseAndGetNodes([
 		["style", [
 			"#projects_frame{height:100%;display:grid;gap:0.5rem}",
 			"#projects_frame.empty::after{place-self:center;content:\"目前没有项目\"}",
@@ -28,7 +28,7 @@ async function showBoard() {
 				], { class: "bs-content" }]
 			], { class: "projects_item" }])
 		}
-		frame.appendChild(decode(temp));
+		frame.appendChild(parse(temp));
 	} else frame.className = "empty";
 }
 export { showBoard }
