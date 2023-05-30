@@ -11,26 +11,26 @@ const toolInterface=ArrayHTML([
 		]],
 		["SPAN",[
 			"当前文件：",["SPAN","无文件",null,"currentFile"]
-		],{"style":"grid-area:current;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],
-		["INPUT",null,{"type":"file","style":"grid-area:input","accept":"audio/*"},"input"],
+		],{style:"grid-area:current;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;max-width:100%;font-size:14px"}],
+		["INPUT",null,{type:"file",style:"grid-area:input",accept:"audio/*"},"input"],
 		["DIV",[
 			["BUTTON","播放",null,"play"],
 			["BUTTON","停止",null,"stop"],
 			["DIV",[
-				["BUTTON","－",{"class":"controls_speed","title":"-0.1"},"speedDown"],
+				["BUTTON","－",{class:"controls_speed",title:"-0.1"},"speedDown"],
 				["SPAN",[
 					"×",
-					["span","1",{"style":"place-self:start "},"playbackRate"]
-				],{"style":"display:grid;grid-template-columns:auto 2em"}],
-				["BUTTON","＋" ,{"class":"controls_speed","title":"+0.1"},"speedUp"]
-			],{"style":"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:inherit;place-items:center;height:100%","title":"速度"}]
-		],{"style":"grid-area:controls;display:grid;grid-template-columns:auto auto 1fr;grid-gap:0.5em;place-items:center;height:100%"}],
+					["span","1",{style:"place-self:start"},"playbackRate"]
+				],{style:"display:grid;grid-template-columns:auto 2em"}],
+				["BUTTON","＋" ,{class:"controls_speed",title:"+0.1"},"speedUp"]
+			],{style:"display:grid;grid-template-columns:24px 1fr 24px;grid-gap:inherit;place-items:center;height:100%",title:"速度"}]
+		],{style:"grid-area:controls;display:grid;grid-template-columns:auto auto 1fr;grid-gap:0.5em;place-items:center;height:100%"}],
 		["DIV",[
 			"音量",
 			["SPAN",[["#text",null,null,"volumeDisplay"],"%"]],
 			["INPUT",null,{type:"range",step:1,min:0,max:100},"volumeSlide"]
-		],{"style":"box-sizing:border-box;border:solid 2px #FFFFFF;background-color:#000;height:100%;width:100%;border-radius:2em;grid-area:volume;display:grid;grid-template-columns:2em 3em auto;grid-gap:0.5em;place-items:end;place-content:center;"}]
-	],{"style":"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center","class":"test_tools","id":"test_audio_player"}]
+		],{style:"box-sizing:border-box;border:solid 2px #FFFFFF;background-color:#000;height:100%;width:100%;border-radius:2em;grid-area:volume;display:grid;grid-template-columns:2em 3em auto;grid-gap:0.5em;place-items:end;place-content:center"}]
+	],{style:"display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-template-areas:\"current input\"\"controls volume\";grid-gap:5px;place-items:center",class:"test_tools",id:"test_audio_player"}]
 ]),nodes=toolInterface.nodes;
 //控制逻辑
 const audioPlayer=new AudioPlayer,analyser=new AudioAnalyser(audioPlayer.context);

@@ -21,9 +21,7 @@
 	font-size: 1.5rem;
 }
 #mobile_top {display: none}
-#navigation {
-	grid-template-columns: repeat(3, 10em);
-}
+#navigation {grid-template-columns: repeat(3, 10em)}
 .navigation {
 	display: block;
 	position: relative;
@@ -69,6 +67,16 @@
 .navigation.current::after {
 	width: 80%;
 	background-color: var(--focusColor);
+}
+.navigation.failed::after {background-color: #FF0000}
+.navigation.loading::after {animation: navigation_loading 1s linear 0s infinite forwards}
+@keyframes navigation_loading {
+	0%{width:0}
+	50%{opacity:1}
+	100%{
+		width: 80%;
+		opacity: 0;
+	}
 }
 .navigation>span {
 	position: relative;
