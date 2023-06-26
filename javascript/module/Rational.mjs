@@ -1,4 +1,5 @@
-const { isFinite, isInteger, isNaN } = Number, toPrimitive = Symbol.toPrimitive;
+const { isFinite, isInteger, isNaN } = Number,
+	toPrimitive = Symbol.toPrimitive;
 class DivideByZeroError extends Error {
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
@@ -14,8 +15,17 @@ class DivideByZeroError extends Error {
 }
 class Rational {
 	static #reduceFactor(n, d) {
-		if (d == 0) return n;
-		return this.#reduceFactor(d, n % d);
+		while (d != 0) d = n % (n = d);
+		return n;
+	}
+	static #denominatorPositify(instance, n, d) {
+		if (d < 0) {
+			instance.#denominator = -d;
+			instance.#numerator = -n;
+		} else {
+			instance.#denominator = d;
+			instance.#numerator = n;
+		}
 	}
 	#denominator;
 	get denominator() { return this.#denominator }
@@ -24,59 +34,43 @@ class Rational {
 	[toPrimitive]() { return this.#numerator / this.#denominator }
 	constructor(x, denominator) {
 		if (arguments.length < 1) throw new TypeError("Failed to construct 'Rational': 1 argument required, but only 0 present.")
+		x = Number(x);
 		if (arguments.length > 1) {
-			denominator = Number(denominator);
-			if (isNaN(denominator)) throw new TypeError("Failed to construct 'Rational': Argument 'denominator' is NaN.");
-			if (isFinite(denominator)) {
-				if (denominator == 0) throw new DivideByZeroError("Failed to construct 'Rational': Argument 'denominator' cannot be 0.");
-				x = Number(x);
-				if (isNaN(x) || !isFinite(x)) {
-					this.#numerator = x;
-					this.#denominator = 1;
-				} else {
-					const divisor = Rational.#reduceFactor(x, denominator);
-					this.#numerator = x / divisor;
-					this.#denominator = denominator / divisor;
-				}
-			} else {
-				this.#numerator = 0;
-				this.#denominator = 1;
-			}
+			if (!isInteger(x)) throw new TypeError("Failed to construct 'Rational': Argument 'numerator' is not an integer.");
+			if (!isInteger(denominator = Number(denominator))) throw new TypeError("Failed to construct 'Rational': Argument 'denominator' is not an integer.");
+			if (denominator == 0) throw new DivideByZeroError("Failed to construct 'Rational': Argument 'denominator' cannot be 0.");
+			const divisor = Rational.#reduceFactor(x, denominator);
+			Rational.#denominatorPositify(this, x / divisor, denominator / divisor);
 		} else {
-			switch (typeof x) {
-				default:
-					x = Number(x);
-				case "number":
-					if (isNaN(x) || !isFinite(x)) {
-						this.#numerator = x;
-						this.#denominator = 1;
-					} else {
-						let denominator = 1;
-						while (!isInteger(x)) {
-							denominator *= 10;
-							x *= 10;
-						}
-						const divisor = Rational.#reduceFactor(x, denominator);
-						this.#numerator = x / divisor;
-						this.#denominator = denominator / divisor;
-					}
-					break;
-				case "bigint":
-					this.#numerator = Number(x);
-					this.#denominator = 1;
-					break;
+			if (isFinite(x)) {
+				denominator = 1;
+				while (!isInteger(x)) {
+					denominator *= 10;
+					x *= 10;
+				}
+				const divisor = Rational.#reduceFactor(x, denominator);
+				Rational.#denominatorPositify(this, x / divisor, denominator / divisor);
+			} else {
+				this.#numerator = x;
+				this.#denominator = 1;
 			}
 		}
 	}
-	#isFinite() { return isFinite(this.#numerator) }
-	isFinite() { return this.isFinite() }
-	static isFinite(x) { return x instanceof Rational ? x.#isFinite() : isFinite(x) }
-	#isInteger() { return isFinite(this.#numerator) && this.#denominator == 1 }
-	isInteger() { return this.#isInteger() }
-	static isInteger(x) { return x instanceof Rational ? x.#isInteger() : isInteger(x) }
-	#isNaN() { return isNaN(this.#numerator) }
-	isNaN() { return this.isNaN() }
-	static isNaN(x) { return x instanceof Rational ? x.#isNaN() : isNaN(x) }
+	isFinite() { return isFinite(this.#numerator) }
+	static isFinite(x) { return x instanceof Rational ? isFinite(x.#numerator) : isFinite(x) }
+	isInteger() { return isFinite(this.#numerator) && this.#denominator == 1 }
+	static isInteger(x) { return x instanceof Rational ? isFinite(x.#numerator) && x.#denominator == 1 : isInteger(x) }
+	isNaN() { return isNaN(this.#numerator) }
+	static isNaN(x) { return x instanceof Rational ? isNaN(x.#numerator) : isNaN(x) }
+	equals(x) {
+		if (!(x instanceof Rational)) x = new Rational(x);
+		return this.#numerator == x.#numerator && this.#denominator == x.#denominator;
+	}
+	static isEqual(x1, x2) {
+		if (!(x1 instanceof Rational)) x1 = new Rational(x1);
+		if (!(x2 instanceof Rational)) x2 = new Rational(x2);
+		return x1.#numerator == x2.#numerator && x1.#denominator == x2.#denominator;
+	}
 	plus(x) {
 		if (!(x instanceof Rational)) x = new Rational(x);
 		const d1 = this.#denominator, d2 = x.#denominator;
@@ -91,12 +85,12 @@ class Rational {
 		if (!(x instanceof Rational)) x = new Rational(x);
 		return new Rational(this.#numerator * x.#numerator, this.#denominator * x.#denominator);
 	}
-	divide(x) {
+	divideBy(x) {
 		if (!(x instanceof Rational)) x = new Rational(x);
-		if (x.#numerator == 0) throw new DivideByZeroError("Failed to execute 'divide' on 'Rational': Argument 'x' is 0.");
+		if (x.#numerator == 0) throw new DivideByZeroError("Failed to execute 'divideBy' on 'Rational': Argument 'x' is 0.");
 		return new Rational(this.#numerator * x.#denominator, this.#denominator * x.#numerator);
 	}
-	toString(radius = undefined) { return this[toPrimitive]().toString(radius) }
+	toString(decimalForm = false) { return this.#denominator == 1 ? this.#numerator.toString() : decimalForm ? (this.#numerator / this.#denominator).toString() : this.#numerator + "/" + this.#denominator }
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
 			value: this.name,
