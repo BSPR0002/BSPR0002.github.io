@@ -115,7 +115,7 @@ function serializeNode(node,outer){
 		case "html":
 			break;
 		default:
-			let child=[node.nodeName];
+			let child=[node.localName];
 			try {
 				if (node.hasAttributes()) {
 					child[2]={};
