@@ -66,9 +66,8 @@ const moduleConfig = {
 };
 for (let i in moduleConfig) moduleConfig[i].name = i;
 Object.freeze(moduleConfig);
-async function importModule(name, useDefault = true) {
-	const config = moduleConfig[name]
-	const module = await import(config.path);
+async function importModule(config, useDefault = true) {
+	const name = config.name, module = await import(config.path);
 	window[name] = useDefault && "default" in config ? module[config.default] : module;
 	console.log("Imported " + name);
 	return module;
