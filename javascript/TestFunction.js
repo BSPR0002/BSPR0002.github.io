@@ -62,6 +62,14 @@ const moduleConfig = {
 	Rational: {
 		path: "/javascript/module/Rational.mjs",
 		default: "default"
+	},
+	privatifyConstructor: {
+		path: "/javascript/module/privatifyConstructor.mjs",
+		default: "default"
+	},
+	PromiseAdapter: {
+		path: "/javascript/module/PromiseAdapter.mjs",
+		default: "default"
 	}
 };
 for (let i in moduleConfig) moduleConfig[i].name = i;

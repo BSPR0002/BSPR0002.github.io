@@ -52,6 +52,6 @@ type Frame = {
 	readonly CRC16: number;
 	readonly end: number;
 }
-declare function decodeFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
-declare function decodeFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];
-export { decodeFrames, decodeFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, subFrameTypes }
+declare function extractFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
+declare function extractFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];
+export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, subFrameTypes }

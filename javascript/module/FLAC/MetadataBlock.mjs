@@ -1,13 +1,12 @@
-import { RESERVED } from "./Const.mjs";
 import { splitBytes, littleEndianToNumber, bigEndianToNumber, numberToLittleEndian, numberToBigEndian, TypedArray } from "../BinaryOperate.mjs";
 import Enum from "../Enum.mjs";
 import { decodeString, encodeString } from "../UTF-8.mjs";
 import BufferContext from "../BufferContext.mjs";
 const metadataBlockTypes = new Enum(
-	["STREAMINFO", "PADDING", "APPLICATION", "SEEKTABLE", "VORBIS_COMMENT", "CUESHEET", "PICTURE", RESERVED], {
+	["STREAMINFO", "PADDING", "APPLICATION", "SEEKTABLE", "VORBIS_COMMENT", "CUESHEET", "PICTURE", "RESERVED"], {
 	valueOf(target, key) {
 		if (key < 0 || key > 126) throw new Error("Invalid metadata block type.");
-		return key > 7 ? RESERVED : target[key];
+		return target[key > 6 ? 7 : key];
 	}
 });
 class MetadataBlock {
@@ -135,7 +134,7 @@ class VorbisCommentMetadata {
 	static encode(tags, vendor = "") {
 		if (!(tags instanceof Object)) throw new TypeError("Failed to execute 'encode': Argument 'tags' must be an object.");
 		if (typeof vendor != "string") throw new TypeError("Failed to execute 'encode': Argument 'vendor' must be a string.");
-		vendor = encodeString(vendor ? vendor : "BSIF.FLAC.MetadataBlock");
+		vendor = encodeString(vendor || "BSIF.FLAC.MetadataBlock");
 		const vendorLength = vendor.byteLength;
 		if (vendorLength > 4294967295) throw new TypeError("Failed to execute 'encode': Argument 'vendor' is too long.");
 		const temp = [];
@@ -190,7 +189,7 @@ class PictureMetedata {
 			indexedColorNumber: { value: bigEndianToNumber(data.subarray(current, current += 4)), enumerable: true },
 		});
 		length = bigEndianToNumber(data.subarray(current, current += 4));
-		Object.defineProperty(this, "image", { value: new Blob([data.subarray(current, current += length)], { type: mime }), enumerable: true });
+		Object.defineProperty(this, "image", { value: new Blob([data.subarray(current, current + length)], { type: mime }), enumerable: true });
 	}
 	static { Object.defineProperty(this.prototype, Symbol.toStringTag, { value: "PictureMetedata", configurable: true }) }
 }

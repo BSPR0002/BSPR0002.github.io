@@ -6,4 +6,4 @@ declare class FLAC {
 	metadataBlocks: ReturnType<typeof allMetadataBlock>;
 	frames: ReturnType<typeof decodeFrames>;
 }
-declare function decodeFLAC(data: Uint8Array, decodeFrames = false): FLAC;
+declare function extract(data: Uint8Array, decodeFrames = false): FLAC;
