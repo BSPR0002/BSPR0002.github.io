@@ -11,18 +11,18 @@ type FrameHeader = {
 	readonly CRC8: number;
 }
 declare class SubFrame {
-	readonly type: subFrameTypes | symbol;
+	readonly type: subFrameTypes;
 	readonly typeName: string;
-	readonly wastedBits: number;
+	readonly sampleSize: number;
 }
 declare class ConstantSubFrame extends SubFrame {
-	constructor(wastedBits: number, context: BufferContext, frameInfo: FrameHeader);
+	constructor(context: BufferContext, sampleSize: number);
 	readonly type: subFrameTypes.constant;
 	readonly typeName: "constant";
 	readonly sample: number;
 }
 declare class VerbatimSubFrame extends SubFrame {
-	constructor(wastedBits: number, context: BufferContext, frameInfo: FrameHeader);
+	constructor(context: BufferContext, sampleSize: number, blockSize: number);
 	readonly type: subFrameTypes.verbatim;
 	readonly typeName: "verbatim";
 	readonly samples: number[];
@@ -33,25 +33,23 @@ declare class PredictorSubFrame extends SubFrame {
 	readonly residual: number[];
 }
 declare class FixedSubFrame extends PredictorSubFrame {
-	constructor(wastedBits: number, context: BufferContext, frameInfo: FrameHeader, order: number);
+	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
 	readonly type: subFrameTypes.fixed;
 	readonly typeName: "fixed";
 }
 declare class LPCSubFrame extends PredictorSubFrame {
-	constructor(wastedBits: number, context: BufferContext, frameInfo: FrameHeader, order: number);
+	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
 	readonly type: subFrameTypes.lpc;
 	readonly typeName: "lpc";
 	readonly coefficientsPrecision: number;
 	readonly coefficientsShift: number;
 	readonly coefficients: number[];
 }
-type Frame = {
-	readonly start: number;
+declare class Frame {
 	readonly header: FrameHeader;
 	readonly subFrames: SubFrame[];
 	readonly CRC16: number;
-	readonly end: number;
 }
 declare function extractFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
 declare function extractFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];
-export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, subFrameTypes }
+export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, Frame, subFrameTypes }

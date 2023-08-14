@@ -2,15 +2,9 @@ import { splitBytes, littleEndianToNumber, bigEndianToNumber, numberToLittleEndi
 import Enum from "../Enum.mjs";
 import { decodeString, encodeString } from "../UTF-8.mjs";
 import BufferContext from "../BufferContext.mjs";
-const metadataBlockTypes = new Enum(
-	["STREAMINFO", "PADDING", "APPLICATION", "SEEKTABLE", "VORBIS_COMMENT", "CUESHEET", "PICTURE", "RESERVED"], {
-	valueOf(target, key) {
-		if (key < 0 || key > 126) throw new Error("Invalid metadata block type.");
-		return target[key > 6 ? 7 : key];
-	}
-});
+const metadataBlockTypes = new Enum(["STREAMINFO", "PADDING", "APPLICATION", "SEEKTABLE", "VORBIS_COMMENT", "CUESHEET", "PICTURE"]);
 class MetadataBlock {
-	get typeName() { return metadataBlockTypes.customValueOf(this.type) }
+	get typeName() { return Enum.keyOf(metadataBlockTypes, this.type) ?? "RESERVED" }
 	constructor(type, data, start, end) {
 		Object.defineProperties(this, {
 			type: { value: type, enumerable: true },

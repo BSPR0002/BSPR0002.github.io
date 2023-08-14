@@ -1,27 +1,28 @@
-type customAccessor = {
-	hasIndex?: (this: Enum, array: any[], index: number) => boolean,
-	hasValue?: (this: Enum, array: any[], value: any) => boolean,
-	valueOf?: (this: Enum, array: any[], index: number) => any,
-	indexOf?: (this: Enum, array: any[], value: any) => number,
-	size?: (this: Enum, array: any[]) => number
-};
+/**
+ * Represent an enum with auto-incrementing numeric values or symbols as values.
+ */
 declare class Enum {
-	constructor(array: any[], custom?: customAccessor);
-	hasIndex(index: number): boolean;
-	hasValue(value: any): boolean;
-	valueOf(index: number): any;
-	indexOf(value: any): number;
-	size(): number;
-	customHasIndex(index: number): boolean;
-	customHasValue(value: any): boolean;
-	customValueOf(index: number): any;
-	customIndexOf(value: any): number;
-	customSize(): number;
-	keys(): IterableIterator<number>;
-	entries(): IterableIterator<[number, any]>;
-	values(): IterableIterator<any>;
-	forEach(callbackfn: (value: any, index: number, array: readonly any[]) => void, thisArg?: any): void
+	/**
+	 * Constructs a new Enum.
+	 * @param array Array of string enum keys.
+	 * @param useSymbol Whether to use Symbols instead of numbers for values. Default false.
+	 */
+	constructor(array: string[], useSymbol = false);
+
+	/**
+	 * Get the enum key for a given enum value.
+	 * @param instance Enum instance.
+	 * @param value Enum value.
+	 * @returns Enum key associated with value.
+	 */
+	static keyOf(instance: Enum, value: number | Symbol): string | undefined;
+
+	/**
+	 * Check if a value is a member of the given enum.
+	 * @param instance Enum instance.
+	 * @param value Enum value.
+	 */
+	static isValueOf(instance: Enum, value: number | Symbol): boolean;
 }
-declare function simpleEnum(array: string[], uppercase = false): string[];
-export { Enum, simpleEnum }
+export { Enum };
 export default Enum;

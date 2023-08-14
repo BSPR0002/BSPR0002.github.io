@@ -13,6 +13,10 @@ const moduleConfig = {
 		path: "/javascript/module/MiniWindow.mjs",
 		default: "MiniWindow"
 	},
+	Enum: {
+		path: "/javascript/module/Enum.mjs",
+		default: "default"
+	},
 	UTF8: {
 		path: "/javascript/module/UTF-8.mjs"
 	},

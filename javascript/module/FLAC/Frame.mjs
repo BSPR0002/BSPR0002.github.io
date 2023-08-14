@@ -1,6 +1,6 @@
 import { decode as decodeValue } from "../UTF-8.mjs";
 import { bigEndianToNumber, splitBytes } from "../BinaryOperate.mjs";
-import { simpleEnum } from "../Enum.mjs";
+import Enum from "../Enum.mjs";
 const { defineProperty, defineProperties, freeze } = Object;
 function readBits(context, bits) {
 	const { array, data } = context;
@@ -27,8 +27,7 @@ function readBits(context, bits) {
 	data.temp = temp;
 	return result;
 }
-const FrameHeader = defineProperty({}, Symbol.toStringTag, { value: "FrameHeader", configurable: true });
-const frameHeaderSplitter = [15, 1, 4, 4, 4, 3, 1];
+const FrameHeader = defineProperty({}, Symbol.toStringTag, { value: "FrameHeader", configurable: true }), frameHeaderSplitter = [15, 1, 4, 4, 4, 3, 1];
 function decodeFrameHeader(context, streamInfo) {
 	const array = context.array,
 		[syncCode, blockingStrategy, blockSizeCode, sampleRateCode, channelCode, sampleSizeCode] = splitBytes(array.subarray(context.current, context.current += 4), frameHeaderSplitter);
@@ -113,10 +112,10 @@ function getChannels(code) {
 		default: throw new Error("Invalid/not supported channels code.");
 	}
 }
-const subFrameTypes = simpleEnum(["constant", "verbatim", "fixed", "lpc"]);
+const subFrameTypes = new Enum(["CONSTANT", "VERBATIM", "FIXED", "LPC"]);
 class SubFrame {
 	constructor(sampleSize) { defineProperty(this, "sampleSize", { value: sampleSize, enumerable: true }) }
-	get typeName() { return subFrameTypes[this.type] }
+	get typeName() { return Enum.keyOf(subFrameTypes, this.type) }
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
@@ -132,7 +131,7 @@ class ConstantSubFrame extends SubFrame {
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
-			type: { value: 0, enumerable: true }
+			type: { value: subFrameTypes.CONSTANT, enumerable: true }
 		});
 	}
 }
@@ -146,7 +145,7 @@ class VerbatimSubFrame extends SubFrame {
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
-			type: { value: 1, enumerable: true }
+			type: { value: subFrameTypes.VERBATIM, enumerable: true }
 		});
 	}
 }
@@ -210,7 +209,7 @@ class FixedSubFrame extends PredictorSubFrame {
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
-			type: { value: 2, enumerable: true }
+			type: { value: subFrameTypes.FIXED, enumerable: true }
 		});
 	}
 }
@@ -232,7 +231,7 @@ class LPCSubFrame extends PredictorSubFrame {
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
-			type: { value: 3, enumerable: true }
+			type: { value: subFrameTypes.LPC, enumerable: true }
 		});
 	}
 }
@@ -247,7 +246,18 @@ function extractSubFrame(context, sampleSize, blockSize) {
 	if (typeCode > 31) return new LPCSubFrame(context, sampleSize, blockSize, typeCode - 31);
 	throw new Error("Invalid/not supported sub frame type code.");
 }
-const Frame = defineProperty({}, Symbol.toStringTag, { value: "Frame", configurable: true });
+class Frame {
+	#data;
+	constructor(header, subFrames, data, CRC16) {
+		defineProperties(this, {
+			header: { value: header, enumerable: true },
+			subFrames: { value: freeze(subFrames), enumerable: true },
+			CRC16: { value: CRC16, enumerable: true }
+		});
+		this.#data = data;
+	}
+	static { defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true }) }
+}
 function extractFrame(context, streamInfo) {
 	const array = context.array, start = context.current, header = decodeFrameHeader(context, streamInfo), { channels, blockSize, sampleSize } = header, bitOffset = context.data = { remain: 8, temp: array[context.current] };
 	let subFrames;
@@ -262,17 +272,11 @@ function extractFrame(context, streamInfo) {
 	}
 	context.data = undefined;
 	if (bitOffset.remain) ++context.current;
-	return defineProperties(Object.create(Frame), {
-		start: { value: start, enumerable: true },
-		header: { value: header, enumerable: true },
-		subFrames: { value: freeze(subFrames), enumerable: true },
-		CRC16: { value: bigEndianToNumber(array.subarray(context.current, context.current += 2)), enumerable: true },
-		end: { value: context.current, enumerable: true }
-	});
+	return new Frame(header, subFrames, array.subarray(start, context.current), bigEndianToNumber(array.subarray(context.current, context.current += 2)));
 }
 function extractFrames(context, streamInfo) {
 	const frames = [];
 	while (context.hasNext) frames.push(extractFrame(context, streamInfo));
 	return frames;
 }
-export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, subFrameTypes }
+export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, Frame, subFrameTypes }

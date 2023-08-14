@@ -17,7 +17,7 @@ function currentFail() {
 	lastLoad = undefined;
 }
 function changeTab(tab) {
-	if (!TAB_LIST.hasIndex(tab)) throw new Error("指定的页面不在页面列表中！");
+	if (!Enum.isValueOf(TAB_LIST, tab)) throw new Error("指定的页面不在页面列表中！");
 	const newTab = NAVIGATIONS[tab];
 	if (newTab == currentTab) {
 		if (lastLoad) return;
@@ -28,14 +28,14 @@ function changeTab(tab) {
 	newTab.className = "navigation current loading";
 	naviSwitch.classList.remove("failed");
 	naviSwitch.classList.add("loading");
-	lastLoad = load(`/page/${TAB_LIST.valueOf(tab)}.html`, PAGE_BOX, true, true, currentSuccess, currentFail);
+	lastLoad = load(`/page/${Enum.keyOf(TAB_LIST, tab)}.html`, PAGE_BOX, true, true, currentSuccess, currentFail);
 	title.innerText = newTab.innerText;
 	currentTab = newTab;
 }
 for (let i = 0, l = NAVIGATIONS.length; i < l; ++i) NAVIGATIONS[i].addEventListener("click", function () { changeTab(i); switchNavigation(false) }, { passive: true });
 function respondHash() {
-	const index = TAB_LIST.indexOf(location.hash.substring(1));
-	changeTab(index == -1 ? 0 : index);
+	const index = TAB_LIST[location.hash.substring(1)];
+	changeTab(index?? 0);
 }
 respondHash();
 function switchNavigation(state = undefined) {

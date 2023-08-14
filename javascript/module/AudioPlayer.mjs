@@ -1,5 +1,5 @@
-import { simpleEnum } from "./Enum.mjs";
-const sourceTypes = simpleEnum(["AUDIO_BUFFER_SOURCE_NODE", "OSCILLATOR_NODE", "CONSTANT_SOURCE_NODE"]),
+import Enum from "./Enum.mjs";
+const sourceTypes = new Enum(["AUDIO_BUFFER_SOURCE_NODE", "OSCILLATOR_NODE", "CONSTANT_SOURCE_NODE"]),
 	typeofAudioBufferSourceNode = AudioBufferSourceNode.prototype,
 	typeofOscillatorNode = OscillatorNode.prototype,
 	typeofConstantSourceNode = ConstantSourceNode.prototype,

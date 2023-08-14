@@ -1,4 +1,3 @@
-import { RESERVED } from "./Const.mjs";
 import BufferContext from "../BufferContext.mjs";
 import { allMetadataBlock } from "./MetadataBlock.mjs";
 import { extractFrames as extractFramesFunction } from "./Frame.mjs"
@@ -22,4 +21,4 @@ function extract(data, extractFrames = false) {
 	const metadata = allMetadataBlock(context);
 	return new FLAC(context, metadata, extractFrames ? extractFramesFunction(context, metadata[0]) : undefined);
 }
-export { extract, RESERVED }
+export { extract }
