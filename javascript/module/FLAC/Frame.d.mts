@@ -1,6 +1,6 @@
 import BufferContext from "../BufferContext.mjs";
 import { StreamInfoMetadata } from "./MetadataBlock.mjs";
-const enum subFrameTypes { constant, verbatim, fixed, lpc }
+const enum subFrameTypes { CONSTANT, VERBATIM, FIXED, LPC }
 type FrameHeader = {
 	readonly blockingStrategy: 0 | 1;
 	readonly id: number;
@@ -18,13 +18,13 @@ declare class SubFrame {
 declare class ConstantSubFrame extends SubFrame {
 	constructor(context: BufferContext, sampleSize: number);
 	readonly type: subFrameTypes.constant;
-	readonly typeName: "constant";
+	readonly typeName: "CONSTANT";
 	readonly sample: number;
 }
 declare class VerbatimSubFrame extends SubFrame {
 	constructor(context: BufferContext, sampleSize: number, blockSize: number);
 	readonly type: subFrameTypes.verbatim;
-	readonly typeName: "verbatim";
+	readonly typeName: "VERBATIM";
 	readonly samples: number[];
 }
 declare class PredictorSubFrame extends SubFrame {
@@ -35,12 +35,12 @@ declare class PredictorSubFrame extends SubFrame {
 declare class FixedSubFrame extends PredictorSubFrame {
 	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
 	readonly type: subFrameTypes.fixed;
-	readonly typeName: "fixed";
+	readonly typeName: "FIXED";
 }
 declare class LPCSubFrame extends PredictorSubFrame {
 	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
 	readonly type: subFrameTypes.lpc;
-	readonly typeName: "lpc";
+	readonly typeName: "LPC";
 	readonly coefficientsPrecision: number;
 	readonly coefficientsShift: number;
 	readonly coefficients: number[];
@@ -49,6 +49,8 @@ declare class Frame {
 	readonly header: FrameHeader;
 	readonly subFrames: SubFrame[];
 	readonly CRC16: number;
+	decode(): Int32Array[];
+	verify(): boolean;
 }
 declare function extractFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
 declare function extractFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];

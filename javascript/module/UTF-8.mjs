@@ -77,28 +77,13 @@ function decode(data) {
 	if (bytes < 7) result += data[0] % 2 ** (7 - bytes) << offset;
 	return result
 }
+const encoder = new TextEncoder(), decoder = new TextDecoder("utf-8");
 function encodeString(string) {
 	if (typeof string != "string") throw new TypeError("Failed to execute 'encodeString': Argument 'string' is not a string.");
-	const temp = [];
-	var resultLength = 0;
-	for (let i = 0, length = string.length; i < length; ++i) {
-		let codePoint = string.codePointAt(i), item = encode(codePoint);
-		temp.push(item);
-		resultLength += item.length;
-		if (codePoint > 65535) ++i;
-	}
-	const result = new Uint8Array(resultLength);
-	var offset = 0;
-	for (let item of temp) {
-		result.set(item, offset);
-		offset += item.length;
-	}
-	return result
+	return encoder.encode(string);
 }
 function decodeString(data) {
 	if (!(data instanceof Uint8Array)) throw new TypeError("Failed to execute 'decodeString': Argument 'data' is not a Uint8Array.");
-	const context = new BufferContext(data), codePoints = [];
-	while (context.hasNext) codePoints.push(decode(context));
-	return String.fromCodePoint(...codePoints);
+	return decoder.decode(data);
 }
 export { decode, encode, encodeString, decodeString }

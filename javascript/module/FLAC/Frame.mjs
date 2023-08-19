@@ -1,5 +1,5 @@
 import { decode as decodeValue } from "../UTF-8.mjs";
-import { bigEndianToNumber, splitBytes } from "../BinaryOperate.mjs";
+import { bigEndianToUint, splitBytes } from "../BinaryOperate.mjs";
 import Enum from "../Enum.mjs";
 const { defineProperty, defineProperties, freeze } = Object;
 function readBits(context, bits) {
@@ -12,13 +12,13 @@ function readBits(context, bits) {
 		}
 		if (bits >= remain) {
 			bits -= remain;
-			result <<= remain;
-			result |= temp;
+			result *= 1 << remain;
+			result += temp;
 			remain = 0;
 			++context.current;
 		} else {
-			result <<= bits;
-			result |= temp >>> (remain -= bits);
+			result *= 1 << bits;
+			result += temp >>> (remain -= bits);
 			temp %= 1 << remain;
 			break;
 		}
@@ -52,8 +52,8 @@ function getBlockSize(code, context) {
 		case 3: return 1152;
 		case 4: return 2304;
 		case 5: return 4608;
-		case 6: return bigEndianToNumber(context.array.subarray(context.current, context.current += 1)) + 1;
-		case 7: return bigEndianToNumber(context.array.subarray(context.current, context.current += 2)) + 1;
+		case 6: return bigEndianToUint(context.array.subarray(context.current, context.current += 1)) + 1;
+		case 7: return bigEndianToUint(context.array.subarray(context.current, context.current += 2)) + 1;
 		case 8: return 256;
 		case 9: return 512;
 		case 10: return 1024;
@@ -79,8 +79,8 @@ function getSampleRate(code, context, streamInfo) {
 		case 10: return 48000;
 		case 11: return 96000;
 		case 12: return context.array[context.current++];
-		case 13: return bigEndianToNumber(context.array.subarray(context.current, context.current += 2));
-		case 14: return bigEndianToNumber(context.array.subarray(context.current, context.current += 2)) * 10;
+		case 13: return bigEndianToUint(context.array.subarray(context.current, context.current += 2));
+		case 14: return bigEndianToUint(context.array.subarray(context.current, context.current += 2)) * 10;
 		default: throw new Error("Invalid sample rate code.");
 	}
 }
@@ -119,7 +119,7 @@ class SubFrame {
 	static {
 		defineProperties(this.prototype, {
 			[Symbol.toStringTag]: { value: this.name, configurable: true },
-			type: { get(){throw new TypeError("Illegal invocation")}, enumerable: true }
+			type: { get() { throw new TypeError("Illegal invocation") }, enumerable: true }
 		});
 	}
 }
@@ -162,9 +162,8 @@ class PredictorSubFrame extends SubFrame {
 		defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true });
 	}
 }
-function extractRice(context, codingMethod, samples) {
+function extractRice(context, codingMethod, buffer) {
 	var parameter;
-	const result = new Array(samples);
 	switch (codingMethod) {
 		case 0: {
 			const temp = readBits(context, 4);
@@ -179,25 +178,26 @@ function extractRice(context, codingMethod, samples) {
 		default:
 			throw new Error("Invalid RICE coding method.");
 	}
+	const samples = buffer.length;
 	if (parameter === undefined) {
 		parameter = readBits(context, 5);
-		for (let i = 0; i < samples; ++i) result[i] = readBits(context, parameter);
+		for (let i = 0; i < samples; ++i) buffer[i] = readBits(context, parameter);
 	} else {
 		for (let i = 0; i < samples; ++i) {
 			let n = 0;
 			while (!readBits(context, 1)) ++n;
-			result[i] = (n << parameter) | readBits(context, parameter);
+			buffer[i] = (n << parameter) | readBits(context, parameter);
 		}
 	}
-	return result;
 }
 function extractResidual(context, blockSize, predictorOrder) {
-	const codingMethod = readBits(context, 2), partitionsNumber = 1 << readBits(context, 4), samples = blockSize / partitionsNumber, partitions = new Array(partitionsNumber);
-	partitions[0] = extractRice(context, codingMethod, samples - predictorOrder);
-	for (let i = 1; i < partitionsNumber; ++i) partitions[i] = extractRice(context, codingMethod, samples);
+	const codingMethod = readBits(context, 2), partitionsNumber = 1 << readBits(context, 4), samplesPerPartition = blockSize / partitionsNumber, samples = new Uint32Array(blockSize - predictorOrder);
+	var current;
+	extractRice(context, codingMethod, samples.subarray(0, current = samplesPerPartition - predictorOrder));
+	for (let i = 1; i < partitionsNumber; ++i) extractRice(context, codingMethod, samples.subarray(current, current += samplesPerPartition));
 	return {
 		codingMethod,
-		partitions
+		samples
 	};
 }
 class FixedSubFrame extends PredictorSubFrame {
@@ -246,6 +246,92 @@ function extractSubFrame(context, sampleSize, blockSize) {
 	if (typeCode > 31) return new LPCSubFrame(context, sampleSize, blockSize, typeCode - 31);
 	throw new Error("Invalid/not supported sub frame type code.");
 }
+function extractFrame(context, streamInfo) {
+	const array = context.array, start = context.current, header = decodeFrameHeader(context, streamInfo), { channels, blockSize, sampleSize } = header, bitOffset = context.data = { remain: 8, temp: array[context.current] };
+	let subFrames;
+	if (channels.includes("side")) {
+		subFrames = channels[0] == "side" ?
+			[extractSubFrame(context, sampleSize + 1, blockSize), extractSubFrame(context, sampleSize, blockSize)] :
+			[extractSubFrame(context, sampleSize, blockSize), extractSubFrame(context, sampleSize + 1, blockSize)];
+	} else {
+		const channelsNumber = channels.length;
+		subFrames = new Array(channelsNumber);
+		for (let i = 0; i < channelsNumber; ++i) subFrames[i] = extractSubFrame(context, sampleSize, blockSize);
+	}
+	context.data = undefined;
+	if (bitOffset.remain) ++context.current;
+	return new Frame(header, subFrames, array.subarray(start, context.current), bigEndianToUint(array.subarray(context.current, context.current += 2)));
+}
+function extractFrames(context, streamInfo) {
+	const frames = [];
+	while (context.hasNext) frames.push(extractFrame(context, streamInfo));
+	return frames;
+}
+function decodeSignedNumber(size, data) {
+	const code = BigInt(data), bits = BigInt(size);
+	return code >> (bits - 1n) ? code ^ -1n << bits : code;
+}
+function decodeResidualValue(samples) {
+	const length = samples.length, result = new BigInt64Array(length);
+	for (let i = 0; i < length; ++i) {
+		const value = samples[i], negetive = value % 2;
+		result[i] = BigInt(negetive ? value >> 1 ^ -1 : value >> 1);
+	}
+	return result;
+}
+function predictor(buffer, coefficients, residuals, shift) {
+	const length = buffer.length, order = coefficients.length;
+	for (let n = order; n < length; ++n) {
+		let sum = 0n;
+		for (let i = 0; i < order; ++i) sum += buffer[n - i - 1] * coefficients[i];
+		buffer[n] = (sum >> shift) + residuals[n - order];
+	}
+}
+const fixedCoefficients = [
+	[1n],
+	[2n, -1n],
+	[3n, -3n, 1n],
+	[4n, -6n, 4n, 1n]
+];
+function decodeSubFrame(subFrame, blockSize) {
+	switch (Object.getPrototypeOf(subFrame)) {
+		case ConstantSubFrame.prototype:
+			const result = new BigInt64Array(blockSize);
+			result.fill(decodeSignedNumber(subFrame.sampleSize, subFrame.sample));
+			return result;
+		case VerbatimSubFrame.prototype: {
+			const result = new BigInt64Array(blockSize), shift = 2 ** (subFrame.sampleSize - 1), samples = subFrame.samples;
+			for (let i = 0; i < blockSize; ++i) {
+				const sample = samples[i], code = sample % shift;
+				result[i] = BigInt(sample - code ? -code : code);
+			}
+			return result;
+		}
+		case FixedSubFrame.prototype: {
+			const residuals = decodeResidualValue(subFrame.residual.samples), { order, warmUpSamples, sampleSize } = subFrame;
+			if (!order) return residuals;
+			const result = new BigInt64Array(blockSize);
+			for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
+			predictor(result, fixedCoefficients[order - 1], residuals, 0n);
+			return result;
+		}
+		case LPCSubFrame.prototype: {
+			const residuals = decodeResidualValue(subFrame.residual.samples), { order, warmUpSamples, sampleSize, coefficients, coefficientsPrecision } = subFrame,
+				shift = decodeSignedNumber(5, subFrame.coefficientsShift), coefficientsTemp = new Array(order), result = new BigInt64Array(blockSize);
+			for (let i = 0; i < order; ++i) coefficientsTemp[i] = decodeSignedNumber(coefficientsPrecision, coefficients[i]);
+			for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
+			predictor(result, coefficientsTemp, residuals, shift);
+			return result;
+		}
+		default:
+			throw new TypeError("Not a valid sub frame.");
+	}
+}
+function bigIntArrayToIntArray(array) {
+	const length = array.length, result = new Int32Array(length);
+	for (let i = 0; i < length; ++i) result[i] = Number(array[i]);
+	return result;
+}
 class Frame {
 	#data;
 	constructor(header, subFrames, data, CRC16) {
@@ -256,27 +342,35 @@ class Frame {
 		});
 		this.#data = data;
 	}
-	static { defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true }) }
-}
-function extractFrame(context, streamInfo) {
-	const array = context.array, start = context.current, header = decodeFrameHeader(context, streamInfo), { channels, blockSize, sampleSize } = header, bitOffset = context.data = { remain: 8, temp: array[context.current] };
-	let subFrames;
-	if (channels.includes("side")) {
-		subFrames = channels[0] == "side" ?
-			[extractSubFrame(context, sampleSize + 1, blockSize), extractSubFrame(context, sampleSize, blockSize)]:
-			[extractSubFrame(context, sampleSize, blockSize), extractSubFrame(context, sampleSize + 1, blockSize)];
-	} else {
-		const channelsNumber = channels.length;
-		subFrames = new Array(channelsNumber);
-		for (let i = 0; i < channelsNumber; ++i) subFrames[i] = extractSubFrame(context, sampleSize, blockSize);
+	decode() {
+		const subFrames = this.subFrames, { channels, blockSize } = this.header, subBlocks = new Array(channels.length);
+		for (let i in subFrames) subBlocks[i] = decodeSubFrame(subFrames[i], blockSize);
+		if (channels.includes("side")) {
+			switch (channels[0]) {
+				case "left": {
+					const result = [bigIntArrayToIntArray(subBlocks[0]), new Int32Array(blockSize)], [left, right] = result, side = subBlocks[1];
+					for (let i = 0; i < blockSize; ++i) right[i] = left[i] - Number(side[i]);
+					return result;
+				}
+				case "side": {
+					const result = [new Int32Array(blockSize), bigIntArrayToIntArray(subBlocks[1])], [left, right] = result, side = subBlocks[0];
+					for (let i = 0; i < blockSize; ++i) left[i] = right[i] + Number(side[i]);
+					return result;
+				}
+				case "average": {
+					const result = [new Int32Array(blockSize), new Int32Array(blockSize)], [left, right] = result, [average, side] = subBlocks;
+					for (let i = 0; i < blockSize; ++i) {
+						const temp1 = Number(average[i]), temp2 = Number(side[i] >> 1n);
+						left[i] = temp1 + temp2;
+						right[i] = temp1 - temp2;
+					}
+					return result;
+				}
+			};
+		}
+		return subBlocks.map(bigIntArrayToIntArray);
 	}
-	context.data = undefined;
-	if (bitOffset.remain) ++context.current;
-	return new Frame(header, subFrames, array.subarray(start, context.current), bigEndianToNumber(array.subarray(context.current, context.current += 2)));
-}
-function extractFrames(context, streamInfo) {
-	const frames = [];
-	while (context.hasNext) frames.push(extractFrame(context, streamInfo));
-	return frames;
+	verify() { return CRC16Check(this.#data) == this.CRC16 }
+	static { defineProperties(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true }) }
 }
 export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, Frame, subFrameTypes }

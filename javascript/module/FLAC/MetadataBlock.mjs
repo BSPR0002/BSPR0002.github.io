@@ -1,16 +1,19 @@
-import { splitBytes, littleEndianToNumber, bigEndianToNumber, numberToLittleEndian, numberToBigEndian, TypedArray } from "../BinaryOperate.mjs";
+import { splitBytes, littleEndianToUint, bigEndianToUint, uintToLittleEndian, uintToBigEndian, TypedArray } from "../BinaryOperate.mjs";
 import Enum from "../Enum.mjs";
 import { decodeString, encodeString } from "../UTF-8.mjs";
 import BufferContext from "../BufferContext.mjs";
 const metadataBlockTypes = new Enum(["STREAMINFO", "PADDING", "APPLICATION", "SEEKTABLE", "VORBIS_COMMENT", "CUESHEET", "PICTURE"]);
+const typeOfUint8Array = Uint8Array.prototype,
+	typeOfBufferContext = BufferContext.prototype,
+	typeOfTypedArray = TypedArray.prototype,
+	typeOfArrayBuffer = ArrayBuffer.prototype,
+	typeOfBlob = Blob.prototype;
 class MetadataBlock {
 	get typeName() { return Enum.keyOf(metadataBlockTypes, this.type) ?? "RESERVED" }
-	constructor(type, data, start, end) {
+	constructor(type, data) {
 		Object.defineProperties(this, {
 			type: { value: type, enumerable: true },
-			data: { value: data, enumerable: true },
-			start: { value: start, enumerable: true },
-			end: { value: end, enumerable: true }
+			data: { value: data, enumerable: true }
 		});
 	}
 	decodeData() {
@@ -20,7 +23,7 @@ class MetadataBlock {
 			case 2: {
 				const data = this.data;
 				return Object.defineProperties(Object.create(ApplicationMetadata), {
-					applicationId: { value: bigEndianToNumber(data.subarray(0, 4)), enumerable: true },
+					applicationId: { value: bigEndianToUint(data.subarray(0, 4)), enumerable: true },
 					data: { value: data.subarray(4), enumerable: true }
 				});
 			}
@@ -48,16 +51,11 @@ class MetadataBlock {
 		if (length > 16777215) throw new Error("Failed to execute 'encodeMetadataBlockHeader': Data length must not grater than 16777215.");
 		const header = new Uint8Array(4);
 		header[0] = isLast ? type | 128 : type;
-		header.set(numberToBigEndian(length, 3), 1);
+		header.set(uintToBigEndian(length, 3), 1);
 		return header
 	}
 	static { Object.defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true }) }
 }
-const typeOfUint8Array = Uint8Array.prototype,
-	typeOfBufferContext = BufferContext.prototype,
-	typeOfTypedArray = TypedArray.prototype,
-	typeOfArrayBuffer = ArrayBuffer.prototype,
-	typeOfBlob = Blob.prototype;
 function allMetadataBlock(context) {
 	var array;
 	switch (Object.getPrototypeOf(context)) {
@@ -72,9 +70,9 @@ function allMetadataBlock(context) {
 	const result = [];
 	var last = false, current = context.current;
 	do {
-		const start = current, [temp, type] = splitBytes(array.subarray(current, ++current), [1, 7]), length = bigEndianToNumber(array.subarray(current, current += 3));
+		const [temp, type] = splitBytes(array.subarray(current, ++current), [1, 7]), length = bigEndianToUint(array.subarray(current, current += 3));
 		last = Boolean(temp);
-		result.push(new MetadataBlock(type, array.subarray(current, current += length), start, current));
+		result.push(new MetadataBlock(type, array.subarray(current, current += length)));
 	} while (!last);
 	context.current = current;
 	return result
@@ -86,10 +84,10 @@ class StreamInfoMetadata {
 		if (data.byteLength != 34) throw new Error("Failed to construct 'StreamInfoMetadata': Data length is not 34 bytes.");
 		const temp = splitBytes(data.subarray(10, 18), streamInfoMetadataSplitter);
 		Object.defineProperties(this, {
-			minBlockSize: { value: bigEndianToNumber(data.subarray(0, 2)), enumerable: true },
-			maxBlockSize: { value: bigEndianToNumber(data.subarray(2, 4)), enumerable: true },
-			minFrameSize: { value: bigEndianToNumber(data.subarray(4, 7)), enumerable: true },
-			maxFrameSize: { value: bigEndianToNumber(data.subarray(7, 10)), enumerable: true },
+			minBlockSize: { value: bigEndianToUint(data.subarray(0, 2)), enumerable: true },
+			maxBlockSize: { value: bigEndianToUint(data.subarray(2, 4)), enumerable: true },
+			minFrameSize: { value: bigEndianToUint(data.subarray(4, 7)), enumerable: true },
+			maxFrameSize: { value: bigEndianToUint(data.subarray(7, 10)), enumerable: true },
 			sampleRate: { value: temp[0], enumerable: true },
 			channels: { value: temp[1] + 1, enumerable: true },
 			sampleSize: { value: temp[2] + 1, enumerable: true },
@@ -111,9 +109,9 @@ class VorbisCommentMetadata {
 		if (!(data instanceof Uint8Array)) throw new TypeError("Failed to construct 'VorbisCommentMetadata': Argument 'data' is not a Uint8Array.");
 		const tags = {};
 		var index = 4;
-		this.#vendor = decodeString(data.subarray(index, index += littleEndianToNumber(data.subarray(0, 4))));
-		for (let i = 0, l = littleEndianToNumber(data.subarray(index, index += 4)); i < l; ++i) {
-			let temp = littleEndianToNumber(data.subarray(index, index += 4));
+		this.#vendor = decodeString(data.subarray(index, index += littleEndianToUint(data.subarray(0, 4))));
+		for (let i = 0, l = littleEndianToUint(data.subarray(index, index += 4)); i < l; ++i) {
+			let temp = littleEndianToUint(data.subarray(index, index += 4));
 			temp = decodeString(data.subarray(index, index += temp));
 			const edge = temp.indexOf("=");
 			if (edge == -1) throw new Error("Invalid tag content.");
@@ -141,7 +139,7 @@ class VorbisCommentMetadata {
 					const item = encodeString(`${key}=${data}`);
 					let length = item.byteLength;
 					if (length > 4294967295) throw new TypeError("Failed to execute 'encode': Content too long.");
-					length = numberToLittleEndian(length, 4);
+					length = uintToLittleEndian(length, 4);
 					temp.push(length, item);
 					++n;
 					break;
@@ -153,7 +151,7 @@ class VorbisCommentMetadata {
 						item = encodeString(`${key}=${item}`);
 						let length = item.byteLength;
 						if (length > 4294967295) throw new TypeError("Failed to execute 'encode': Content too long.");
-						length = numberToLittleEndian(length, 4);
+						length = uintToLittleEndian(length, 4);
 						temp.push(length, item);
 						++n;
 					}
@@ -162,7 +160,7 @@ class VorbisCommentMetadata {
 					throw new TypeError("Failed to execute 'encode': Invalid tag data.");
 			}
 		}
-		temp.unshift(numberToLittleEndian(vendorLength, 4), vendor, numberToLittleEndian(n, 4))
+		temp.unshift(uintToLittleEndian(vendorLength, 4), vendor, uintToLittleEndian(n, 4))
 		return new Blob(temp)
 	}
 }
@@ -170,19 +168,19 @@ class PictureMetedata {
 	constructor(data) {
 		if (!(data instanceof Uint8Array)) throw new TypeError("Failed to construct 'PictureMetedata': Argument 'data' is not a Uint8Array.");
 		let current = 8;
-		Object.defineProperty(this, "relationShip", { value: bigEndianToNumber(data.subarray(0, 4)), enumerable: true });
-		let length = bigEndianToNumber(data.subarray(4, 8));
+		Object.defineProperty(this, "relationShip", { value: bigEndianToUint(data.subarray(0, 4)), enumerable: true });
+		let length = bigEndianToUint(data.subarray(4, 8));
 		const mime = decodeString(data.subarray(current, current += length));
 		Object.defineProperty(this, "MIME", { value: mime, enumerable: true });
-		length = bigEndianToNumber(data.subarray(current, current += 4));
+		length = bigEndianToUint(data.subarray(current, current += 4));
 		Object.defineProperties(this, {
 			description: { value: decodeString(data.subarray(current, current += length)), enumerable: true },
-			width: { value: bigEndianToNumber(data.subarray(current, current += 4)), enumerable: true },
-			height: { value: bigEndianToNumber(data.subarray(current, current += 4)), enumerable: true },
-			pixelSize: { value: bigEndianToNumber(data.subarray(current, current += 4)), enumerable: true },
-			indexedColorNumber: { value: bigEndianToNumber(data.subarray(current, current += 4)), enumerable: true },
+			width: { value: bigEndianToUint(data.subarray(current, current += 4)), enumerable: true },
+			height: { value: bigEndianToUint(data.subarray(current, current += 4)), enumerable: true },
+			pixelSize: { value: bigEndianToUint(data.subarray(current, current += 4)), enumerable: true },
+			indexedColorNumber: { value: bigEndianToUint(data.subarray(current, current += 4)), enumerable: true },
 		});
-		length = bigEndianToNumber(data.subarray(current, current += 4));
+		length = bigEndianToUint(data.subarray(current, current += 4));
 		Object.defineProperty(this, "image", { value: new Blob([data.subarray(current, current + length)], { type: mime }), enumerable: true });
 	}
 	static { Object.defineProperty(this.prototype, Symbol.toStringTag, { value: "PictureMetedata", configurable: true }) }

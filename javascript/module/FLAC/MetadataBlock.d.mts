@@ -45,4 +45,4 @@ declare class PictureMetadata {
 }
 declare function allMetadataBlock(context: BufferContext): MetadataBlock[];
 declare function allMetadataBlock(data: Uint8Array): MetadataBlock[];
-export { allMetadataBlock, MetadataBlock, StreamInfoMetadata, VorbisCommentMetadata, metadataBlockTypes }
+export { allMetadataBlock, MetadataBlock, StreamInfoMetadata, VorbisCommentMetadata, metadataBlockTypes, metadataBlockTypes}

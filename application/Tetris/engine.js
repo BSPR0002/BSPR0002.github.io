@@ -45,7 +45,8 @@ var blocks=[
 			[[0,1],[1,1],[2,1],[3,1]],
 			[[1,0],[1,1],[1,2],[1,3]]
 		],
-		"start":[[3,0],[4,0],[5,0],[6,0]]
+		"start":[[3,0],[4,0],[5,0],[6,0]],
+		color:"orangered"
 	},
 	{
 		"range":[
@@ -54,21 +55,24 @@ var blocks=[
 			[[2,1],[1,1],[0,1],[1,0]],
 			[[1,2],[1,1],[1,0],[2,1]]
 		],
-		"start":[[3,0],[4,0],[5,0],[4,1]]
+		"start":[[3,0],[4,0],[5,0],[4,1]],
+		color:"lightcoral"
 	},
 	{
 		"range":[
 			[[0,1],[1,1],[1,2],[2,2]],
 			[[2,0],[2,1],[1,1],[1,2]]
 		],
-		"start":[[3,0],[4,0],[4,1],[5,1]]
+		"start":[[3,0],[4,0],[4,1],[5,1]],
+		color:"skyblue"
 	},
 	{
 		"range":[
 			[[2,1],[1,1],[1,2],[0,2]],
 			[[0,0],[0,1],[1,1],[1,2]]
 		],
-		"start":[[5,0],[4,0],[4,1],[3,1]]
+		"start":[[5,0],[4,0],[4,1],[3,1]],
+		color:"lightgreen"
 	},
 	{
 		"range":[
@@ -77,7 +81,8 @@ var blocks=[
 			[[2,1],[1,1],[0,1],[0,0]],
 			[[1,2],[1,1],[1,0],[2,0]]
 		],
-		"start":[[3,0],[4,0],[5,0],[5,1]]
+		"start":[[3,0],[4,0],[5,0],[5,1]],
+		color:"gold"
 	},
 	{
 		"range":[
@@ -86,11 +91,13 @@ var blocks=[
 			[[0,1],[1,1],[2,1],[2,0]],
 			[[1,0],[1,1],[1,2],[2,2]]
 		],
-		"start":[[5,0],[4,0],[3,0],[3,1]]
+		"start":[[5,0],[4,0],[3,0],[3,1]],
+		color:"orchid"
 	},
 	{
 		"range":[[[0,0],[1,0],[1,1],[0,1]]],
-		"start":[[4,0],[5,0],[5,1],[4,1]]
+		"start":[[4,0],[5,0],[5,1],[4,1]],
+		color:"saddlebrown"
 	}
 ];
 var colors=["orangered","lightcoral","skyblue","lightgreen","gold","orchid","saddlebrown"];
@@ -157,9 +164,9 @@ function clearSpace(){
 	}
 	function next() {
 		currentTetris=[];
-			currentBlock=nextBlock;
-			nextBlock={"block":randomBlock(),"rotate":0,"color":randomColor()};
-			for (let tetri of currentBlock.block.start) {
+		currentBlock=nextBlock;
+		nextBlock={"block":randomBlock(),"rotate":0,"color":randomColor()};
+		for (let tetri of currentBlock.block.start) {
 			let temp=new Tetri({x:tetri[0],y:tetri[1],color:currentBlock.color});
 			temp.display(map);
 			currentTetris.push(temp);
