@@ -1,9 +1,9 @@
 import BufferContext from "../BufferContext.mjs";
 import { allMetadataBlock } from "./MetadataBlock.mjs";
-import { decodeFrames } from "./Frame.mjs"
+import { extractFrames } from "./Frame.mjs"
 declare class FLAC {
 	context: BufferContext;
 	metadataBlocks: ReturnType<typeof allMetadataBlock>;
-	frames: ReturnType<typeof decodeFrames>;
+	frames: ReturnType<typeof extractFrames>;
 }
-declare function extract(data: Uint8Array, decodeFrames = false): FLAC;
+declare function extract(data: Uint8Array, extractFrames = false): FLAC;

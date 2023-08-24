@@ -52,6 +52,6 @@ declare class Frame {
 	decode(): Int32Array[];
 	verify(): boolean;
 }
-declare function extractFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
-declare function extractFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];
+declare function extractFrames(context: BufferContext, streamInfo: StreamInfoMetadata): Frame[];
+declare function extractFrame(context: BufferContext, streamInfo: StreamInfoMetadata): Frame;
 export { extractFrames, extractFrame, ConstantSubFrame, VerbatimSubFrame, FixedSubFrame, LPCSubFrame, SubFrame, Frame, subFrameTypes }

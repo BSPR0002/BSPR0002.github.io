@@ -51,8 +51,8 @@ class MetadataBlock {
 		if (length > 16777215) throw new Error("Failed to execute 'encodeMetadataBlockHeader': Data length must not grater than 16777215.");
 		const header = new Uint8Array(4);
 		header[0] = isLast ? type | 128 : type;
-		header.set(uintToBigEndian(length, 3), 1);
-		return header
+		uintToBigEndian(length, header.subarray(1));
+		return header;
 	}
 	static { Object.defineProperty(this.prototype, Symbol.toStringTag, { value: this.name, configurable: true }) }
 }
@@ -127,8 +127,8 @@ class VorbisCommentMetadata {
 		if (!(tags instanceof Object)) throw new TypeError("Failed to execute 'encode': Argument 'tags' must be an object.");
 		if (typeof vendor != "string") throw new TypeError("Failed to execute 'encode': Argument 'vendor' must be a string.");
 		vendor = encodeString(vendor || "BSIF.FLAC.MetadataBlock");
-		const vendorLength = vendor.byteLength;
-		if (vendorLength > 4294967295) throw new TypeError("Failed to execute 'encode': Argument 'vendor' is too long.");
+		var length = vendor.byteLength + 8;
+		if (length > 16777215) throw new Error("Failed to execute 'encode': Content too long.");
 		const temp = [];
 		var n = 0;
 		for (let key in tags) {
@@ -136,11 +136,10 @@ class VorbisCommentMetadata {
 			const data = tags[key];
 			switch (typeof data) {
 				case "string": {
-					const item = encodeString(`${key}=${data}`);
-					let length = item.byteLength;
-					if (length > 4294967295) throw new TypeError("Failed to execute 'encode': Content too long.");
-					length = uintToLittleEndian(length, 4);
-					temp.push(length, item);
+					const item = encodeString(`${key}=${data}`), itemLength = item.byteLength;
+					length += itemLength + 4;
+					if (length > 16777215) throw new Error("Failed to execute 'encode': Content too long.");
+					temp.push(uintToLittleEndian(itemLength, new Uint8Array(4)), item);
 					++n;
 					break;
 				}
@@ -149,10 +148,10 @@ class VorbisCommentMetadata {
 					for (let item of data) {
 						if (typeof item != "string") throw new TypeError("Failed to execute 'encode': Invalid tag data.");
 						item = encodeString(`${key}=${item}`);
-						let length = item.byteLength;
-						if (length > 4294967295) throw new TypeError("Failed to execute 'encode': Content too long.");
-						length = uintToLittleEndian(length, 4);
-						temp.push(length, item);
+						const itemLength = item.byteLength;
+						length += itemLength + 4;
+						if (length > 16777215) throw new Error("Failed to execute 'encode': Content too long.");
+						temp.push(uintToLittleEndian(itemLength, new Uint8Array(4)), item);
 						++n;
 					}
 					break;
@@ -160,7 +159,7 @@ class VorbisCommentMetadata {
 					throw new TypeError("Failed to execute 'encode': Invalid tag data.");
 			}
 		}
-		temp.unshift(uintToLittleEndian(vendorLength, 4), vendor, uintToLittleEndian(n, 4))
+		temp.unshift(uintToLittleEndian(vendorLength, new Uint8Array(4)), vendor, uintToLittleEndian(n, new Uint8Array(4)))
 		return new Blob(temp)
 	}
 }

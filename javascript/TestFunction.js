@@ -36,6 +36,10 @@ const moduleConfig = {
 	torrent: {
 		path: "/unuse/torrent.mjs"
 	},
+	flac2wav: {
+		path: "/unuse/flac2wav.mjs",
+		default: "default"
+	},
 	BufferContext: {
 		path: "/javascript/module/BufferContext.mjs",
 		default: "default"

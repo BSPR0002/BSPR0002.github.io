@@ -67,66 +67,66 @@ declare function bigEndianToBigInt(data: Uint8Array): bigint;
 /**
  * 将无符号整数转换为小端序字节数组
  * @param value - 要转换的无符号整数 
- * @param size - 字节数组长度 
+ * @param bufferArray- 需要写入数据的字节数组 
  * @returns 小端序字节数组
  */
-declare function uintToLittleEndian(value: number, size: number): Uint8Array;
+declare function uintToLittleEndian(value: number, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将有符号整数转换为小端序字节数组
  * @param value - 要转换的有符号整数
- * @param size - 字节数组长度
+ * @param bufferArray- 需要写入数据的字节数组
  * @returns 小端序字节数组
  */
-declare function intToLittleEndian(value: number, size: number): Uint8Array;
+declare function intToLittleEndian(value: number, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将大数无符号整数转换为小端序字节数组
  * @param value - 要转换的大数无符号整数
- * @param size - 字节数组长度 
+ * @param bufferArray- 需要写入数据的字节数组 
  * @returns 小端序字节数组
  */
-declare function bigUintToLittleEndian(value: bigint, size: number): Uint8Array;
+declare function bigUintToLittleEndian(value: bigint, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将大数有符号整数转换为小端序字节数组
  * @param value - 要转换的大数有符号整数
- * @param size - 字节数组长度
+ * @param bufferArray- 需要写入数据的字节数组
  * @returns 小端序字节数组
  */ 
-declare function bigIntToLittleEndian(value: bigint, size: number): Uint8Array;
+declare function bigIntToLittleEndian(value: bigint, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将无符号整数转换为大端序字节数组
  * @param value - 要转换的无符号整数
- * @param size - 字节数组长度
+ * @param bufferArray- 需要写入数据的字节数组
  * @returns 大端序字节数组
  */
-declare function uintToBigEndian(value: number, size: number): Uint8Array;
+declare function uintToBigEndian(value: number, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将有符号整数转换为大端序字节数组
  * @param value - 要转换的有符号整数
- * @param size - 字节数组长度 
+ * @param bufferArray- 需要写入数据的字节数组 
  * @returns 大端序字节数组
  */
-declare function intToBigEndian(value: number, size: number): Uint8Array;
+declare function intToBigEndian(value: number, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将大数无符号整数转换为大端序字节数组
  * @param value - 要转换的大数无符号整数
- * @param size - 字节数组长度
+ * @param bufferArray- 需要写入数据的字节数组
  * @returns 大端序字节数组
  */
-declare function bigUintToBigEndian(value: bigint, size: number): Uint8Array;
+declare function bigUintToBigEndian(value: bigint, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 将大数有符号整数转换为大端序字节数组 
  * @param value - 要转换的大数有符号整数
- * @param size - 字节数组长度
+ * @param bufferArray- 需要写入数据的字节数组
  * @returns 大端序字节数组
  */
-declare function bigIntToBigEndian(value: bigint, size: number): Uint8Array;
+declare function bigIntToBigEndian(value: bigint, bufferArray: Uint8Array): Uint8Array;
 
 /**
  * 计算无符号整数的二进制位数

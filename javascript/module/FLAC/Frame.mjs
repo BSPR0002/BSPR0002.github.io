@@ -288,7 +288,6 @@ function predictor(buffer, coefficients, residuals, shift) {
 	}
 }
 const fixedCoefficients = [
-	[1n],
 	[2n, -1n],
 	[3n, -3n, 1n],
 	[4n, -6n, 4n, 1n]
@@ -311,8 +310,13 @@ function decodeSubFrame(subFrame, blockSize) {
 			const residuals = decodeResidualValue(subFrame.residual.samples), { order, warmUpSamples, sampleSize } = subFrame;
 			if (!order) return residuals;
 			const result = new BigInt64Array(blockSize);
-			for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
-			predictor(result, fixedCoefficients[order - 1], residuals, 0n);
+			if (order == 1) {
+				let last = result[0] = decodeSignedNumber(sampleSize, warmUpSamples[0]);
+				for (let i = 1; i < blockSize; ++i) result[i] = last += residuals[i - 1];
+			} else {
+				for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
+				predictor(result, fixedCoefficients[order - 2], residuals, 0n);
+			}
 			return result;
 		}
 		case LPCSubFrame.prototype: {
@@ -360,9 +364,9 @@ class Frame {
 				case "average": {
 					const result = [new Int32Array(blockSize), new Int32Array(blockSize)], [left, right] = result, [average, side] = subBlocks;
 					for (let i = 0; i < blockSize; ++i) {
-						const temp1 = Number(average[i]), temp2 = Number(side[i] >> 1n);
-						left[i] = temp1 + temp2;
-						right[i] = temp1 - temp2;
+						const temp1 = side[i], temp2 = average[i] - (temp1 >> 1n);
+						left[i] = Number(temp2 + temp1);
+						right[i] = Number(temp2);
 					}
 					return result;
 				}
