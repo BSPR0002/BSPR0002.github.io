@@ -45,8 +45,8 @@ function littleEndianToUint(data) {
 	const length = data.length;
 	if (length > 4) throw new Error(`Failed to execute 'littleEndianToUint': Cannot process data with length greater then 4.`);
 	var result = 0;
-	for (let i = 0; i < length; ++i) result += data[i] * 2 ** (8 * i);
-	return result;
+	for (let i = 0; i < length; ++i) result |= data[i] << 8 * i;
+	return result >>> 0;
 }
 function littleEndianToInt(data) {
 	if (!(data instanceof Uint8Array)) throw new TypeError("Failed to execute 'littleEndianToInt': Argument 'data' is not type of Uint8Array.");
@@ -75,8 +75,8 @@ function bigEndianToUint(data) {
 	const length = data.length;
 	if (length > 4) throw new Error(`Failed to execute 'bigEndianToUint': Cannot process data with length greater then 4.`);
 	var result = 0;
-	for (let i = 0; i < length; ++i) result = result * 2 ** 8 + data[i];
-	return result;
+	for (let i = 0; i < length; ++i) result = result << 8 | data[i];
+	return result >>> 0;
 }
 function bigEndianToInt(data) {
 	if (!(data instanceof Uint8Array)) throw new TypeError("Failed to execute 'bigEndianToInt': Argument 'data' is not type of Uint8Array.");

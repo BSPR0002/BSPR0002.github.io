@@ -1,48 +1,35 @@
-import { bitsOf } from "./BinaryOperate.mjs";
 import BufferContext from "./BufferContext.mjs";
+const { log2, floor, ceil } = Math;
 function getCodeBytes(headValue) {
-	var bytes = 0;
-	for (let i = 7; i > -1; --i) {
-		if (!(headValue >> i)) break;
-		headValue %= 2 ** i;
+	var bytes = 0, mask = 128;
+	for (let i = 8; i; --i) {
+		if (!(headValue & mask)) break;
+		mask >>>= 1;
 		++bytes;
 	}
-	return bytes ? (bytes == 1 || bytes == 8 ? 0 : bytes) : 1;
-}
-function splitNumber(value) {
-	const result = [];
-	while (value) {
-		result.unshift(value % 64);
-		value >>>= 6;
-	}
-	return result
-}
-function splitBigInt(value) {
-	const result = [];
-	while (value) {
-		result.unshift(Number(value % 64n));
-		value >>= 6n;
-	}
-	return result
+	if (bytes == 1 || bytes == 8) throw new Error("Invalid data");
+	return bytes || 1;
 }
 function encode(value) {
 	if (typeof value != "number") throw new TypeError("Failed to execute 'encode': Argument 'value' is not a number.");
-	if (!isFinite(value)) throw new TypeError("Failed to execute 'encode': Argument 'value' is not finite.");
-	const bitsOfValue = bitsOf(value);
-	if (bitsOfValue < 8) {
-		let result = new Uint8Array(1);
+	if (!Number.isInteger(value) || value < 0) throw new TypeError("Failed to execute 'encode': Argument 'value' must be an unsigned integer.");
+	if (value < 128) {
+		const result = new Uint8Array(1);
 		result[0] = value;
 		return result
 	}
+	const bitsOfValue = floor(log2(value)) + 1;
 	if (bitsOfValue > 36) throw new TypeError("Failed to execute 'encode': UTF-8 cannot encode values with bits greater than 36.");
-	const temp = bitsOfValue > 32 ? splitBigInt(BigInt(value)) : splitNumber(value);
-	if (bitsOf(temp[0]) > 7 - temp.length) temp.unshift(0);
-	const length = temp.length, result = new Uint8Array(length);
-	for (let i = length - 1; i > 0; --i) {
-		result[i] = 128 + temp[i];
+	let byteLength = ceil((bitsOfValue - 1) / 5);
+	const result = new Uint8Array(byteLength);
+	for (let i = byteLength - 1; i; --i) {
+		let temp = value & 63;
+		value = (value - temp) / 64;
+		result[i] = 128 | temp;
 	}
-	result[0] = (2 ** length - 1 << 8 - length) + temp[0];
-	return result
+	byteLength = 8 - byteLength;
+	result[0] = (255 >>> byteLength << byteLength) | value;
+	return result;
 }
 const typeOfUint8Array = Uint8Array.prototype,
 	typeOfBufferContext = BufferContext.prototype;
@@ -70,12 +57,14 @@ function decode(data) {
 	}
 	if (bytes == 1) return data[0];
 	var result = 0, offset = 0;
-	for (let i = bytes - 1; i > 0; --i) {
-		result += data[i] % 64 << offset;
+	for (let i = bytes - 1; i; --i) {
+		const temp = data[i];
+		if (temp >>> 6 != 2) throw new Error("Failed to execute 'decode': Invalid code.");
+		result += (temp & 63) * 2 ** offset;
 		offset += 6;
 	}
-	if (bytes < 7) result += data[0] % 2 ** (7 - bytes) << offset;
-	return result
+	if (bytes < 7) result += (data[0] & 127 >>> bytes) * 2 ** offset;
+	return result;
 }
 const encoder = new TextEncoder(), decoder = new TextDecoder("utf-8");
 function encodeString(string) {

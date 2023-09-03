@@ -19,6 +19,6 @@ function extract(data, extractFrames = false) {
 	if (typeof extractFrames != "boolean") throw new TypeError("Failed to execute 'decode': Argument 'extractFrames' is not a boolean.");
 	const context = checkHead(data);
 	const metadata = allMetadataBlock(context);
-	return new FLAC(context, metadata, extractFrames ? extractFramesFunction(context, metadata[0]) : undefined);
+	return new FLAC(context, metadata, extractFrames ? extractFramesFunction(context, metadata[0].decodeData()) : undefined);
 }
 export { extract }

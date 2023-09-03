@@ -78,7 +78,7 @@ function getSampleRate(code, context, streamInfo) {
 		case 9: return 44100;
 		case 10: return 48000;
 		case 11: return 96000;
-		case 12: return context.array[context.current++];
+		case 12: return context.array[context.current++] * 1000;
 		case 13: return bigEndianToUint(context.array.subarray(context.current, context.current += 2));
 		case 14: return bigEndianToUint(context.array.subarray(context.current, context.current += 2)) * 10;
 		default: throw new Error("Invalid sample rate code.");
@@ -149,7 +149,7 @@ class VerbatimSubFrame extends SubFrame {
 		});
 	}
 }
-class PredictorSubFrame extends SubFrame {
+class PredictionSubFrame extends SubFrame {
 	constructor(sampleSize, order, warmUpSamples, residual) {
 		super(sampleSize);
 		defineProperties(this, {
@@ -200,7 +200,7 @@ function extractResidual(context, blockSize, predictorOrder) {
 		samples
 	};
 }
-class FixedSubFrame extends PredictorSubFrame {
+class FixedSubFrame extends PredictionSubFrame {
 	constructor(context, sampleSize, blockSize, order) {
 		const warmUpSamples = new Array(order);
 		for (let i = 0; i < order; ++i) warmUpSamples[i] = readBits(context, sampleSize);
@@ -213,7 +213,7 @@ class FixedSubFrame extends PredictorSubFrame {
 		});
 	}
 }
-class LPCSubFrame extends PredictorSubFrame {
+class LPCSubFrame extends PredictionSubFrame {
 	constructor(context, sampleSize, blockSize, order) {
 		const warmUpSamples = new Array(order), coefficients = new Array(order);
 		for (let i = 0; i < order; ++i) warmUpSamples[i] = readBits(context, sampleSize);
@@ -236,8 +236,7 @@ class LPCSubFrame extends PredictorSubFrame {
 	}
 }
 function extractSubFrame(context, sampleSize, blockSize) {
-	const checkFlag = readBits(context, 1);
-	if (checkFlag) throw new Error("Wrong sub frame starting position.");
+	if (readBits(context, 1)) throw new Error("Wrong sub frame starting position.");
 	const typeCode = readBits(context, 6), wastedBitsFlag = readBits(context, 1);
 	if (wastedBitsFlag) do { --sampleSize } while (!readBits(context, 1));
 	if (typeCode == 0) return new ConstantSubFrame(context, sampleSize);
