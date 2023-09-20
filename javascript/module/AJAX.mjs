@@ -2,14 +2,14 @@ const XMLHttpRequest = window.XMLHttpRequest;
 function callHandler(thisArg, handler, parameter) { if (typeof handler == "function") try { handler.call(thisArg, parameter) } catch (error) { console.error("Uncaught", error) } }
 function buildRequest(request, options) {
 	const url = options.url;
-	if (!(typeof url == "string" || url instanceof URL)) throw new TypeError("Invalid URL type.");
+	if (!(typeof url == "string" || url instanceof URL)) throw new TypeError("The URL was not provided or is invalid.");
 	const async = options.async ?? true, success = typeof options.success == "function" ? options.success : null, fail = typeof options.fail == "function" ? options.fail : null, done = typeof options.done == "function" ? options.done : null;
 	request.open(options.method ?? "GET", url, async, options.username, options.password);
 	if (async) {
 		if ("type" in options) request.responseType = options.type;
 		if ("timeout" in options) request.timeout = options.timeout;
 	}
-	if ("cache" in options && !options.cache) request.setRequestHeader("If-Modified-Since", "0");
+	if ("cache" in options && !options.cache) request.setRequestHeader("Cache-Control", "no-cache");
 	request.ontimeout = function () { callHandler(this, fail, this.status) };
 	request.onabort = options.abort;
 	request.onerror = options.error;
