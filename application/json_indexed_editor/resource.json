@@ -1,0 +1,11 @@
+{
+    "id": "org.BSIF.JSONIndexedEditor",
+    "version": 0,
+    "files": [
+        "index.html",
+        "main.mjs",
+        "editor.mjs",
+        "editor.css",
+        "icon.svg"
+    ]
+}

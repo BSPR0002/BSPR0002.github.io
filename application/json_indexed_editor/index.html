@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="editor.css">
 	<script src="main.mjs" type="module"></script>
 	<link rel="manifest" href="./manifest.webmanifest">
+	<script>navigator.serviceWorker.register("/application/service_worker.mjs", { type: "module", updateViaCache: "none", scope: "/application/json_indexed_editor/" })</script>
 </head>
 
 <body class="bs-loading">
