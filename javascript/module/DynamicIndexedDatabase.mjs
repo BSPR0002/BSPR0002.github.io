@@ -34,11 +34,7 @@ class DynamicIndexedDatabase {
 		while (queue.length) {
 			const { name, configure, adapter: { resolve, reject } } = queue.shift();
 			try {
-				if (!database.objectStoreNames.contains(name)) {
-					console.log("restart & create",name);
-					await database.restart(Date.now(), configure);
-					console.log("restart finish",name);
-				}
+				if (!database.objectStoreNames.contains(name)) await database.restart(Date.now(), configure);
 				resolve(database.getObjectStore(name));
 			} catch(e) {reject(e)}
 		}
