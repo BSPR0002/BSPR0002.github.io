@@ -78,6 +78,9 @@ const moduleConfig = {
 	PromiseAdapter: {
 		path: "/javascript/module/PromiseAdapter.mjs",
 		default: "default"
+	},
+	StringEnhancement: {
+		path: "/javascript/module/StringEnhancement.mjs"
 	}
 };
 for (let i in moduleConfig) moduleConfig[i].name = i;
@@ -127,4 +130,10 @@ class PerSecond {
 	}
 }
 
-const gain = (y, z = 16) => 2 ** (z * (y - 1))
+const gain = (y, z = 16) => 2 ** (z * (y - 1));
+
+function generateRandomArray(length, min, max) {
+	const range = max - min + 1, array = new Array(length);
+	for (let i = length - 1; i; --i) array[i] = Math.floor(Math.random() * range) + min;
+	return array;
+}

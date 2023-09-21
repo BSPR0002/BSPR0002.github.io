@@ -6,9 +6,9 @@ function getBinary(character, index) {
 	return data
 }
 /**
- * 将字节数组编码为 Base64 字符串
- * @param {Uint8Array} uint8Array 需要编码的字节数组
- * @returns Base64 字符串
+ * Encode byte arrays into Base64 strings.
+ * @param {Uint8Array} uint8Array The byte array that needs to be encoded.
+ * @returns A Base64 string.
  */
 function encode(uint8Array) {
 	if (!(uint8Array instanceof Uint8Array)) throw new TypeError("Failed to execute 'encode': Argument 'uint8Array' is not an Uint8Array.");
@@ -39,9 +39,9 @@ function encode(uint8Array) {
 	return result
 }
 /**
- * 将 Base64 字符串解码为字节数组
- * @param {string} base64String 需要解码的 Base64 字符串
- * @returns 字节数组
+ * Decode Base64 strings into byte arrays.
+ * @param {string} base64String The string that needs to be decoded.
+ * @returns A byte array in the form of Uint8Array.
  */
 function decode(base64String) {
 	if (typeof base64String != "string") throw new TypeError("Failed to execute 'decode': Argument 'base64String' is not a string.");
