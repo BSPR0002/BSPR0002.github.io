@@ -88,7 +88,7 @@ async function importModule(config, useDefault = true) {
 	console.log("Imported " + name);
 	return module;
 }
-function printArguments() { console.log(arguments) }
+function printArguments() { console.log(this, arguments) }
 function manual() { debugger }
 class RandomStatistician {
 	#data = (new Array(10)).fill(0n);

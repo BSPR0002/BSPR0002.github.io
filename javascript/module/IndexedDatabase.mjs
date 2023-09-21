@@ -1,3 +1,7 @@
+const encapsulateRequest = Function.prototype.bind.bind(function encapsulateRequest(request, resolve, reject) {
+	request.addEventListener("success", function (event) { resolve(event.target.result) });
+	request.addEventListener("error", function (event) { reject(event.target.error) });
+}, null);
 class IndexedDatabase {
 	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
 	#db;
@@ -19,13 +23,10 @@ class IndexedDatabase {
 				if (arguments.length > 3 && typeof onBlocked != "function") throw new TypeError("Failed to execute 'open': Argument 'onBlocked' is not a function.");
 			}
 		}
-		return new Promise(function (resolve, reject) {
-			const request = indexedDB.open(name, version);
-			request.addEventListener("success", function (event) { resolve(new IndexedDatabase(event.target.result)) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (onBlocked) request.addEventListener("blocked", onBlocked);
-			if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
-		});
+		const request = indexedDB.open(name, version);
+		if (onBlocked) request.addEventListener("blocked", onBlocked);
+		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
+		return new Promise(encapsulateRequest(request));
 	}
 	#transaction = null;
 	#startTransaction(objectStoreNames, writeRequire, durability) {
@@ -56,17 +57,17 @@ class IndexedDatabase {
 				} else throw new TypeError("Failed to execute 'startTransaction' on 'IndexedDatabase': Argument 'options' is not an object.");
 			}
 		}
-		const transaction = this.#transaction = this.#startTransaction(this.#db.objectStoreNames, writeRequire, durability), self = this;
-		transaction.addEventListener("complete", function () {
-			self.#transaction = null;
+		const transaction = this.#transaction = this.#startTransaction(this.#db.objectStoreNames, writeRequire, durability);
+		transaction.addEventListener("complete", () => {
+			this.#transaction = null;
 			if (oncomplete) oncomplete();
 		});
-		transaction.addEventListener("abort", function () {
-			self.#transaction = null;
+		transaction.addEventListener("abort", () => {
+			this.#transaction = null;
 			if (onabort) onabort();
 		});
-		transaction.addEventListener("error", function (event) {
-			self.#transaction = null;
+		transaction.addEventListener("error", (event) => {
+			this.#transaction = null;
 			if (onerror) { onerror(event) } else console.error(event.target.error);
 		});
 	}
@@ -86,65 +87,50 @@ class IndexedDatabase {
 		if (arguments.length < 2) throw new TypeError(`Failed to execute 'add' on 'IndexedDatabase': 2 argument required, but only ${arguments.length} present.`);
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'add' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName, true);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).add(content, key);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName, true),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).add(content, key)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async delete(objectStoreName, query) {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 2) throw new TypeError(`Failed to execute 'delete' on 'IndexedDatabase': 2 arguments required, but only ${arguments.length} present.`);
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'delete' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName, true);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).delete(query);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName, true),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).delete(query)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async clear(objectStoreName) {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'clear' on 'IndexedDatabase': 1 argument required, but only 0 present.");
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'clear' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName, true);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).clear();
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName, true),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).clear()));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async update(objectStoreName, content, key = undefined) {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 2) throw new TypeError(`Failed to execute 'update' on 'IndexedDatabase': 2 arguments required, but only ${arguments.length} present.`);
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'update' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName, true);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).put(content, key);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName, true),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).put(content, key)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async get(objectStoreName, key) {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 2) throw new TypeError(`Failed to execute 'get' on 'IndexedDatabase': 2 arguments required, but only ${arguments.length} present.`);
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'get' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).get(key);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).get(key)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async getAll(objectStoreName, query = undefined, count = undefined) {
 		IndexedDatabase.#checkInstance(this);
@@ -152,13 +138,10 @@ class IndexedDatabase {
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).getAll(query, count);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).getAll(query, count)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async getAllKeys(objectStoreName, query = undefined, count = undefined) {
 		IndexedDatabase.#checkInstance(this);
@@ -166,13 +149,10 @@ class IndexedDatabase {
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName);
-		return new Promise(function (resolve, reject) {
-			const request = transaction.objectStore(objectStoreName).getAllKeys(query, count);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName),
+			promise = new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).getAllKeys(query, count)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async getByIndex(objectStoreName, indexName, key) {
 		IndexedDatabase.#checkInstance(this);
@@ -180,16 +160,12 @@ class IndexedDatabase {
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getByIndex' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
 		if (typeof indexName != "string") throw new TypeError("Failed to execute 'getByIndex' on 'IndexedDatabase': Argument 'indexName' is not a string.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName);
-		var operator = transaction.objectStore(objectStoreName);
-		if (!operator.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getByIndex' on 'IndexedDatabase': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
-		operator = operator.index(indexName);
-		return new Promise(function (resolve, reject) {
-			const request = operator.get(key);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName),
+			objectStore = transaction.objectStore(objectStoreName);
+		if (!objectStore.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getByIndex' on 'IndexedDatabase': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
+		const promise = new Promise(encapsulateRequest(objectStore.index(indexName).get(key)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	async getAllByIndex(objectStoreName, indexName, query, count = undefined) {
 		IndexedDatabase.#checkInstance(this);
@@ -198,16 +174,12 @@ class IndexedDatabase {
 		if (typeof indexName != "string") throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'indexName' is not a string.");
 		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabase': Argument 'count' must be integer and greater than 0.");
 		await this.#restarting;
-		const { transaction, commit } = this.#getTransaction(objectStoreName);
-		var operator = transaction.objectStore(objectStoreName);
-		if (!operator.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getAllByIndex' on 'IndexedDatabase': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
-		operator = operator.index(indexName);
-		return new Promise(function (resolve, reject) {
-			const request = operator.getAll(query, count);
-			request.addEventListener("success", function (event) { resolve(event.target.result) });
-			request.addEventListener("error", function (event) { reject(event.target.error) });
-			if (commit) transaction.commit();
-		});
+		const { transaction, commit } = this.#getTransaction(objectStoreName),
+			objectStore = transaction.objectStore(objectStoreName);
+		if (!objectStore.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getAllByIndex' on 'IndexedDatabase': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
+		const promise = new Promise(encapsulateRequest(objectStore.index(indexName).getAll(query, count)));
+		if (commit) transaction.commit();
+		return promise;
 	}
 	getObjectStore(objectStoreName) {
 		IndexedDatabase.#checkInstance(this);
@@ -238,20 +210,19 @@ class IndexedDatabase {
 		}
 		if (this.#restarting) throw new Error("Failed to execute 'restart' on 'IndexedDatabase': Database has been restarting now.");
 		this.#db.close();
-		const self = this;
-		return this.#restarting = new Promise(function (resolve, reject) {
-			const request = indexedDB.open(self.#db.name, version);
-			request.addEventListener("success", function (event) {
-				self.#db = event.target.result;
-				self.#restarting = undefined;
-				resolve()
+		const request = indexedDB.open(this.#db.name, version);
+		if (onBlocked) request.addEventListener("blocked", onBlocked);
+		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
+		return this.#restarting = new Promise((resolve, reject) => {
+			request.addEventListener("success", event => {
+				this.#db = event.target.result;
+				this.#restarting = undefined;
+				resolve();
 			});
-			request.addEventListener("error", function (event) {
-				self.#restarting = undefined;
-				reject(event.target.error)
+			request.addEventListener("error", event => {
+				this.#restarting = undefined;
+				reject(event.target.error);
 			});
-			if (onBlocked) request.addEventListener("blocked", onBlocked);
-			if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
 		});
 	}
 	static {

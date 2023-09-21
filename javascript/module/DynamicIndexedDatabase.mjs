@@ -1,4 +1,5 @@
 import IndexedDatabase from "./IndexedDatabase.mjs";
+import PromiseAdapter from "./PromiseAdapter.mjs";
 class DynamicIndexedDatabase {
 	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
 	#db;
@@ -16,20 +17,28 @@ class DynamicIndexedDatabase {
 		return temp;
 	}
 	#queue = [];
+	#processing = false;
 	initialStore(name, configure) {
 		DynamicIndexedDatabase.#checkInstance(this);
 		if (typeof name != "string") throw new TypeError("Failed to execute 'initialStore' on 'DynamicIndexedDatabase': Argument 'name' is not a string.");
 		if (typeof configure != "function") throw new TypeError("Failed to execute 'initialStore' on 'DynamicIndexedDatabase': Argument 'configure' is not a function.");
-		const queue = this.#queue, temp = this.#process(queue[queue.length - 1], name, configure);
-		queue.push(temp);
-		return temp;
+		const adapter = new PromiseAdapter;
+		this.#queue.push({ adapter, name, configure });
+		this.#process();
+		return adapter.promise;
 	}
-	async #process(after, name, configure) {
-		await after;
-		const database = this.#db;
-		if (!database.objectStoreNames.contains(name)) await database.restart(Date.now(), configure);
-		this.#queue.shift();
-		return database.getObjectStore(name);
+	async #process() {
+		if (this.#processing) return;
+		this.#processing = true;
+		const database = this.#db,queue = this.#queue;
+		while (queue.length) {
+			const { name, configure, adapter: { resolve, reject } } = queue.shift();
+			try {
+				if (!database.objectStoreNames.contains(name)) await database.restart(Date.now(), configure);
+				resolve(database.getObjectStore(name));
+			} catch(e) {reject(e)}
+		}
+		this.#processing = false;
 	}
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
