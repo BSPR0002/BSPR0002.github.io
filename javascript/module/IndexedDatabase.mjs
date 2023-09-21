@@ -26,7 +26,10 @@ class IndexedDatabase {
 		const request = indexedDB.open(name, version);
 		if (onBlocked) request.addEventListener("blocked", onBlocked);
 		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
-		return new Promise(encapsulateRequest(request));
+		return new Promise((resolve, reject) => {
+			request.addEventListener("success", function (event) { resolve(new IndexedDatabase(event.target.result)) });
+			request.addEventListener("error", function (event) { reject(event.target.error) });
+		});
 	}
 	#transaction = null;
 	#startTransaction(objectStoreNames, writeRequire, durability) {
