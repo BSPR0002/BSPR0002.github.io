@@ -8,7 +8,8 @@ self.addEventListener("install", event => {
             "main.mjs",
             "editor.mjs",
             "editor.css",
-            "icon.svg"
+            "icon.svg",
+            "icon.png"
         ],
         requiredScripts: [
             "ArrayHTML.mjs",
