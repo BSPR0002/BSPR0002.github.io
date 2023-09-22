@@ -111,4 +111,3 @@ Object.defineProperties(String.prototype, {
 	substringByCharacter: { configurable: true, writable: true, value: substringByCharacter },
 	lengthByCharacter: { get: lengthByCharacter }
 });
-export { characterAt, codePointAtByCharacter, sliceByCharacter, substringByCharacter, lengthByCharacter };

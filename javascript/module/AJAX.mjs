@@ -1,4 +1,3 @@
-const XMLHttpRequest = window.XMLHttpRequest;
 function callHandler(thisArg, handler, parameter) { if (typeof handler == "function") try { handler.call(thisArg, parameter) } catch (error) { console.error("Uncaught", error) } }
 function buildRequest(request, options) {
 	const url = options.url;

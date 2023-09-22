@@ -1,18 +1,19 @@
-const encapsulateRequest = Function.prototype.bind.bind(function encapsulateRequest(request, resolve, reject) {
-	request.addEventListener("success", function (event) { resolve(event.target.result) });
-	request.addEventListener("error", function (event) { reject(event.target.error) });
-}, null);
+const key = Symbol("privateConstructor"),
+	encapsulateRequest = Function.prototype.bind.bind(function encapsulateRequest(request, resolve, reject) {
+		request.addEventListener("success", function (event) { resolve(event.target.result) });
+		request.addEventListener("error", function (event) { reject(event.target.error) });
+	}, null);
 class IndexedDatabase {
 	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
 	#db;
 	get name() { return this.#db.name }
 	get objectStoreNames() { return this.#db.objectStoreNames }
 	get version() { return this.#db.version }
-	constructor(db) {
-		if (arguments.length < 1) throw new TypeError("Failed to construct 'IndexedDatabase': 1 argument required, but only 0 present.");
-		if (!(db instanceof IDBDatabase)) throw new TypeError("Failed to construct 'IndexedDatabase': Argument 'db' is not type of IDBDatabase.");
+	constructor(privateInvoke, db) {
+		if (privateInvoke != key) throw new TypeError("Illegal invacation");
 		this.#db = db;
 	}
+	static #pool = new WeakMap;
 	static open(name, version = undefined, onUpgradeNeeded = undefined, onBlocked = undefined) {
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'open': 1 argument required, but only 0 present.");
 		if (typeof name != "string") throw new TypeError("Failed to execute 'open': Argument 'name' is not a string.");
@@ -25,9 +26,16 @@ class IndexedDatabase {
 		}
 		const request = indexedDB.open(name, version);
 		if (onBlocked) request.addEventListener("blocked", onBlocked);
-		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
+		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(key, event.target.result, event.oldVersion, event.newVersion)) });
 		return new Promise((resolve, reject) => {
-			request.addEventListener("success", function (event) { resolve(new IndexedDatabase(event.target.result)) });
+			request.addEventListener("success", function (event) {
+				const db = event.target.result, pool = IndexedDatabase.#pool, cache = pool.get(db);
+				if (cache) { resolve(cache) } else {
+					const instance = new IndexedDatabase(key, db);
+					pool.set(db, instance);
+					resolve(instance);
+				}
+			});
 			request.addEventListener("error", function (event) { reject(event.target.error) });
 		});
 	}
@@ -188,7 +196,7 @@ class IndexedDatabase {
 		IndexedDatabase.#checkInstance(this);
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabase': 1 argument required, but only 0 present.");
 		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabase': Argument 'objectStoreName' is not a string.");
-		return new IndexedDatabaseObjectStore(this, objectStoreName);
+		return new IndexedDatabaseObjectStore(key, this, objectStoreName);
 	}
 	getObjectStoreDetail(objectStoreName) {
 		IndexedDatabase.#checkInstance(this);
@@ -215,10 +223,10 @@ class IndexedDatabase {
 		this.#db.close();
 		const request = indexedDB.open(this.#db.name, version);
 		if (onBlocked) request.addEventListener("blocked", onBlocked);
-		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(event.target.result, event.oldVersion, event.newVersion)) });
+		if (onUpgradeNeeded) request.addEventListener("upgradeneeded", function (event) { onUpgradeNeeded(new IndexedDatabaseUpgrader(key, event.target.result, event.oldVersion, event.newVersion)) });
 		return this.#restarting = new Promise((resolve, reject) => {
 			request.addEventListener("success", event => {
-				this.#db = event.target.result;
+				IndexedDatabase.#pool.set(this.#db = event.target.result, this);
 				this.#restarting = undefined;
 				resolve();
 			});
@@ -236,17 +244,15 @@ class IndexedDatabase {
 	}
 }
 
-class IndexedDatabaseUpgrader extends IndexedDatabase {
+class IndexedDatabaseUpgrader {
 	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
 	#db;
 	#oldVersion;
 	get oldVersion() { return this.#oldVersion }
 	#newVersion;
 	get newVersion() { return this.#newVersion }
-	constructor(db, oldVersion, newVersion) {
-		super(db);
-		if (arguments.length < 3) throw new TypeError(`Failed to construct 'IndexedDatabaseUpgrader': 3 arguments required, but only ${arguments.length} present.`);
-		if (!(db instanceof IDBDatabase)) throw new TypeError("Failed to construct 'IndexedDatabaseUpgrader': Argument 'db' is not type of IDBDatabase.");
+	constructor(privateInvoke, db, oldVersion, newVersion) {
+		if (privateInvoke != key) throw new TypeError("Illegal invacation");
 		this.#db = db;
 		this.#oldVersion = oldVersion;
 		this.#newVersion = newVersion;
@@ -254,12 +260,87 @@ class IndexedDatabaseUpgrader extends IndexedDatabase {
 	createObjectStore(name, option = null) {
 		IndexedDatabaseUpgrader.#checkInstance(this);
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'createObjectStore' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
-		return new ObjectStoreUpgrader(this.#db.createObjectStore(name, option));
+		return new ObjectStoreUpgrader(key, this.#db.createObjectStore(name, option));
 	}
 	deleteObjectStore(name) {
 		IndexedDatabaseUpgrader.#checkInstance(this);
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'deleteObjectStore' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
 		this.#db.deleteObjectStore(name);
+	}
+	async add(objectStoreName, content, key = undefined) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'add' on 'IndexedDatabaseUpgrader': 2 argument required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'add' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).add(content, key)));
+	}
+	async delete(objectStoreName, query) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'delete' on 'IndexedDatabaseUpgrader': 2 arguments required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'delete' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).delete(query)));
+	}
+	async clear(objectStoreName) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'clear' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'clear' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).clear()));
+	}
+	async update(objectStoreName, content, key = undefined) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'update' on 'IndexedDatabaseUpgrader': 2 arguments required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'update' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).put(content, key)));
+	}
+	async get(objectStoreName, key) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 2) throw new TypeError(`Failed to execute 'get' on 'IndexedDatabaseUpgrader': 2 arguments required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'get' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).get(key)));
+	}
+	async getAll(objectStoreName, query = undefined, count = undefined) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAll' on 'IndexedDatabaseUpgrader': Argument 'count' must be integer and greater than 0.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).getAll(query, count)));
+	}
+	async getAllKeys(objectStoreName, query = undefined, count = undefined) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllKeys' on 'IndexedDatabaseUpgrader': Argument 'count' must be integer and greater than 0.");
+		return new Promise(encapsulateRequest(transaction.objectStore(objectStoreName).getAllKeys(query, count)));
+	}
+	async getByIndex(objectStoreName, indexName, key) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 3) throw new TypeError(`Failed to execute 'getByIndex' on 'IndexedDatabaseUpgrader': 3 arguments required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getByIndex' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		if (typeof indexName != "string") throw new TypeError("Failed to execute 'getByIndex' on 'IndexedDatabaseUpgrader': Argument 'indexName' is not a string.");
+		const objectStore = transaction.objectStore(objectStoreName);
+		if (!objectStore.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getByIndex' on 'IndexedDatabaseUpgrader': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
+		return new Promise(encapsulateRequest(objectStore.index(indexName).get(key)));
+	}
+	async getAllByIndex(objectStoreName, indexName, query, count = undefined) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 3) throw new TypeError(`Failed to execute 'getAllByIndex' on 'IndexedDatabaseUpgrader': 3 arguments required, but only ${arguments.length} present.`);
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		if (typeof indexName != "string") throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabaseUpgrader': Argument 'indexName' is not a string.");
+		if (count !== undefined && !(Number.isInteger(count) && count > 0)) throw new TypeError("Failed to execute 'getAllByIndex' on 'IndexedDatabaseUpgrader': Argument 'count' must be integer and greater than 0.");
+		const objectStore = transaction.objectStore(objectStoreName);
+		if (!objectStore.indexNames.contains(indexName)) throw new Error(`Failed to execute 'getAllByIndex' on 'IndexedDatabaseUpgrader': The database does not exist index named '${indexName}' on object store '${objectStoreName}'.`);
+		return new Promise(encapsulateRequest(objectStore.index(indexName).getAll(query, count)));
+	}
+	getObjectStore(objectStoreName) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getObjectStore' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new IndexedDatabaseObjectStore(key, this, objectStoreName);
+	}
+	getObjectStoreDetail(objectStoreName) {
+		IndexedDatabaseUpgrader.#checkInstance(this);
+		if (arguments.length < 1) throw new TypeError("Failed to execute 'getObjectStoreDetail' on 'IndexedDatabaseUpgrader': 1 argument required, but only 0 present.");
+		if (typeof objectStoreName != "string") throw new TypeError("Failed to execute 'getObjectStoreDetail' on 'IndexedDatabaseUpgrader': Argument 'objectStoreName' is not a string.");
+		return new ObjectStoreDetail(temp);
 	}
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
@@ -298,9 +379,8 @@ class ObjectStoreDetail {
 class ObjectStoreUpgrader extends ObjectStoreDetail {
 	static #checkInstance(instance) { if (!(instance instanceof this)) throw new TypeError("Illegal invocation") }
 	#objectStore;
-	constructor(objectStore) {
-		if (arguments.length < 1) throw new TypeError("Failed to construct 'ObjectStoreUpgrader': 1 argument required, but only 0 present.");
-		if (!(objectStore instanceof IDBObjectStore)) throw new TypeError("Failed to construct 'ObjectStoreUpgrader': Argument 'objectStore' is not type of IDBObjectStore.");
+	constructor(privateInvoke, objectStore) {
+		if (privateInvoke != key) throw new TypeError("Illegal invacation");
 		super(objectStore);
 		this.#objectStore = objectStore;
 	}
@@ -350,11 +430,8 @@ class IndexedDatabaseObjectStore {
 	#name;
 	get indexedDatabase() { return this.#db }
 	get name() { return this.#name }
-	constructor(db, name) {
-		if (arguments.length < 2) throw new TypeError(`Failed to construct 'IndexedDatabaseObjectStore': 2 arguments required, but only ${arguments.length} present.`);
-		if (!(db instanceof IndexedDatabase)) throw new TypeError("Failed to construct 'IndexedDatabaseObjectStore': Argument 'db' is not type of IndexedDatabase.");
-		if (typeof name != "string") throw new TypeError("Failed to construct 'IndexedDatabaseObjectStore': Argument 'name' is not a string.");
-		if (!db.objectStoreNames.contains(name)) throw new Error(`Failed to construct 'IndexedDatabaseObjectStore': The database does not exist object store named '${name}'.`);
+	constructor(privateInvoke, db, name) {
+		if (privateInvoke != key) throw new TypeError("Illegal invacation");
 		this.#db = db;
 		this.#name = name;
 	}
