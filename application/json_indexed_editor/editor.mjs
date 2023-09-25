@@ -1,10 +1,10 @@
 import { endWork } from "./main.mjs";
-import initialStore from "/javascript/AppletsDataStorage.mjs";
+import database from "./data.mjs";
 import { parse as parseAH, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import { save } from "/javascript/module/FileIO.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 const { stringify, parse } = JSON, ROOT = Symbol("ROOT"),
-	indexorStorage = await initialStore("org.BSIF.JSONIndexedEditor", function (upgrader) { upgrader.createObjectStore("org.BSIF.JSONIndexedEditor") });
+	indexorStorage = database.getObjectStore("indexors");
 //预览部分
 class TreeNode {
 	key;
@@ -338,7 +338,7 @@ class Indexor {
 	static async loadSet() {
 		if (pending) return;
 		pending = true;
-		const last = await indexorStorage.get("indexor");
+		const last = await indexorStorage.get("current");
 		if (last) {
 			if (await MiniWindow.confirm(buildIndexorData("当前的索引器方案将会丢失。\n确定要加载如下方案吗？", last))) {
 				Indexor.#removeAll();
@@ -540,7 +540,7 @@ function buildIndexorData(message, data) {
 function loadIndexorMapper(item) { Indexor.newInstance(item.title, item.path) }
 function loadIndexor(data) { data.map(loadIndexorMapper) }
 {
-	const last = await indexorStorage.get("indexor");
+	const last = await indexorStorage.get("current");
 	if (last?.length) { loadIndexor(last) } else Indexor.newInstance();
 }
 //菜单部分
@@ -598,8 +598,8 @@ buildMenu([
 				async action() {
 					if (pending) return;
 					pending = true;
-					const last = await indexorStorage.get("indexor");
-					if (!last || await MiniWindow.confirm(buildIndexorData("之前已保存了如下方案，要覆盖吗？", last))) indexorStorage.update(Indexor.export(), "indexor");
+					const last = await indexorStorage.get("current");
+					if (!last || await MiniWindow.confirm(buildIndexorData("之前已保存了如下方案，要覆盖吗？", last))) indexorStorage.update(Indexor.export(), "current");
 					pending = false;
 				}
 			},
@@ -612,9 +612,9 @@ buildMenu([
 				async action() {
 					if (pending) return;
 					pending = true;
-					const last = await indexorStorage.get("indexor");
+					const last = await indexorStorage.get("current");
 					if (last) {
-						if (await MiniWindow.confirm(buildIndexorData("确定要删除如下已保存方案吗？", last))) indexorStorage.delete("indexor");
+						if (await MiniWindow.confirm(buildIndexorData("确定要删除如下已保存方案吗？", last))) indexorStorage.delete("current");
 					} else new MiniWindow("没有已保存的索引器方案。");
 					pending = false;
 				}

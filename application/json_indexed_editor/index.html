@@ -9,30 +9,35 @@
 	<link rel="stylesheet" type="text/css" href="/css/BSIF_style.css">
 	<link rel="stylesheet" type="text/css" href="editor.css">
 	<script src="main.mjs" type="module"></script>
+	<script src="ui.mjs" type="module"></script>
 	<link rel="manifest" href="./manifest.webmanifest">
-	<script>navigator.serviceWorker.register("./service_worker.mjs", { type: "module", updateViaCache: "none" })</script>
+	<script>
+		//if (location.hostname != "127.0.0.1") 
+		navigator.serviceWorker.register("./service_worker.mjs", { type: "module", updateViaCache: "none" });
+	</script>
 </head>
 
 <body class="bs-loading">
 	<div id="open">
-		<header id="top">
-			<h1>JSON 索引化编辑工具</h1>
-		</header>
-		<button id="select_file">打开 JSON 文件</button>
+		<div id="icon"></div>
+		<button id="select_file" class="default-color">打开 JSON 文件</button>
 	</div>
 	<div id="work">
 		<div id="file_name_frame"><span id="file_name">文件名</span></div>
 		<div id="menu"></div>
 		<div id="ui_frame">
-			<div class="ui_frame">
-				<h3>预览</h3>
+			<div id="preview_frame" class="on">
+				<span>预览</span><button id="preview_switch"></button>
 				<div id="preview"></div>
+				<div id="preview_resize"></div>
 			</div>
-			<div class="ui_frame">
-				<h3>编辑</h3>
+			<div id="editor_frame" class="ui_frame">
+				<div id="editor_tabs">
+					<button class="editor_tab current"><span>索引式编辑</span></button>
+				</div>
 				<div id="editor">
 					<div id="editor_index">索引编号<input id="editor_index_set" type="number" value="0" min="0" step="1" max="4294967295" title="索引编号"></div>
-					<div id="editor_indexor">索引器<button id="editor_indexor_add" title="增加一个索引器">+</button></div>
+					<div id="editor_indexor">索引器<button id="editor_indexor_add" class="default-color" title="增加一个索引器">+</button></div>
 					<div id="indexor_frame"></div>
 				</div>
 			</div>

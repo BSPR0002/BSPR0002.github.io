@@ -21,8 +21,7 @@ class CacheController {
 		await (await caches.open(this.ownCacheName)).addAll(own.map(ownUrl));
 		if (requiredScripts) await (await caches.open("/javascript/module/")).addAll(requiredScripts.map(requiredScriptsUrl));
 		if (shared) await (await caches.open("/")).addAll(shared);
-
-		console.log("服务线程安装成功，资源版本：" + this.version);
+		console.log("Service worker installed successfully.\nResource version: " + this.version);
 	}
 	async respond(request) {
 		const url = request.url;
@@ -35,7 +34,7 @@ class CacheController {
 			if (response) return response;
 			break;
 		}
-		return fetch(url);
+		return fetch(request);
 	}
 	async clean() { for (let cacheName of await caches.keys()) if (cacheName.startsWith(ownCachePrefix) && cacheName != this.ownCacheName) await caches.delete(cacheName) }
 }
