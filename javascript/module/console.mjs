@@ -1,6 +1,6 @@
 import { parseAndGetNodes } from "./ArrayHTML.mjs";
 const { documentFragment, nodes } = parseAndGetNodes([
-	["DIV", [
+	["div", [
 
 	], { id: "BSIF_console_emulator" }],
 	["STYLE", [

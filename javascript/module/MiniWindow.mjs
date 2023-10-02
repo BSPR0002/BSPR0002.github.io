@@ -1,6 +1,6 @@
 import { parseAndGetNodes as ArrayHTML } from "./ArrayHTML.mjs";
 const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent, contentFrame, confirmStyle, subLayer, subTitle, subFrame, subBody } = ArrayHTML([
-	["DIV", [
+	["div", [
 		["STYLE", [
 			"#MiniWindowLayer,#MiniWindowSubLayer{top:0;bottom:0;left:0;right:0;z-index:1073741823;display:none}",
 			"#MiniWindowLayer{position:fixed;background-color:rgba(0,0,0,0.7)}",
@@ -45,21 +45,21 @@ const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent,
 			"@keyframes MiniWindowSubCycle{from{transform:rotate(0)}to{transform:rotate(1turn)}}",
 			"#MiniWindowSubCycle::before{display:block;content:\"\";box-sizing:border-box;background-color:transparent;border:solid 0.125rem;border-color:#0080FF #0080FF transparent transparent;border-radius:50%;transform-origin:center;animation:MiniWindowSubCycle 1s linear infinite forwards running}"
 		]],
-		["DIV", [
-			["DIV", [
-				["SPAN", null, { id: "MiniWindowTitle" }, "windowTitle"],
-				["SPAN", "0", { id: "MiniWindowQueue", title: "正在排队的弹窗数量" }, "windowQueue"],
-				["BUTTON", null, { id: "MiniWindowClose", title: "关闭" }, "windowClose"]
+		["div", [
+			["div", [
+				["span", null, { id: "MiniWindowTitle" }, "windowTitle"],
+				["span", "0", { id: "MiniWindowQueue", title: "正在排队的弹窗数量" }, "windowQueue"],
+				["button", null, { id: "MiniWindowClose", title: "关闭" }, "windowClose"]
 			], { id: "MiniWindowTop" }],
 			["HR", null, { id: "MiniWindowHR" }],
-			["DIV", [
-				["DIV", null, { id: "MiniWindowContent" }, "windowContent"]
+			["div", [
+				["div", null, { id: "MiniWindowContent" }, "windowContent"]
 			], { id: "MiniWindowContentFrame" }, "contentFrame"],
-			["DIV", [
-				["DIV", [
-					["SPAN", null, { id: "MiniWindowSubTitle" }, "subTitle"],
+			["div", [
+				["div", [
+					["span", null, { id: "MiniWindowSubTitle" }, "subTitle"],
 					["HR", null, { id: "MiniWindowSubHR" }],
-					["DIV", null, { id: "MiniWindowSubContentFrame" }, "subFrame"]
+					["div", null, { id: "MiniWindowSubContentFrame" }, "subFrame"]
 				], { id: "MiniWindowSub" }, "subBody"]
 			], { id: "MiniWindowSubLayer" }, "subLayer"]
 		], { id: "MiniWindow" }, "windowBody"]
@@ -224,8 +224,8 @@ class MiniWindow extends EventTarget {
 		if (typeof message != "string") throw new TypeError("Failed to execute 'alert' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck();
 		const AH = ArrayHTML([
-			["DIV", message, { id: "MiniWindowSubMessage" }],
-			["DIV", [["BUTTON", "确认", null, "ok"]], { id: "MiniWindowSubButtons" }]
+			["div", message, { id: "MiniWindowSubMessage" }],
+			["div", [["button", "确认", null, "ok"]], { id: "MiniWindowSubButtons" }]
 		]), ok = AH.nodes.ok, controller = new SubWindowController, { promise1, resolve1 } = controller;
 		ok.addEventListener("click", function () { resolve1() }, { once: true, passive: true });
 		this.#createSub(controller, "alert", "提示", AH.documentFragment);
@@ -236,10 +236,10 @@ class MiniWindow extends EventTarget {
 		if (typeof message != "string") throw new TypeError("Failed to execute 'confirm' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck();
 		const AH = ArrayHTML([
-			["DIV", message, { id: "MiniWindowSubMessage" }],
-			["DIV", [
-				["BUTTON", "是", null, "yes"],
-				["BUTTON", "否", null, "no"]
+			["div", message, { id: "MiniWindowSubMessage" }],
+			["div", [
+				["button", "是", null, "yes"],
+				["button", "否", null, "no"]
 			], { id: "MiniWindowSubButtons" }]
 		]), { yes, no } = AH.nodes, controller = new SubWindowController, { promise1, resolve1 } = controller;
 		yes.addEventListener("click", function () { resolve1(true) }, { once: true, passive: true });
@@ -251,8 +251,8 @@ class MiniWindow extends EventTarget {
 		if (typeof message != "string") throw new TypeError("Failed to execute 'wait' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck("wait");
 		const AH = ArrayHTML([
-			["DIV", null, { id: "MiniWindowSubCycle" }],
-			["DIV", message, { id: "MiniWindowSubMessage" }]
+			["div", null, { id: "MiniWindowSubCycle" }],
+			["div", message, { id: "MiniWindowSubMessage" }]
 		]), controller = new SubWindowController, { resolve1 } = controller;
 		this.#createSub(controller, "wait", "请等待", AH.documentFragment);
 		return resolve1;
@@ -269,10 +269,10 @@ class MiniWindow extends EventTarget {
 		if (typeof title != "string") title = "确认";
 		const AH = ArrayHTML([
 			confirmStyle,
-			["DIV", content, { id: "MiniWindow_confirm_descriptions" }],
-			["DIV", [
-				["BUTTON", "是", null, "yes"],
-				["BUTTON", "否", null, "no"]
+			["div", content, { id: "MiniWindow_confirm_descriptions" }],
+			["div", [
+				["button", "是", null, "yes"],
+				["button", "否", null, "no"]
 			], { id: "MiniWindow_confirm_buttons" }]
 		], true), { yes, no } = AH.nodes;
 		var fulfill;

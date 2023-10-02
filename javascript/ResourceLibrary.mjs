@@ -21,12 +21,12 @@ class Field {
 	show(data) {
 		const container = document.createDocumentFragment();
 		for (let item of data) {
-			let card = ArrayHTML([["DIV", [
-				["DIV", null, item.icon ? { class: "resource_card_icon", style: `background-image:url("${item.icon}")` } : { class: "resource_card_icon none" }],
-				["SPAN", item.display, { class: "resource_card_name" }],
-				["DIV", buildMediaTags(item.media, "resource_card_tag"), { class: "resource_card_media" }],
-				["DIV", buildContentTags(item.content, "resource_card_tag"), { class: "resource_card_content" }],
-				["BUTTON", "详细信息", { class: "resource_card_detail" }, "cardDetail"]
+			let card = ArrayHTML([["div", [
+				["div", null, item.icon ? { class: "resource_card_icon", style: `background-image:url("${item.icon}")` } : { class: "resource_card_icon none" }],
+				["span", item.display, { class: "resource_card_name" }],
+				["div", buildMediaTags(item.media, "resource_card_tag"), { class: "resource_card_media" }],
+				["div", buildContentTags(item.content, "resource_card_tag"), { class: "resource_card_content" }],
+				["button", "详细信息", { class: "resource_card_detail" }, "cardDetail"]
 			], { class: "resource_card" }]]);
 			card.nodes.cardDetail.addEventListener("click", function () { showDetail(item) });
 			container.appendChild(card.documentFragment);

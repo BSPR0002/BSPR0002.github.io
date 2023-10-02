@@ -23,9 +23,9 @@ async function alertRequest(permissionName, reason) {
 	--requestCount.chance;
 	const documentFragment = parseAH([
 		style,
-		["DIV", [
+		["div", [
 			["H1", `此网站请求${permissions[permissionName].localName}权限`, { id: "bs-requestPermission_title" }],
-			["SPAN", permissions[permissionName].descriptions, { id: "bs-requestPermission_hint" }],
+			["span", permissions[permissionName].descriptions, { id: "bs-requestPermission_hint" }],
 			["P", [
 				"此网站需要这项权限用于：", ["BR"],
 				reason ?? "未知用途"

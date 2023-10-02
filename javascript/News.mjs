@@ -79,11 +79,11 @@ const boardStyle=parseAndGetNodes([["STYLE",[
 function createWindow(content){return new MiniWindow(content,"推送通知",{size:{width:"25rem",height:"100%"}})}
 async function showBoard() {
 	const {auto,container,frame}=parseAndGetNodes([
-		["DIV",[
+		["div",[
 			boardStyle,
 			["LABEL",[
-				["SPAN","访问网站时自动推送通知"],
-				["INPUT",null,{type:"checkbox",id:"bs-News_setting_switch"},"auto"]
+				["span","访问网站时自动推送通知"],
+				["input",null,{type:"checkbox",id:"bs-News_setting_switch"},"auto"]
 			],{id:"bs-News_setting"}],
 			["div",null,{class:"bs-loading"},"container"]
 		],{id:"bs-News"},"frame"]
@@ -107,11 +107,11 @@ async function showBoard() {
 				if (item.preview.message) previewMessage=item.preview.message;
 			}
 			let temp=[
-				["SPAN",item.title,{class:"bs-News_item_title"}],
-				["SPAN",previewMessage??typeof content=="string"?content:"详情请点击查看。",{class:"bs-News_item_message"}]
+				["span",item.title,{class:"bs-News_item_title"}],
+				["span",previewMessage??typeof content=="string"?content:"详情请点击查看。",{class:"bs-News_item_message"}]
 			];
 			if (previewImage) temp.push(["img",null,{src:previewImage,class:"bs-News_item_image"}]);
-			let itemBody=parseAndGetNodes([["DIV",temp,{class:"bs-News_item"},"body"]]).nodes.body;
+			let itemBody=parseAndGetNodes([["div",temp,{class:"bs-News_item"},"body"]]).nodes.body;
 			itemBody.addEventListener("click",function(){showDetail(item.id,item.title,item.content)});
 			container.appendChild(itemBody);
 		}

@@ -26,9 +26,9 @@ document.head.appendChild(ArrayHTML([["STYLE", [
 ]]]));
 function buildItem(data) {
 	const temp = [];
-	if ("image" in data) temp.push(["DIV", null, { class: "bs-carousel_item_image", style: `background-image:url("${data.image}")` }]);
-	if ("text" in data) temp.push(["DIV", data.text, { class: "bs-carousel_item_text", title: data.text }]);
-	var item = ["DIV", temp, { class: "bs-carousel_item" }, "item"];
+	if ("image" in data) temp.push(["div", null, { class: "bs-carousel_item_image", style: `background-image:url("${data.image}")` }]);
+	if ("text" in data) temp.push(["div", data.text, { class: "bs-carousel_item_text", title: data.text }]);
+	var item = ["div", temp, { class: "bs-carousel_item" }, "item"];
 	const action = data.action, attribute = item[2];
 	switch (typeof action) {
 		case "function":
@@ -108,13 +108,13 @@ class Carousel {
 		if (!Array.isArray(data)) throw new TypeError("Failed to construct 'Carousel': Argument 'data' is not an array.");
 		const items = data.filter(filter).map(buildItem);
 		const number = this.#size = items.length;
-		const paginations = [["DIV", null, { class: "bs-carousel_paginations_float" }, "float"]];
-		for (let i = 0; i < number; ++i) paginations.push(["INPUT", null, { type: "radio", class: "bs-carousel_paginations_item", name: "bs-carousel_page", value: i }]);
-		const nodes = ArrayHTML([["DIV", [
-			["DIV", items, { class: "bs-carousel_scroll" }, "scroll"],
+		const paginations = [["div", null, { class: "bs-carousel_paginations_float" }, "float"]];
+		for (let i = 0; i < number; ++i) paginations.push(["input", null, { type: "radio", class: "bs-carousel_paginations_item", name: "bs-carousel_page", value: i }]);
+		const nodes = ArrayHTML([["div", [
+			["div", items, { class: "bs-carousel_scroll" }, "scroll"],
 			["FORM", paginations, { class: "bs-carousel_paginations" }, "navi"],
-			["BUTTON", "<", { class: "bs-carousel_arrow prev" }, "prevButton"],
-			["BUTTON", ">", { class: "bs-carousel_arrow next" }, "nextButton"]
+			["button", "<", { class: "bs-carousel_arrow prev" }, "prevButton"],
+			["button", ">", { class: "bs-carousel_arrow next" }, "nextButton"]
 		], { class: "bs-carousel_box" }, "box"]], true).nodes;
 		const box = this.#box = nodes.box;
 		if (number < 2) {
