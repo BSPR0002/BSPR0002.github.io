@@ -37,7 +37,7 @@ function buildItem(data) {
 			item.addEventListener("click", action);
 			break;
 		case "string":
-			item[0] = "A";
+			item[0] = "a";
 			attribute.href = action;
 			attribute.class += " action";
 			attribute.target = "_blank";
@@ -112,7 +112,7 @@ class Carousel {
 		for (let i = 0; i < number; ++i) paginations.push(["input", null, { type: "radio", class: "bs-carousel_paginations_item", name: "bs-carousel_page", value: i }]);
 		const nodes = ArrayHTML([["div", [
 			["div", items, { class: "bs-carousel_scroll" }, "scroll"],
-			["FORM", paginations, { class: "bs-carousel_paginations" }, "navi"],
+			["form", paginations, { class: "bs-carousel_paginations" }, "navi"],
 			["button", "<", { class: "bs-carousel_arrow prev" }, "prevButton"],
 			["button", ">", { class: "bs-carousel_arrow next" }, "nextButton"]
 		], { class: "bs-carousel_box" }, "box"]], true).nodes;

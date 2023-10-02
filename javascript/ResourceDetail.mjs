@@ -37,7 +37,7 @@ detailStyle.textContent = [
 function buildResourceBaiduNetDisk(data, container) {
 	const link = "https://pan.baidu.com/s/" + data.code, temp = [
 		["h3", [["div", null, { class: "resource_detail_content_release_icon bdnd" }], "百度网盘"], { class: "resource_detail_content_release_type" }], ["HR"],
-		"链接：", ["A", link, { href: link + "?pwd=" + data.password, target: "_blank" }]
+		"链接：", ["a", link, { href: link + "?pwd=" + data.password, target: "_blank" }]
 	];
 	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
 	container.push(["div", temp]);
@@ -45,7 +45,7 @@ function buildResourceBaiduNetDisk(data, container) {
 function buildResourceMagnet(data, container) {
 	const link = "magnet:?xt=urn:btih:" + data.hash, temp = [
 		["h3", [["div", null, { class: "resource_detail_content_release_icon magnet" }], "磁力链接"], { class: "resource_detail_content_release_type" }], ["HR"],
-		"链接：", ["A", link, { href: link }]
+		"链接：", ["a", link, { href: link }]
 	];
 	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
 	container.push(["div", temp]);
