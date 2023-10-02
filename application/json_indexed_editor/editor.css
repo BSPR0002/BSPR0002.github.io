@@ -117,25 +117,53 @@ body.open>#open {display: grid}
 	cursor: ew-resize;
 }
 
+#editor_tabs_frame {
+	position: relative;
+	overflow: hidden;
+	padding: 0 0.0625rem;
+	background-color: #000;
+}
 #editor_tabs {
-	background-color: #222;
-	padding-left: 0.5rem;
+	height: 100%;
 	display: grid;
+	grid-auto-flow: column;
 	grid-auto-columns: min-content;
+	overflow: auto hidden;
+	gap: 0.0625rem;
+}
+#editor_tabs::-webkit-scrollbar {height: 0}
+#editor_tabs_scroll_bar {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 0.25rem;
+	opacity: 0;
+	transition: opacity 0.5s;
+	pointer-events: none;
+}
+#editor_tabs_frame:hover #editor_tabs_scroll_bar {opacity: 0.5}
+#editor_tabs_scroll_bar_slide {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: #FFF;
 }
 .editor_tab {
 	min-width: 8rem;
 	display: grid;
 	grid-template-columns: 1fr 2rem;
 	place-items: center;
-	background-color: #333;
+	background-color: #111;
 	border: none;
 	border-radius: 0;
 	padding: 0;
 	color: #FFF;
+	border-width: 0.0625rem 0;
+	border-style: solid;
+	border-color: transparent;
 }
-.editor_tab.current {background-color: #111!important}
-.editor_tab:hover {background-color: #333}
+.editor_tab.current{border-bottom-color: #00BFFF}
+.editor_tab.current,.editor_tab:hover {background-color: #222}
 .editor_tab:active:focus {background-color: #444}
 .editor_tab > span {
 	font-size: 0.875rem;
@@ -154,6 +182,9 @@ body.open>#open {display: grid}
 }
 .editor_tab_close:hover {background-color: #555}
 .editor_tab_close:active {background-color: #000}
+
+#editor_page {overflow: hidden}
+#editor_page > div {height: 100%}
 
 #file_name_frame,#menu {
 	display: grid;
@@ -210,11 +241,8 @@ body.open>#open {display: grid}
 .menu_option:hover {background-color: #0060A0}
 .menu_option:active:not(:hover) {background-color: #D08000}
 
-#preview,#editor {
-	height: 100%;
-}
-
 #preview {
+	height: 100%;
 	display: grid;
 	grid-area: preview;
 	padding: 0.5rem;
@@ -268,17 +296,17 @@ body.open>#open {display: grid}
 .preview_type.Object::after {content: "}"}
 .preview_type.Object {color: #00BFFF}
 
-#editor {
+#editor_page_indexed_edit {
 	display: grid;
 	grid-template-rows: 2rem 2rem 1fr;
 	overflow: hidden;
 }
-#editor>div {
+#editor_page_indexed_edit > div {
 	display: grid;
 	height: 100%;
 }
 
-#editor_index,#editor_indexor {
+#indexed_edit_index,#indexed_edit_indexor {
 	background-color: #333;
 	padding: 0 0.5rem;
 	grid-template-columns: auto auto;
@@ -287,7 +315,7 @@ body.open>#open {display: grid}
 	gap: 0.5rem;
 }
 
-#editor_index_set {
+#indexed_edit_index_set {
 	border: solid #000 0.125rem;
 	border-radius: 0.25rem;
 	height: 1.5rem;
@@ -296,12 +324,12 @@ body.open>#open {display: grid}
 	text-align: end;
 }
 
-#editor_indexor_add {
+#indexed_edit_indexor_add {
 	width: 1.5rem;
 	height: 1.5rem;
 }
 
-#indexor_frame {
+#indexed_edit_indexor_frame {
 	padding: 0.5rem;
 	overflow-y: auto;
 	grid-auto-rows: min-content;

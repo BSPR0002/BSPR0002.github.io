@@ -11,10 +11,7 @@
 	<script src="main.mjs" type="module"></script>
 	<script src="ui.mjs" type="module"></script>
 	<link rel="manifest" href="./manifest.webmanifest">
-	<script>
-		//if (location.hostname != "127.0.0.1") 
-		navigator.serviceWorker.register("./service_worker.mjs", { type: "module", updateViaCache: "none" });
-	</script>
+	<script>if (location.host != "127.0.0.1") navigator.serviceWorker.register("./service_worker.mjs", { type: "module", updateViaCache: "none" })</script>
 </head>
 
 <body class="bs-loading">
@@ -32,13 +29,20 @@
 				<div id="preview_resize"></div>
 			</div>
 			<div id="editor_frame" class="ui_frame">
-				<div id="editor_tabs">
-					<button class="editor_tab current"><span>索引式编辑</span></button>
+				<div id="editor_tabs_frame">
+					<div id="editor_tabs"><button class="editor_tab current" draggable="true"><span>索引式编辑</span></button></div>
+					<div id="editor_tabs_scroll_bar">
+						<div id="editor_tabs_scroll_bar_slide"></div>
+					</div>
 				</div>
-				<div id="editor">
-					<div id="editor_index">索引编号<input id="editor_index_set" type="number" value="0" min="0" step="1" max="4294967295" title="索引编号"></div>
-					<div id="editor_indexor">索引器<button id="editor_indexor_add" class="default-color" title="增加一个索引器">+</button></div>
-					<div id="indexor_frame"></div>
+				<div id="editor_page">
+					<div id="editor_page_indexed_edit">
+						<div id="indexed_edit_index">索引编号<input id="indexed_edit_index_set" type="number" value="0"
+								min="0" step="1" max="4294967295" title="索引编号"></div>
+						<div id="indexed_edit_indexor">索引器<button id="indexed_edit_indexor_add" class="default-color"
+								title="增加一个索引器">+</button></div>
+						<div id="indexed_edit_indexor_frame"></div>
+					</div>
 				</div>
 			</div>
 		</div>

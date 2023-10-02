@@ -203,9 +203,9 @@ function reRender(node, viewTop, viewBottom, offsetTop) {
 var tree, fileHandle, data, changed = false, pending = false;
 const fileName = document.getElementById("file_name"),
 	preview = document.getElementById("preview"),
-	indexorFrame = document.getElementById("indexor_frame"),
+	indexorFrame = document.getElementById("indexed_edit_indexor_frame"),
 	menu = document.getElementById("menu"),
-	index = document.getElementById("editor_index_set"),
+	index = document.getElementById("indexed_edit_index_set"),
 	root = new TreeRootNode;
 preview.addEventListener("scroll", function () { root.update(tree) }, { passive: true });
 function openFile(JSONData, file) {
@@ -349,7 +349,7 @@ class Indexor {
 	}
 	static export() { return Indexor.#pool.map(indexorMapper) }
 	static {
-		document.getElementById("editor_indexor_add").addEventListener("click", addIndexor)
+		document.getElementById("indexed_edit_indexor_add").addEventListener("click", addIndexor)
 		index.addEventListener("change", function () {
 			Indexor.#index = Number(this.value);
 			Indexor.#pool.forEach(Indexor.#updateMapper);
