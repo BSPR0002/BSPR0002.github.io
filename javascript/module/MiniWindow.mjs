@@ -1,7 +1,7 @@
 import { parseAndGetNodes as ArrayHTML } from "./ArrayHTML.mjs";
 const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent, contentFrame, confirmStyle, subLayer, subTitle, subFrame, subBody } = ArrayHTML([
 	["div", [
-		["STYLE", [
+		["style", [
 			"#MiniWindowLayer,#MiniWindowSubLayer{top:0;bottom:0;left:0;right:0;z-index:1073741823;display:none}",
 			"#MiniWindowLayer{position:fixed;background-color:rgba(0,0,0,0.7)}",
 			"#MiniWindowSubLayer{position:absolute}",
@@ -64,7 +64,7 @@ const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent,
 			], { id: "MiniWindowSubLayer" }, "subLayer"]
 		], { id: "MiniWindow" }, "windowBody"]
 	], { id: "MiniWindowLayer" }, "layer"],
-	["STYLE", [
+	["style", [
 		"#MiniWindowContent{display:grid;grid-template-rows:1fr auto;gap:0.5rem}",
 		"#MiniWindow_confirm_descriptions{overflow:hidden auto}",
 		"#MiniWindow_confirm_buttons{display:grid;grid-template-columns:repeat(2,minmax(auto,6rem));gap:0.5rem;justify-self:end}",

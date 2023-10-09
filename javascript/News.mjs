@@ -56,7 +56,7 @@ async function operator(list) {
 		});
 	}
 }
-const boardStyle=parseAndGetNodes([["STYLE",[
+const boardStyle=parseAndGetNodes([["style",[
 	"#bs-News{display:grid;height:100%;grid-template-rows:auto 1fr}",
 	"#bs-News_setting{display:grid;height:2rem;grid-template-columns:1fr 3rem;gap:1em;place-items:center start;border-bottom:dashed 1px var(--strongEdge)}",
 	"#bs-News_setting>span{font-weight:bold;white-space:nowrap;overflow:hidden}",

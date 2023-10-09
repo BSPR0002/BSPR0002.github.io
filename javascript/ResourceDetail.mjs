@@ -2,7 +2,7 @@ import { getJSON } from "/javascript/module/AJAX.mjs";
 import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
-const detailStyle = document.createElement("STYLE");
+const detailStyle = document.createElement("style");
 detailStyle.textContent = [
 	"#resource_detail{display:grid;grid-template-rows:auto 1fr;gap:0.5rem}",
 	"#resource_detail_information{display:grid;gap:0.25rem 1rem;color:#000000}",
@@ -39,7 +39,7 @@ function buildResourceBaiduNetDisk(data, container) {
 		["h3", [["div", null, { class: "resource_detail_content_release_icon bdnd" }], "百度网盘"], { class: "resource_detail_content_release_type" }], ["HR"],
 		"链接：", ["a", link, { href: link + "?pwd=" + data.password, target: "_blank" }]
 	];
-	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
+	if ("note" in data) temp.push(["br"], "说明：", ["br"], ...data.note);
 	container.push(["div", temp]);
 }
 function buildResourceMagnet(data, container) {
@@ -47,7 +47,7 @@ function buildResourceMagnet(data, container) {
 		["h3", [["div", null, { class: "resource_detail_content_release_icon magnet" }], "磁力链接"], { class: "resource_detail_content_release_type" }], ["HR"],
 		"链接：", ["a", link, { href: link }]
 	];
-	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
+	if ("note" in data) temp.push(["br"], "说明：", ["br"], ...data.note);
 	container.push(["div", temp]);
 }
 function buildRelease(data) {
@@ -57,8 +57,8 @@ function buildRelease(data) {
 	return buildDetailsPart("资源", temp, true, "resource_detail_content_release");
 }
 function buildDetailsPart(title, data, opened = false, className = null) {
-	data.unshift(["SUMMARY", [["H2", title]]]);
-	const arrayHTML = ["DETAILS", data, { class: "bs-content" }], attributes = arrayHTML[2];
+	data.unshift(["summary", [["h2", title]]]);
+	const arrayHTML = ["details", data, { class: "bs-content" }], attributes = arrayHTML[2];
 	if (className) attributes.class += " " + className;
 	if (opened) attributes.open = "";
 	return arrayHTML;
@@ -75,8 +75,8 @@ function showDetail(data) {
 		detailStyle.cloneNode(true),
 		["div", [
 			["div", [
-				["IMG", null, { id: "resource_detail_information_icon", src: data.icon, alt: "资源印象图" }],
-				["H1", data.display, { id: "resource_detail_information_name" }],
+				["img", null, { id: "resource_detail_information_icon", src: data.icon, alt: "资源印象图" }],
+				["h1", data.display, { id: "resource_detail_information_name" }],
 				["div", [
 					["span", "媒体类型", { class: "resource_detail_information_item_name" }],
 					"media" in data ? ["div", buildMediaTags(data.media, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"

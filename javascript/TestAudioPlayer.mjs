@@ -4,7 +4,7 @@ import MiniWindow from "/javascript/module/MiniWindow.mjs";
 //交互托盘
 const toolInterface=ArrayHTML([
 	["div",[
-		["STYLE",[
+		["style",[
 			"#test_audio_player>*{max-width:100%}",
 			"#test_audio_player button{border:solid 2px #FFFFFF;border-radius:4px;background-color:#000000;font-size:15px}",
 			"#test_audio_player .controls_speed{padding:0;width:24px;height:24px}"

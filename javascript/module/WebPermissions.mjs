@@ -1,7 +1,7 @@
 import MiniWindow from "./MiniWindow.mjs";
 import { parse as parseAH, parseAndGetNodes as parseAHNode } from "./ArrayHTML.mjs";
 import { LocalStorageObject } from "./LocalStorageObject.mjs";
-const style = parseAHNode([["STYLE", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]], true).nodes.style;
+const style = parseAHNode([["style", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]], true).nodes.style;
 const permissions = {
 	notification: {
 		localName: "通知",
@@ -24,10 +24,10 @@ async function alertRequest(permissionName, reason) {
 	const documentFragment = parseAH([
 		style,
 		["div", [
-			["H1", `此网站请求${permissions[permissionName].localName}权限`, { id: "bs-requestPermission_title" }],
+			["h1", `此网站请求${permissions[permissionName].localName}权限`, { id: "bs-requestPermission_title" }],
 			["span", permissions[permissionName].descriptions, { id: "bs-requestPermission_hint" }],
-			["P", [
-				"此网站需要这项权限用于：", ["BR"],
+			["p", [
+				"此网站需要这项权限用于：", ["br"],
 				reason ?? "未知用途"
 			], { id: "bs-requestPermission_descriptions" }],
 			"你想要授权吗？",

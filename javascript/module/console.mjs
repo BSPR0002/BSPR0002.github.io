@@ -3,7 +3,7 @@ const { documentFragment, nodes } = parseAndGetNodes([
 	["div", [
 
 	], { id: "BSIF_console_emulator" }],
-	["STYLE", [
+	["style", [
 		"#BSIF_console_emulator"
 	]]
 ]);

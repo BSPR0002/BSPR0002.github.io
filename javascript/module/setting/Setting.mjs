@@ -1,7 +1,7 @@
 import getStorage from "./SettingStorage.mjs";
 import { IndexedDatabaseObjectStore } from "../IndexedDatabase.mjs";
 import { parseAndGetNodes, parse } from "../ArrayHTML.mjs";
-const style = document.createElement("STYLE");
+const style = document.createElement("style");
 style.textContent = [
 	".bs-setting_frame,.bs-setting_frame_sub{width:100%;height:100%;background-color:#FFFFFF;overflow:hidden;display:grid;grid-template-rows:2.5rem 1fr;box-sizing:border-box}",
 	".bs-setting_frame{position:relative;user-select:none}",
