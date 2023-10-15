@@ -80,27 +80,37 @@ function userChangeTab() {
 	pageFrame.appendChild(tabItem.page);
 }
 function changeTap(tab) {
-	currentTab.tab.classList.remove("current");
+	currentTab?.tab.classList.remove("current");
 	currentTab = tab;
 	const tabElement = tab.tab;
 	tabElement.classList.add("current");
 	pageFrame.innerHTML = "";
-	pageFrame.appendChild(tabItem.page);
+	pageFrame.appendChild(tab.page);
 	tabElement.scrollIntoViewIfNeeded();
 }
 function closeTab() {
 	const tabItem = this[relation], index = tabItems.indexOf(tabItem);
 	tabItems.splice(index, 1);
 	const length = tabItems.length;
-	changeTap(tabItems[index < length ? index : length - 1]);
+	if (length) {
+		changeTap(tabItems[index < length ? index : length - 1]);
+	} else {
+		currentTab = null;
+		pageFrame.innerHTML = "";
+	}
 }
+function findExist(id, item) { return item.id == id }
 class TabItem {
-	constructor(id, title, content) {
+	constructor(id, title, content, userClosable = true) {
+		{
+			const exist = tabItems.find(findExist.bind(null, id));
+			if (exist) return exist;
+		}
 		const { tab, page, close } = parseAndGetNodes([
 			["button", [
 				["span", title],
 				["button", null, { class: "editor_tab_close" }, "close"]
-			], { class: "editor_tab" }, "tab"],
+			], { class: "editor_tab", draggable: true }, "tab"],
 			["div", content, { id: "editor_page_" + id }, "page"]
 		]).nodes;
 		this.id = id;
@@ -110,21 +120,23 @@ class TabItem {
 		Object.defineProperty(tab, relation, { value: this });
 		Object.defineProperty(page, relation, { value: this });
 		tab.addEventListener("click", userChangeTab, { passive: true });
-		close.addEventListener("click", closeTab, { passive: true });
+		if (userClosable) {
+			close.addEventListener("click", closeTab, { passive: true });
+		} else close.remove();
 		tabItems.push(this);
 		tabsElement.append(tab);
 	}
 }
-let currentTab = Object.freeze(Object.setPrototypeOf({
-	id: "indexed_edit",
-	tab: document.querySelector(".editor_tab"),
-	page: document.getElementById("editor_page_indexed_edit")
-}, TabItem));
-currentTab.tab.addEventListener("click", userChangeTab, { passive: true });
-const tabItems = [currentTab];
 tabsElement.addEventListener("dragover", (event) => { event.preventDefault() });
 tabsElement.addEventListener("dragstart", (event) => {
 	console.log(event)
 });
-
-export { TabItem, changeTap }
+function createTab(id, title, content, userClosable = true) {
+	const length = tabItems.length,
+		tab = new TabItem(id, title, content, userClosable);
+	if (!length) changeTap(tab);
+	return tab;
+}
+const tabItems = [];
+var currentTab = null;
+export { createTab, changeTap };

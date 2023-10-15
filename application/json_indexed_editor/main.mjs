@@ -8,13 +8,15 @@ async function loadFile(fileHandle) {
 	if (pending || working) return;
 	pending = true;
 	const waitWin = new MiniWindow("正在加载，请稍等……", "请稍等", { noManualClose: true });
+	let data
 	try {
-		const data = JSON.parse(await read(await fileHandle.getFile(), readableTypes.TEXT));
+		data = JSON.parse(await read(await fileHandle.getFile(), readableTypes.TEXT));
 		fileHandle.requestPermission({ mode: "readwrite" });
-		startWork(data, fileHandle);
 	} catch (error) {
 		new MiniWindow("无法解读该文件，请选择正确的 JSON 文件。", "错误！");
 	}
+	startWork(data, fileHandle);
+	document.title = fileHandle.name;
 	pending = false;
 	waitWin.close();
 }
@@ -38,5 +40,6 @@ function startWork(data, fileHandle) {
 function endWork() {
 	working = false;
 	body.className = "open";
+	document.title = "JSON 索引化编辑器"
 }
 export { endWork }

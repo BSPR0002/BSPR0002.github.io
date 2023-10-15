@@ -7,7 +7,8 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 	<link rel="icon" type="image/png" href="icon.svg">
 	<link rel="stylesheet" type="text/css" href="/css/BSIF_style.css">
-	<link rel="stylesheet" type="text/css" href="editor.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/indexed_edit.css">
 	<script src="main.mjs" type="module"></script>
 	<script src="ui.mjs" type="module"></script>
 	<link rel="manifest" href="./manifest.webmanifest">
@@ -20,7 +21,6 @@
 		<button id="select_file" class="default-color">打开 JSON 文件</button>
 	</div>
 	<div id="work">
-		<div id="file_name_frame"><span id="file_name">文件名</span></div>
 		<div id="menu"></div>
 		<div id="ui_frame">
 			<div id="preview_frame" class="on">
@@ -30,20 +30,12 @@
 			</div>
 			<div id="editor_frame" class="ui_frame">
 				<div id="editor_tabs_frame">
-					<div id="editor_tabs"><button class="editor_tab current" draggable="true"><span>索引式编辑</span></button></div>
+					<div id="editor_tabs"></div>
 					<div id="editor_tabs_scroll_bar">
 						<div id="editor_tabs_scroll_bar_slide"></div>
 					</div>
 				</div>
-				<div id="editor_page">
-					<div id="editor_page_indexed_edit">
-						<div id="indexed_edit_index">索引编号<input id="indexed_edit_index_set" type="number" value="0"
-								min="0" step="1" max="4294967295" title="索引编号"></div>
-						<div id="indexed_edit_indexor">索引器<button id="indexed_edit_indexor_add" class="default-color"
-								title="增加一个索引器">+</button></div>
-						<div id="indexed_edit_indexor_frame"></div>
-					</div>
-				</div>
+				<div id="editor_page"></div>
 			</div>
 		</div>
 	</div>

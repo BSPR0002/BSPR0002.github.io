@@ -17,7 +17,7 @@ detailStyle.textContent = [
 	"#resource_detail_information_icon{grid-area:icon}",
 	".resource_detail_information_item{grid-template-columns:auto 1fr;gap:0.5rem}",
 	"}",
-	"@media all and (max-width:47.999rem){",
+	"@media all and not (min-width:48rem){",
 	"#resource_detail_information{grid-template-rows:8rem repeat(5,1fr);place-items:center}",
 	".resource_detail_information_item{align-self:start;width:100%;place-items:center}",
 	".resource_detail_tag{margin-inline:0.125rem}",

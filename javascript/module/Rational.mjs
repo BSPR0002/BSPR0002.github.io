@@ -41,19 +41,17 @@ class Rational {
 			if (denominator == 0) throw new DivideByZeroError("Failed to construct 'Rational': Argument 'denominator' cannot be 0.");
 			const divisor = Rational.#reduceFactor(x, denominator);
 			Rational.#denominatorPositify(this, x / divisor, denominator / divisor);
-		} else {
-			if (isFinite(x)) {
-				denominator = 1;
-				while (!isInteger(x)) {
-					denominator *= 10;
-					x *= 10;
-				}
-				const divisor = Rational.#reduceFactor(x, denominator);
-				Rational.#denominatorPositify(this, x / divisor, denominator / divisor);
-			} else {
-				this.#numerator = x;
-				this.#denominator = 1;
+		} else if (isFinite(x)) {
+			denominator = 1;
+			while (!isInteger(x)) {
+				denominator *= 10;
+				x *= 10;
 			}
+			const divisor = Rational.#reduceFactor(x, denominator);
+			Rational.#denominatorPositify(this, x / divisor, denominator / divisor);
+		} else {
+			this.#numerator = x;
+			this.#denominator = 1;
 		}
 	}
 	isFinite() { return isFinite(this.#numerator) }
