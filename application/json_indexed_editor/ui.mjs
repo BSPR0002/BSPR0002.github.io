@@ -37,19 +37,20 @@ document.getElementById("preview_switch").addEventListener("click", function () 
 })
 // 选项卡控制
 const tabsElement = document.getElementById("editor_tabs"),
-	tabsOverlayTrack = document.getElementById("editor_tabs_scroll_bar").style,
+	tabsOverlayTrack = document.getElementById("editor_tabs_scroll_bar"),
+	tabsOverlayTrackStyle = tabsOverlayTrack.style,
 	tabsOverlaySlide = document.getElementById("editor_tabs_scroll_bar_slide").style,
 	pageFrame = document.getElementById("editor_page"),
 	relation = Symbol("relation");
-let tabsWidth, tabsContentWidth, tabsSlideWidth, tabsSlideMotionSpace, tabsMotionSpace;
+var tabsWidth, tabsContentWidth, tabsSlideWidth, tabsSlideMotionSpace, tabsMotionSpace, dragScrollOrigin;
 function tabsChange() {
 	if (tabsContentWidth > tabsWidth) {
-		tabsOverlayTrack.display = null;
+		tabsOverlayTrackStyle.display = null;
 		tabsOverlaySlide.width = (tabsSlideWidth = ceil(tabsWidth / tabsContentWidth * tabsWidth)) / 16 + "rem";
 		tabsSlideMotionSpace = tabsWidth - tabsSlideWidth;
 		tabsMotionSpace = tabsContentWidth - tabsWidth;
 		tabsScroll();
-	} else tabsOverlayTrack.display = "none";
+	} else tabsOverlayTrackStyle.display = "none";
 }
 function tabsScroll() { tabsOverlaySlide.left = tabsElement.scrollLeft / tabsMotionSpace * tabsSlideMotionSpace / 16 + "rem" }
 new ResizeObserver(([{ borderBoxSize: [{ inlineSize }] }]) => {
@@ -64,13 +65,37 @@ new MutationObserver(([{ addedNodes, removedNodes }]) => {
 	}
 }).observe(tabsElement, { childList: true });
 tabsElement.addEventListener("scroll", tabsScroll, { passive: true });
-tabsElement.addEventListener("wheel", (event) => {
+tabsElement.addEventListener("wheel", event => {
+	if (event.shiftKey) return;
 	const y = event.deltaY;
 	if (y) {
 		event.preventDefault();
 		tabsElement.scrollBy({ left: y, behavior: "smooth" });
 	}
 });
+function dragScroll({ movementX }) { tabsElement.scrollLeft = (dragScrollOrigin += movementX) / tabsSlideMotionSpace * tabsMotionSpace }
+function dragScrollEnd() {
+	dragScrollOrigin = undefined;
+	tabsOverlayTrackStyle.opacity = null;
+	window.removeEventListener("pointermove", dragScroll, { passive: true });
+	window.removeEventListener("pointerup", dragScrollEnd, { passive: true });
+	window.removeEventListener("blur", dragScrollEnd, { passive: true })
+}
+tabsOverlayTrack.addEventListener("pointerdown", ({ target, offsetX }) => {
+	if (target == tabsOverlayTrack) {
+		const half = ceil(tabsSlideWidth / 2);
+		if (offsetX - half <= 0) {
+			dragScrollOrigin = tabsElement.scrollLeft = 0;
+		} else if (tabsSlideMotionSpace + half <= offsetX) {
+			tabsElement.scrollLeft = tabsMotionSpace;
+			dragScrollOrigin = tabsSlideMotionSpace;
+		} else tabsElement.scrollLeft = (dragScrollOrigin = offsetX - half) / tabsSlideMotionSpace * tabsMotionSpace;
+	} else dragScrollOrigin = ceil(tabsElement.scrollLeft / tabsMotionSpace * tabsSlideMotionSpace);
+	window.addEventListener("pointermove", dragScroll, { passive: true });
+	window.addEventListener("pointerup", dragScrollEnd, { passive: true });
+	window.addEventListener("blur", dragScrollEnd, { passive: true });
+	tabsOverlayTrackStyle.opacity = 0.5;
+}, { passive: true });
 function userChangeTab() {
 	const tabItem = this[relation];
 	currentTab.tab.classList.remove("current");
@@ -88,22 +113,18 @@ function changeTap(tab) {
 	pageFrame.appendChild(tab.page);
 	tabElement.scrollIntoViewIfNeeded();
 }
-function closeTab() {
-	const tabItem = this[relation], index = tabItems.indexOf(tabItem);
-	tabItems.splice(index, 1);
-	const length = tabItems.length;
-	if (length) {
-		changeTap(tabItems[index < length ? index : length - 1]);
-	} else {
-		currentTab = null;
-		pageFrame.innerHTML = "";
-	}
+function userCloseTab(event) {
+	event.stopImmediatePropagation();
+	this.parentNode[relation].close();
 }
-function findExist(id, item) { return item.id == id }
-class TabItem {
+function getTab(id) {
+	for (const item of tabItems) if (item.id == id) return item;
+	return null;
+}
+class TabItem extends EventTarget {
 	constructor(id, title, content, userClosable = true) {
 		{
-			const exist = tabItems.find(findExist.bind(null, id));
+			const exist = getTab(id);
 			if (exist) return exist;
 		}
 		const { tab, page, close } = parseAndGetNodes([
@@ -113,6 +134,7 @@ class TabItem {
 			], { class: "editor_tab", draggable: true }, "tab"],
 			["div", content, { id: "editor_page_" + id }, "page"]
 		]).nodes;
+		super();
 		this.id = id;
 		this.tab = tab;
 		this.page = page;
@@ -121,15 +143,74 @@ class TabItem {
 		Object.defineProperty(page, relation, { value: this });
 		tab.addEventListener("click", userChangeTab, { passive: true });
 		if (userClosable) {
-			close.addEventListener("click", closeTab, { passive: true });
+			close.addEventListener("click", userCloseTab, { passive: true });
 		} else close.remove();
 		tabItems.push(this);
 		tabsElement.append(tab);
 	}
+	close() {
+		const index = tabItems.indexOf(this);
+		if (index == -1) return;
+		tabItems.splice(index, 1);
+		this.tab.remove();
+		this.dispatchEvent(new Event("close"));
+		if (this != currentTab) return;
+		const length = tabItems.length;
+		if (length) {
+			changeTap(tabItems[index < length ? index : length - 1]);
+		} else {
+			currentTab = null;
+			pageFrame.innerHTML = "";
+		}
+	}
 }
-tabsElement.addEventListener("dragover", (event) => { event.preventDefault() });
-tabsElement.addEventListener("dragstart", (event) => {
-	console.log(event)
+var movingTab = null;
+function tabDragOver(event) {
+	event.preventDefault();
+	event.dataTransfer.dropEffect = "move";
+	event.stopImmediatePropagation();
+}
+function tabDragLeave(event) {
+	event.preventDefault();
+	event.dataTransfer.dropEffect = "none";
+}
+function tabDrop({ target, layerX }) {
+	var targetIndex;
+	if (target.className == "editor_tab_close") {
+		targetIndex = tabItems.indexOf(target.parentNode[relation]);
+	} else if (target.classList.contains("editor_tab")) {
+		targetIndex = tabItems.indexOf(target[relation]);
+	} else {
+		const lastIndex = tabItems.length - 1, lastTab = tabItems[lastIndex].tab;
+		if (layerX + tabsElement.scrollLeft > lastTab.offsetLeft + lastTab.offsetWidth) {
+			targetIndex = lastIndex;
+		} else return;
+	}
+	const currentIndex = tabItems.indexOf(movingTab);
+	if (currentIndex == targetIndex) return;
+	if (currentIndex < targetIndex) {
+		tabsElement.insertBefore(movingTab.tab, tabItems[targetIndex].tab.nextSibling)
+		tabItems.copyWithin(currentIndex, currentIndex + 1, targetIndex + 1);
+		tabItems[targetIndex] = movingTab;
+	} else {
+		tabsElement.insertBefore(movingTab.tab, tabItems[targetIndex].tab);
+		tabItems.copyWithin(targetIndex + 1, targetIndex, currentIndex);
+		tabItems[targetIndex] = movingTab;
+	}
+}
+function tabDragEnd() {
+	movingTab = null
+	tabsElement.removeEventListener("dragover", tabDragOver);
+	tabsElement.removeEventListener("dragleave", tabDragLeave);
+	tabsElement.removeEventListener("drop", tabDrop);
+	tabsElement.removeEventListener("dragend", tabDragEnd);
+}
+tabsElement.addEventListener("dragstart", ({ target }) => {
+	movingTab = target[relation];
+	tabsElement.addEventListener("dragover", tabDragOver);
+	tabsElement.addEventListener("dragleave", tabDragLeave);
+	tabsElement.addEventListener("drop", tabDrop);
+	tabsElement.addEventListener("dragend", tabDragEnd);
 });
 function createTab(id, title, content, userClosable = true) {
 	const length = tabItems.length,
@@ -139,4 +220,4 @@ function createTab(id, title, content, userClosable = true) {
 }
 const tabItems = [];
 var currentTab = null;
-export { createTab, changeTap };
+export { createTab, changeTap, getTab };

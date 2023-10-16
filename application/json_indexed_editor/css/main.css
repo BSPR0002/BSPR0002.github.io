@@ -139,7 +139,6 @@ body.open>#open {display: grid}
 	height: 0.25rem;
 	opacity: 0;
 	transition: opacity 0.5s;
-	pointer-events: none;
 }
 #editor_tabs_frame:hover #editor_tabs_scroll_bar {opacity: 0.5}
 #editor_tabs_scroll_bar_slide {
@@ -147,6 +146,7 @@ body.open>#open {display: grid}
 	height: 100%;
 	width: 100%;
 	background-color: #FFF;
+	pointer-events: none;
 }
 .editor_tab {
 	min-width: 8rem;
@@ -158,9 +158,9 @@ body.open>#open {display: grid}
 	border-radius: 0;
 	padding: 0;
 	color: #FFF;
-	border-width: 0.0625rem 0;
+	border-width: 0.0625rem;
 	border-style: solid;
-	border-color: transparent;
+	border-color: #000 transparent;
 }
 .editor_tab.current{border-bottom-color: #00BFFF}
 .editor_tab.current,.editor_tab:hover {background-color: #222}
@@ -170,6 +170,7 @@ body.open>#open {display: grid}
 	place-self: center start;
 	padding-left: 0.5rem;
 	word-break: keep-all;
+	pointer-events: none;
 }
 .editor_tab_close {
 	place-self: center;

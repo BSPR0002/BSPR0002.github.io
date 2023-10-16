@@ -21,7 +21,10 @@ async function loadFile(fileHandle) {
 	waitWin.close();
 }
 function preventDefault(event) { event.preventDefault() }
-document.addEventListener("dragover", preventDefault);
+document.addEventListener("dragover", event =>{
+	event.preventDefault();
+	event.dataTransfer.dropEffect = "none";
+});
 document.addEventListener("drop", preventDefault);
 body.className = "open";
 launchQueue.setConsumer(function (launchParams) {

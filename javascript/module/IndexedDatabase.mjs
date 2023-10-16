@@ -77,7 +77,7 @@ class IndexedDatabase {
 			this.#transaction = null;
 			if (onabort) onabort();
 		});
-		transaction.addEventListener("error", (event) => {
+		transaction.addEventListener("error", event => {
 			this.#transaction = null;
 			if (onerror) { onerror(event) } else console.error(event.target.error);
 		});
