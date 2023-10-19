@@ -1,4 +1,4 @@
-import { TreeCollectionNode, tree } from "./editor.mjs";
+import { TreeCollectionNode, tree } from "./tree.mjs";
 const parse = JSON.parse,
 	literalRegexp = /\[('(?:\\.|[^\\'])*'|"(?:\\.|[^\\"])*"|\d+)]/y,
 	propertyRegexp = /\.([A-Za-z_$][\w$]*)/y,

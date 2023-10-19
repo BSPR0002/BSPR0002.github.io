@@ -1,6 +1,6 @@
 import { open, read, readableTypes } from "/javascript/module/FileIO.mjs";
 import { MiniWindow } from "/javascript/module/MiniWindow.mjs";
-import { openFile } from "./editor.mjs";
+import { openFile } from "./tree.mjs";
 const body = document.body;
 var working = false, pending = false;
 document.getElementById("select_file").addEventListener("click", async function () { try { loadFile(await open({ types: [{ accept: { "application/json": [".json"] } }] })) } catch (e) { } });
