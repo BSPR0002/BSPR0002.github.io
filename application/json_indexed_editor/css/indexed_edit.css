@@ -11,17 +11,31 @@
 #indexed_edit_variables,#indexed_edit_indexor {
 	background-color: #333;
 	padding: 0 0.5rem;
-	grid-template-columns: auto auto;
+	grid-template-columns: auto 2rem;
 	justify-content: start;
 	align-items: center;
 	gap: 0.5rem;
+	text-wrap: nowrap;
 }
+#indexed_edit_variables { grid-template-columns: auto 2rem 1fr }
+
+.indexed_edit_options {
+	width: 1.5rem;
+	height: 1.5rem;
+	justify-self: center;
+	border: 0;
+	background-color: transparent;
+	background-image: url(../buttons.svg);
+	background-position: -3rem -1rem;
+}
+.indexed_edit_options:hover { background-color: #444 }
+.indexed_edit_options:active { background-color: #111 }
 
 #indexed_edit_index_set {
 	border: solid #000 0.125rem;
 	border-radius: 0.25rem;
 	height: 1.5rem;
-	width: 7rem;
+	width: 7.25rem;
 	font-size: 0.875rem;
 	text-align: end;
 }

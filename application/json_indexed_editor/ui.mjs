@@ -1,10 +1,11 @@
 import database from "./data.mjs";
-import { parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { EVENT_LISTENERS, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 // 预览窗格宽度控制
 const ceil = Math.ceil,
 	uiData = database.getObjectStore("UI"),
 	previewFrame = document.getElementById("preview_frame"),
 	previewFrameStyle = previewFrame.style,
+	previewSwitch = document.getElementById("preview_switch"),
 	rootStyle = document.firstElementChild.style;
 let previewFrameWidth, save = false, previewSwitchState = true;
 previewFrameStyle.width = (await uiData.get("previewFrameWidth") ?? 256) + "px";
@@ -31,9 +32,15 @@ document.getElementById("preview_resize").addEventListener("pointerdown", /* res
 	window.addEventListener("blur", resizeEnd, { passive: true });
 	rootStyle.cursor = "ew-resize";
 });
-document.getElementById("preview_switch").addEventListener("click", function () {
-	previewFrame.className = (previewSwitchState = !previewSwitchState) ? "on" : "off";
-	this.blur();
+previewSwitch.addEventListener("click", function () {
+	if (previewSwitchState = !previewSwitchState) {
+		previewFrame.className = "on";
+		previewSwitch.title = "收起预览窗格";
+	} else {
+		previewFrame.className = "off";
+		previewSwitch.title = "展开预览窗格";
+	}
+	previewSwitch.blur();
 })
 // 选项卡控制
 const tabsElement = document.getElementById("editor_tabs"),
@@ -54,7 +61,7 @@ function tabsChange() {
 }
 function tabsScroll() { tabsOverlaySlide.left = tabsElement.scrollLeft / tabsMotionSpace * tabsSlideMotionSpace / 16 + "rem" }
 new ResizeObserver(([{ borderBoxSize: [{ inlineSize }] }]) => {
-	tabsWidth = inlineSize;
+	tabsWidth = ceil(inlineSize);
 	tabsContentWidth = tabsElement.scrollWidth;
 	tabsChange();
 }).observe(tabsElement);
@@ -127,10 +134,11 @@ class TabItem extends EventTarget {
 			const exist = getTab(id);
 			if (exist) return exist;
 		}
-		const { tab, page, close } = parseAndGetNodes([
+		const { tab, page } = parseAndGetNodes([
 			["button", [
 				["span", title],
-				["button", null, { class: "editor_tab_close" }, "close"]
+				userClosable ?
+					["button", null, { class: "editor_tab_close", [EVENT_LISTENERS]: [["click", userCloseTab, { passive: true }]] }] : undefined
 			], { class: "editor_tab", draggable: true }, "tab"],
 			["div", content, { id: "editor_page_" + id }, "page"]
 		]).nodes;
@@ -142,9 +150,6 @@ class TabItem extends EventTarget {
 		Object.defineProperty(tab, relation, { value: this });
 		Object.defineProperty(page, relation, { value: this });
 		tab.addEventListener("click", userChangeTab, { passive: true });
-		if (userClosable) {
-			close.addEventListener("click", userCloseTab, { passive: true });
-		} else close.remove();
 		tabItems.push(this);
 		tabsElement.append(tab);
 	}

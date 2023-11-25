@@ -3,6 +3,7 @@ import { endWork } from "./main.mjs";
 import { parse as parseAH, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import { save } from "/javascript/module/FileIO.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
+import { buildMenu } from "./menu.mjs";
 const stringify = JSON.stringify, ROOT = Symbol("ROOT");
 //预览部分
 class TreeNode {
@@ -204,7 +205,6 @@ function reRender(node, viewTop, viewBottom, offsetTop) {
 }
 var tree, fileHandle, data, changed = false, pending = false;
 const preview = document.getElementById("preview"),
-	menu = document.getElementById("menu"),
 	root = new TreeRootNode;
 preview.addEventListener("scroll", function () { root.update(tree) }, { passive: true });
 function openFile(JSONData, file) {
@@ -304,26 +304,6 @@ function buildSubArray(value, parent) {
 }
 
 //菜单部分
-function buildMenu(array) { menu.appendChild(parseAH(array.map(menuMapper1))) }
-function focusMenu() { if (menu.contains(document.activeElement)) this.focus() }
-function clickOption(event) {
-	const target = event.srcElement;
-	if (target != this) target.blur();
-}
-function menuMapper1(item, tabindex) {
-	const element = parseAndGetNodes([["div", [
-		item.title,
-		["div", item.options.map(menuMapper2), { class: "menu_expand" }]
-	], { class: "menu_item", tabindex }, "element"]]).nodes.element;
-	element.addEventListener("mouseenter", focusMenu);
-	element.addEventListener("click", clickOption);
-	return element;
-}
-function menuMapper2(item) {
-	const element = parseAndGetNodes([["button", item.title, { class: "menu_option" }, "option"]]).nodes.option;
-	element.addEventListener("click", item.action);
-	return element;
-}
 buildMenu([
 	{
 		title: "文件",

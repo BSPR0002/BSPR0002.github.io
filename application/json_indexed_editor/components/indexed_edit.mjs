@@ -118,7 +118,6 @@ class IndexorItem {
 		})
 	}
 }
-
 function newIndexor() {
 	const indexor = new IndexorItem;
 	indexor.update();
@@ -203,18 +202,19 @@ function loadSet({ indexors: indexorsSet, variables: variablesSet }) {
 
 
 
-indexorAdd.addEventListener("click", newIndexor);
+// indexorAdd.addEventListener("click", newIndexor);
 
 loadSet(await indexorStorage.get("") ?? { variables: {}, indexors: [] });
 
 createTab("indexed_edit", "索引式编辑", [
 	["div", [
 		"索引变量",
+		["button", null, {class:"indexed_edit_options" ,title:"索引变量选项"}],
 		index
 	], { id: "indexed_edit_variables" }],
 	["div", [
 		"索引器",
-		indexorAdd
+		["button", null, {class:"indexed_edit_options" ,title:"索引器选项"}]
 	], { id: "indexed_edit_indexor" }],
 	indexorFrame,
 	managementFrame
