@@ -1,0 +1,9 @@
+[submodule "application/JSON-Indexed-Editor"]
+	path = application/JSON-Indexed-Editor
+	url = https://github.com/BSPR0002/JSON-Indexed-Editor
+[submodule "application/Tetris"]
+	path = application/Tetris
+	url = https://github.com/BSPR0002/Tetris
+[submodule "application/Visual-Game-Platform"]
+	path = application/Visual-Game-Platform
+	url = https://github.com/BSPR0002/Blue-Sky-Visual-Game-Platform-Web
