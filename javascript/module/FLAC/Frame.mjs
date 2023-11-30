@@ -289,20 +289,18 @@ function predictor(buffer, coefficients, residuals, shift) {
 const fixedCoefficients = [
 	[2n, -1n],
 	[3n, -3n, 1n],
-	[4n, -6n, 4n, 1n]
+	[4n, -6n, 4n, -1n]
 ];
 function decodeSubFrame(subFrame, blockSize) {
 	switch (Object.getPrototypeOf(subFrame)) {
-		case ConstantSubFrame.prototype:
+		case ConstantSubFrame.prototype: {
 			const result = new BigInt64Array(blockSize);
 			result.fill(decodeSignedNumber(subFrame.sampleSize, subFrame.sample));
 			return result;
+		}
 		case VerbatimSubFrame.prototype: {
-			const result = new BigInt64Array(blockSize), shift = 2 ** (subFrame.sampleSize - 1), samples = subFrame.samples;
-			for (let i = 0; i < blockSize; ++i) {
-				const sample = samples[i], code = sample % shift;
-				result[i] = BigInt(sample - code ? -code : code);
-			}
+			const result = new BigInt64Array(blockSize), {sampleSize, samples} = subFrame;
+			for (let i = 0; i < blockSize; ++i) result[i] = decodeSignedNumber(sampleSize, samples[i]);
 			return result;
 		}
 		case FixedSubFrame.prototype: {
