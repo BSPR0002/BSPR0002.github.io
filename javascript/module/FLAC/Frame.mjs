@@ -114,7 +114,7 @@ function getChannels(code) {
 }
 const subFrameTypes = new Enum(["CONSTANT", "VERBATIM", "FIXED", "LPC"]);
 class SubFrame {
-	constructor(sampleSize) { defineProperty(this, "sampleSize", { value: sampleSize, enumerable: true }) }
+	constructor(wastedBits) { defineProperty(this, "wastedBits", { value: wastedBits, enumerable: true }) }
 	get typeName() { return Enum.keyOf(subFrameTypes, this.type) }
 	static {
 		defineProperties(this.prototype, {
@@ -124,9 +124,9 @@ class SubFrame {
 	}
 }
 class ConstantSubFrame extends SubFrame {
-	constructor(context, sampleSize) {
-		super(sampleSize);
-		defineProperty(this, "sample", { value: readBits(context, sampleSize), enumerable: true });
+	constructor(context, sampleSize, wastedBits) {
+		super(wastedBits);
+		defineProperty(this, "sample", { value: readSignedNumber(context, sampleSize), enumerable: true });
 	}
 	static {
 		defineProperties(this.prototype, {
@@ -136,10 +136,10 @@ class ConstantSubFrame extends SubFrame {
 	}
 }
 class VerbatimSubFrame extends SubFrame {
-	constructor(context, sampleSize, blockSize) {
-		super(sampleSize);
+	constructor(context, sampleSize, wastedBits, blockSize) {
+		super(wastedBits);
 		const samples = new Array(blockSize);
-		for (let i = 0; i < blockSize; ++i) samples[i] = readBits(context, sampleSize);
+		for (let i = 0; i < blockSize; ++i) samples[i] = readSignedNumber(context, sampleSize);
 		defineProperty(this, "samples", { value: freeze(samples), enumerable: true });
 	}
 	static {
@@ -150,11 +150,11 @@ class VerbatimSubFrame extends SubFrame {
 	}
 }
 class PredictionSubFrame extends SubFrame {
-	constructor(sampleSize, order, warmUpSamples, residual) {
-		super(sampleSize);
+	constructor(wastedBits, order, warmUpSamples, residual) {
+		super(wastedBits);
 		defineProperties(this, {
 			order: { value: order, enumerable: true },
-			warmUpSamples: { value: freeze(warmUpSamples), enumerable: true },
+			warmUpSamples: { value: warmUpSamples, enumerable: true },
 			residual: { value: residual, enumerable: true }
 		});
 	}
@@ -204,10 +204,10 @@ function extractResidual(context, blockSize, predictorOrder) {
 	return samples;
 }
 class FixedSubFrame extends PredictionSubFrame {
-	constructor(context, sampleSize, blockSize, order) {
-		const warmUpSamples = new Array(order);
-		for (let i = 0; i < order; ++i) warmUpSamples[i] = readBits(context, sampleSize);
-		super(sampleSize, order, warmUpSamples, extractResidual(context, blockSize, order));
+	constructor(context, sampleSize, wastedBits, blockSize, order) {
+		const warmUpSamples = new BigInt64Array(order);
+		for (let i = 0; i < order; ++i) warmUpSamples[i] = readSignedNumber(context, sampleSize);
+		super(wastedBits, order, warmUpSamples, extractResidual(context, blockSize, order));
 	}
 	static {
 		defineProperties(this.prototype, {
@@ -217,18 +217,17 @@ class FixedSubFrame extends PredictionSubFrame {
 	}
 }
 class LPCSubFrame extends PredictionSubFrame {
-	constructor(context, sampleSize, blockSize, order) {
-		const warmUpSamples = new Array(order), coefficients = new Array(order);
-		for (let i = 0; i < order; ++i) warmUpSamples[i] = readBits(context, sampleSize);
+	constructor(context, sampleSize, wastedBits, blockSize, order) {
+		const warmUpSamples = new BigInt64Array(order), coefficients = new BigInt64Array(order);
+		for (let i = 0; i < order; ++i) warmUpSamples[i] = readSignedNumber(context, sampleSize);
 		const coefficientsPrecision = readBits(context, 4) + 1;
 		if (coefficientsPrecision == 16) throw new Error("Invalid LPC coefficients precision.");
-		const coefficientsShift = readBits(context, 5);
-		for (let i = 0; i < order; ++i) coefficients[i] = readBits(context, coefficientsPrecision);
-		super(sampleSize, order, warmUpSamples, extractResidual(context, blockSize, order));
+		const coefficientsShift = readSignedNumber(context, 5);
+		for (let i = 0; i < order; ++i) coefficients[i] = readSignedNumber(context, coefficientsPrecision);
+		super(wastedBits, order, warmUpSamples, extractResidual(context, blockSize, order));
 		defineProperties(this, {
-			coefficientsPrecision: { value: coefficientsPrecision, enumerable: true },
 			coefficientsShift: { value: coefficientsShift, enumerable: true },
-			coefficients: { value: freeze(coefficients), enumerable: true }
+			coefficients: { value: coefficients, enumerable: true }
 		});
 	}
 	static {
@@ -241,11 +240,15 @@ class LPCSubFrame extends PredictionSubFrame {
 function extractSubFrame(context, sampleSize, blockSize) {
 	if (readBits(context, 1)) throw new Error("Wrong sub frame starting position.");
 	const typeCode = readBits(context, 6), wastedBitsFlag = readBits(context, 1);
-	if (wastedBitsFlag) do { --sampleSize } while (!readBits(context, 1));
-	if (typeCode == 0) return new ConstantSubFrame(context, sampleSize);
-	if (typeCode == 1) return new VerbatimSubFrame(context, sampleSize, blockSize);
-	if (typeCode > 7 && typeCode < 13) return new FixedSubFrame(context, sampleSize, blockSize, typeCode - 8);
-	if (typeCode > 31) return new LPCSubFrame(context, sampleSize, blockSize, typeCode - 31);
+	let wastedBits = 0;
+	if (wastedBitsFlag) {
+		do { if (++wastedBits > sampleSize) throw new Error("Invalid data.") } while (!readBits(context, 1));
+		sampleSize -= wastedBits;
+	}
+	if (typeCode == 0) return new ConstantSubFrame(context, sampleSize, wastedBits);
+	if (typeCode == 1) return new VerbatimSubFrame(context, sampleSize, wastedBits, blockSize);
+	if (typeCode > 7 && typeCode < 13) return new FixedSubFrame(context, sampleSize, wastedBits, blockSize, typeCode - 8);
+	if (typeCode > 31) return new LPCSubFrame(context, sampleSize, wastedBits, blockSize, typeCode - 31);
 	throw new Error("Invalid/not supported sub frame type code.");
 }
 function extractFrame(context, streamInfo) {
@@ -269,19 +272,23 @@ function extractFrames(context, streamInfo) {
 	while (context.hasNext) frames.push(extractFrame(context, streamInfo));
 	return frames;
 }
-function decodeSignedNumber(size, data) {
-	const code = BigInt(data), bits = BigInt(size);
+function readSignedNumber(context, size) {
+	const code = BigInt(readBits(context, size)), bits = BigInt(size);
 	return code >> (bits - 1n) ? code | -1n << bits : code;
 }
-function predictor(buffer, coefficients, residual, shift) {
-	const length = buffer.length, order = coefficients.length;
+function predictor(buffer, coefficients, warmUpSamples, residual, shift, wastedBits) {
+	const length = buffer.length, order = coefficients.length,
+		temp = new BigInt64Array(order);
+	for (let i = 0, reverseStart = order - 1; i < order; ++i) buffer[i] = (temp[reverseStart - i] = warmUpSamples[i]) << wastedBits;
 	for (let n = order; n < length; ++n) {
 		let sum = 0n;
-		for (let i = 0; i < order; ++i) sum += buffer[n - i - 1] * coefficients[i];
-		buffer[n] = (sum >> shift) + BigInt(residual[n - order]);
+		for (let i = 0; i < order; ++i) sum += temp[i] * coefficients[i];
+		temp.copyWithin(1);
+		buffer[n] = (temp[0] = (sum >> shift) + BigInt(residual[n - order])) << wastedBits;
 	}
 }
 const fixedCoefficients = [
+	[1n],
 	[2n, -1n],
 	[3n, -3n, 1n],
 	[4n, -6n, 4n, -1n]
@@ -290,38 +297,26 @@ function decodeSubFrame(subFrame, blockSize) {
 	switch (Object.getPrototypeOf(subFrame)) {
 		case ConstantSubFrame.prototype: {
 			const result = new BigInt64Array(blockSize);
-			result.fill(decodeSignedNumber(subFrame.sampleSize, subFrame.sample));
+			result.fill(subFrame.sample << BigInt(subFrame.wastedBits));
 			return result;
 		}
 		case VerbatimSubFrame.prototype: {
-			const result = new BigInt64Array(blockSize), {sampleSize, samples} = subFrame;
-			for (let i = 0; i < blockSize; ++i) result[i] = decodeSignedNumber(sampleSize, samples[i]);
+			const result = new BigInt64Array(blockSize), { samples } = subFrame, wastedBits = BigInt(subFrame.wastedBits);
+			for (let i = 0; i < blockSize; ++i) result[i] = samples[i] << wastedBits;
 			return result;
 		}
 		case FixedSubFrame.prototype: {
-			const { order, warmUpSamples, sampleSize, residual } = subFrame,
+			const { order, warmUpSamples, residual } = subFrame, wastedBits = BigInt(subFrame.wastedBits),
 				result = new BigInt64Array(blockSize);
-			switch (order) {
-				case 0: 
-					for (let i = 0; i< blockSize; ++i) result[i] = BigInt(residual[i]);
-					break;
-				case 1: {
-					let last = result[0] = decodeSignedNumber(sampleSize, warmUpSamples[0]);
-					for (let i = 1; i < blockSize; ++i) result[i] = last += BigInt(residual[i - 1]);
-					break;
-				}
-				default:
-					for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
-					predictor(result, fixedCoefficients[order - 2], residual, 0n);
-			}
+			if (order) {
+				predictor(result, fixedCoefficients[order - 1], warmUpSamples, residual, 0n, wastedBits);
+			} else for (let i = 0; i < blockSize; ++i) result[i] = BigInt(residual[i]) << wastedBits;
 			return result;
 		}
 		case LPCSubFrame.prototype: {
-			const { order, warmUpSamples, sampleSize, coefficients, coefficientsPrecision, residual } = subFrame,
-				shift = decodeSignedNumber(5, subFrame.coefficientsShift), coefficientsTemp = new Array(order), result = new BigInt64Array(blockSize);
-			for (let i = 0; i < order; ++i) coefficientsTemp[i] = decodeSignedNumber(coefficientsPrecision, coefficients[i]);
-			for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
-			predictor(result, coefficientsTemp, residual, shift);
+			const { warmUpSamples, coefficients, coefficientsShift, residual } = subFrame, wastedBits = BigInt(subFrame.wastedBits),
+				result = new BigInt64Array(blockSize);
+			predictor(result, coefficients, warmUpSamples, residual, coefficientsShift, wastedBits);
 			return result;
 		}
 		default:

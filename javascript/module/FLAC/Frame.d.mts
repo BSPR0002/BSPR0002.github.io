@@ -13,37 +13,36 @@ type FrameHeader = {
 declare class SubFrame {
 	readonly type: subFrameTypes;
 	readonly typeName: string;
-	readonly sampleSize: number;
+	readonly wastedBits: number;
 }
 declare class ConstantSubFrame extends SubFrame {
-	constructor(context: BufferContext, sampleSize: number);
-	readonly type: subFrameTypes.constant;
+	constructor(context: BufferContext, sampleSize: number, wastedBits: number);
+	readonly type: subFrameTypes.CONSTANT;
 	readonly typeName: "CONSTANT";
-	readonly sample: number;
+	readonly sample: bigint;
 }
 declare class VerbatimSubFrame extends SubFrame {
-	constructor(context: BufferContext, sampleSize: number, blockSize: number);
-	readonly type: subFrameTypes.verbatim;
+	constructor(context: BufferContext, sampleSize: number, wastedBits: number, blockSize: number);
+	readonly type: subFrameTypes.VERBATIM;
 	readonly typeName: "VERBATIM";
-	readonly samples: number[];
+	readonly samples: bigint[];
 }
 declare class PredictorSubFrame extends SubFrame {
 	readonly order: number;
-	readonly warmUpSamples: number[];
+	readonly warmUpSamples: BigInt64Array;
 	readonly residual: Int32Array;
 }
 declare class FixedSubFrame extends PredictorSubFrame {
-	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
-	readonly type: subFrameTypes.fixed;
+	constructor(context: BufferContext, sampleSize: number, wastedBits: number, blockSize: number, order: number);
+	readonly type: subFrameTypes.FIXED;
 	readonly typeName: "FIXED";
 }
 declare class LPCSubFrame extends PredictorSubFrame {
-	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
-	readonly type: subFrameTypes.lpc;
+	constructor(context: BufferContext, sampleSize: number, wastedBits: number, blockSize: number, order: number);
+	readonly type: subFrameTypes.LPC;
 	readonly typeName: "LPC";
-	readonly coefficientsPrecision: number;
-	readonly coefficientsShift: number;
-	readonly coefficients: number[];
+	readonly coefficientsShift: bigint;
+	readonly coefficients: BigInt64Array;
 }
 declare class Frame {
 	readonly header: FrameHeader;
