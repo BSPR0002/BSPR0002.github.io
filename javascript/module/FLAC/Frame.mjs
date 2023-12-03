@@ -155,7 +155,7 @@ class PredictionSubFrame extends SubFrame {
 		defineProperties(this, {
 			order: { value: order, enumerable: true },
 			warmUpSamples: { value: freeze(warmUpSamples), enumerable: true },
-			residual: { value: freeze(residual), enumerable: true }
+			residual: { value: residual, enumerable: true }
 		});
 	}
 	static {
@@ -181,24 +181,27 @@ function extractRice(context, codingMethod, buffer) {
 	const samples = buffer.length;
 	if (parameter === undefined) {
 		parameter = readBits(context, 5);
-		for (let i = 0; i < samples; ++i) buffer[i] = readBits(context, parameter);
+		if (!parameter) return;
+		const shift = parameter - 1;
+		for (let i = 0; i < samples; ++i) {
+			const code = readBits(context, parameter);
+			buffer[i] = code >> shift ? code | -1 << parameter : code;
+		}
 	} else {
 		for (let i = 0; i < samples; ++i) {
 			let n = 0;
 			while (!readBits(context, 1)) ++n;
-			buffer[i] = (n << parameter) | readBits(context, parameter);
+			const value = (n << parameter) | readBits(context, parameter);
+			buffer[i] = value & 1 ? value >> 1 ^ -1 : value >> 1;
 		}
 	}
 }
 function extractResidual(context, blockSize, predictorOrder) {
-	const codingMethod = readBits(context, 2), partitionsNumber = 1 << readBits(context, 4), samplesPerPartition = blockSize / partitionsNumber, samples = new Uint32Array(blockSize - predictorOrder);
+	const codingMethod = readBits(context, 2), partitionsNumber = 1 << readBits(context, 4), samplesPerPartition = blockSize / partitionsNumber, samples = new Int32Array(blockSize - predictorOrder);
 	var current;
 	extractRice(context, codingMethod, samples.subarray(0, current = samplesPerPartition - predictorOrder));
 	for (let i = 1; i < partitionsNumber; ++i) extractRice(context, codingMethod, samples.subarray(current, current += samplesPerPartition));
-	return {
-		codingMethod,
-		samples
-	};
+	return samples;
 }
 class FixedSubFrame extends PredictionSubFrame {
 	constructor(context, sampleSize, blockSize, order) {
@@ -268,22 +271,14 @@ function extractFrames(context, streamInfo) {
 }
 function decodeSignedNumber(size, data) {
 	const code = BigInt(data), bits = BigInt(size);
-	return code >> (bits - 1n) ? code ^ -1n << bits : code;
+	return code >> (bits - 1n) ? code | -1n << bits : code;
 }
-function decodeResidualValue(samples) {
-	const length = samples.length, result = new BigInt64Array(length);
-	for (let i = 0; i < length; ++i) {
-		const value = samples[i], negetive = value % 2;
-		result[i] = BigInt(negetive ? value >> 1 ^ -1 : value >> 1);
-	}
-	return result;
-}
-function predictor(buffer, coefficients, residuals, shift) {
+function predictor(buffer, coefficients, residual, shift) {
 	const length = buffer.length, order = coefficients.length;
 	for (let n = order; n < length; ++n) {
 		let sum = 0n;
 		for (let i = 0; i < order; ++i) sum += buffer[n - i - 1] * coefficients[i];
-		buffer[n] = (sum >> shift) + residuals[n - order];
+		buffer[n] = (sum >> shift) + BigInt(residual[n - order]);
 	}
 }
 const fixedCoefficients = [
@@ -304,24 +299,29 @@ function decodeSubFrame(subFrame, blockSize) {
 			return result;
 		}
 		case FixedSubFrame.prototype: {
-			const residuals = decodeResidualValue(subFrame.residual.samples), { order, warmUpSamples, sampleSize } = subFrame;
-			if (!order) return residuals;
-			const result = new BigInt64Array(blockSize);
-			if (order == 1) {
-				let last = result[0] = decodeSignedNumber(sampleSize, warmUpSamples[0]);
-				for (let i = 1; i < blockSize; ++i) result[i] = last += residuals[i - 1];
-			} else {
-				for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
-				predictor(result, fixedCoefficients[order - 2], residuals, 0n);
+			const { order, warmUpSamples, sampleSize, residual } = subFrame,
+				result = new BigInt64Array(blockSize);
+			switch (order) {
+				case 0: 
+					for (let i = 0; i< blockSize; ++i) result[i] = BigInt(residual[i]);
+					break;
+				case 1: {
+					let last = result[0] = decodeSignedNumber(sampleSize, warmUpSamples[0]);
+					for (let i = 1; i < blockSize; ++i) result[i] = last += BigInt(residual[i - 1]);
+					break;
+				}
+				default:
+					for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
+					predictor(result, fixedCoefficients[order - 2], residual, 0n);
 			}
 			return result;
 		}
 		case LPCSubFrame.prototype: {
-			const residuals = decodeResidualValue(subFrame.residual.samples), { order, warmUpSamples, sampleSize, coefficients, coefficientsPrecision } = subFrame,
+			const { order, warmUpSamples, sampleSize, coefficients, coefficientsPrecision, residual } = subFrame,
 				shift = decodeSignedNumber(5, subFrame.coefficientsShift), coefficientsTemp = new Array(order), result = new BigInt64Array(blockSize);
 			for (let i = 0; i < order; ++i) coefficientsTemp[i] = decodeSignedNumber(coefficientsPrecision, coefficients[i]);
 			for (let i = 0; i < order; ++i) result[i] = decodeSignedNumber(sampleSize, warmUpSamples[i]);
-			predictor(result, coefficientsTemp, residuals, shift);
+			predictor(result, coefficientsTemp, residual, shift);
 			return result;
 		}
 		default:

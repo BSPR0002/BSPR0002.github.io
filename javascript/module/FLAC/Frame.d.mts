@@ -30,7 +30,7 @@ declare class VerbatimSubFrame extends SubFrame {
 declare class PredictorSubFrame extends SubFrame {
 	readonly order: number;
 	readonly warmUpSamples: number[];
-	readonly residual: number[];
+	readonly residual: Int32Array;
 }
 declare class FixedSubFrame extends PredictorSubFrame {
 	constructor(context: BufferContext, sampleSize: number, blockSize: number, order: number);
