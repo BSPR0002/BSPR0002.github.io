@@ -60,7 +60,7 @@ function getBlockSize(code, context) {
 		case 11: return 2048;
 		case 12: return 4096;
 		case 13: return 8192;
-		case 14: return 16385;
+		case 14: return 16384;
 		case 15: return 32768;
 	}
 }
