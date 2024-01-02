@@ -3,31 +3,31 @@ import { IndexedDatabaseObjectStore } from "../IndexedDatabase.mjs";
 import { parseAndGetNodes, parse } from "../ArrayHTML.mjs";
 const style = document.createElement("style");
 style.textContent = [
-	".bs-setting_frame,.bs-setting_frame_sub{width:100%;height:100%;background-color:#FFFFFF;overflow:hidden;display:grid;grid-template-rows:2.5rem 1fr;box-sizing:border-box}",
-	".bs-setting_frame{position:relative;user-select:none}",
-	".bs-setting_frame.blocked::after{content:\"\";position:absolute;height:100%;width:100%}",
-	".bs-setting_frame_sub{position:absolute;transition:transform 0.2s ease-in;top:0;box-shadow:black 0 0 1rem}",
-	".bs-setting_frame_sub.out{transform:translateX(100%)}",
-	".bs-setting_frame_title{display:grid;gap:0.5rem;grid-template-columns:3rem 1fr 3rem;grid-template-areas:\"back title .\";border-bottom:1px solid #808080}",
-	".bs-setting_frame_back{padding:0.5rem 0!important;align-self:center}",
-	".bs-setting_title{grid-area:title;font-weight:bold;place-self:center;max-width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}",
-	".bs-setting_list{display:grid;grid-auto-rows:minmax(2.5rem,min-content);overflow:hidden auto;place-content:start stretch}",
-	".bs-setting_item{border-bottom:solid 1px #CCCCCC!important;padding:0.5rem!important;display:grid;place-items:center start;gap:0.5rem;background-color:inherit!important;border-radius:0!important;color:#000000!important;font-size:inherit!important;cursor:pointer}",
-	".bs-setting_item:hover{background-color:#DDDDDD!important}",
-	".bs-setting_item:active{background-color:#BBBBBB!important}",
-	".bs-setting_item.next,.bs-setting_item.switch{grid-template-columns:1fr auto}",
-	".bs-setting_item.next::after{content:\">\";color:#808080}",
-	".bs-setting_item_title{word-break:break-word;text-align:start}",
-	".bs-setting_switch{background-color:#FFFFFF;appearance:none;display:block;margin:0;width:3rem;height:1.5rem;border-radius:0.75rem;border:solid 0.125rem #808080;padding:0.125rem;overflow:hidden;outline:none;cursor:pointer}",
-	".bs-setting_switch::before{content:\"\";display:block;background-color:#808080;width:1rem;height:1rem;border-radius:50%;transition:all 0.5s}",
-	".bs-setting_switch:checked{border-color:#00C000}",
-	".bs-setting_switch:checked::before{background-color:#00C000;transform:translateX(1.5rem)}",
-	".bs-setting_page{width:100%;height:100%;border:none}"
+	".bs-setting-frame,.bs-setting-frame-sub{width:100%;height:100%;background-color:#FFFFFF;overflow:hidden;display:grid;grid-template-rows:2.5rem 1fr;box-sizing:border-box}",
+	".bs-setting-frame{position:relative;user-select:none}",
+	".bs-setting-frame.blocked::after{content:\"\";position:absolute;height:100%;width:100%}",
+	".bs-setting-frame-sub{position:absolute;transition:transform 0.2s ease-in;top:0;box-shadow:black 0 0 1rem}",
+	".bs-setting-frame-sub.out{transform:translateX(100%)}",
+	".bs-setting-frame-title{display:grid;gap:0.5rem;grid-template-columns:3rem 1fr 3rem;grid-template-areas:\"back title .\";border-bottom:1px solid #808080}",
+	".bs-setting-frame-back{padding:0.5rem 0!important;align-self:center;border:0}",
+	".bs-setting-title{grid-area:title;font-weight:bold;place-self:center;max-width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}",
+	".bs-setting-list{display:grid;grid-auto-rows:minmax(2.5rem,min-content);overflow:hidden auto;place-content:start stretch}",
+	".bs-setting-item{border-style:solid;border-width:0 0 0.0625rem 0;border-color:#CCC;padding:0.5rem!important;display:grid;place-items:center start;gap:0.5rem;background-color:inherit!important;border-radius:0!important;color:#000000!important;font-size:inherit!important;cursor:pointer}",
+	".bs-setting-item:hover{background-color:#DDDDDD!important}",
+	".bs-setting-item:active{background-color:#BBBBBB!important}",
+	".bs-setting-item.next,.bs-setting-item.switch{grid-template-columns:1fr auto}",
+	".bs-setting-item.next::after{content:\">\";color:#808080}",
+	".bs-setting-item-title{word-break:break-word;text-align:start}",
+	".bs-setting-switch{background-color:#FFFFFF;appearance:none;display:block;margin:0;width:3rem;height:1.5rem;border-radius:0.75rem;border:solid 0.125rem #808080;padding:0.125rem;overflow:hidden;outline:none;cursor:pointer}",
+	".bs-setting-switch::before{content:\"\";display:block;background-color:#808080;width:1rem;height:1rem;border-radius:50%;transition:all 0.5s}",
+	".bs-setting-switch:checked{border-color:#00C000}",
+	".bs-setting-switch:checked::before{background-color:#00C000;transform:translateX(1.5rem)}",
+	".bs-setting-page{width:100%;height:100%;border:none}"
 ].join("");
 async function buildList(instance, data, root) {
 	const list = [];
 	for (let item of data) list.push(await buildItem(instance, item, root));
-	return ["div", list, { class: "bs-setting_list" }];
+	return ["div", list, { class: "bs-setting-list" }];
 }
 async function buildItem(instance, data, root) {
 	switch (data.type) {
@@ -48,39 +48,39 @@ async function buildItem(instance, data, root) {
 	}
 }
 function buildCollection(instance, data, root) {
-	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting-item-title" }]], { class: "bs-setting-item next" }, "element"]]).nodes.element;
 	element.addEventListener("click", async function () { createSub(data.title, await buildList(instance, data.sub, root), root) });
 	return element;
 }
 function buildAction(instance, data) {
-	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting-item-title" }]], { class: "bs-setting-item" }, "element"]]).nodes.element;
 	element.addEventListener("click", function () { data.action(instance) });
 	return element;
 }
 async function buildSwitch(instance, data) {
 	const { element, switch: input } = parseAndGetNodes([["label", [
-		["span", data.title, { class: "bs-setting_item_title" }],
-		["input", null, { class: "bs-setting_switch", type: "checkbox" }, "switch"]
-	], { class: "bs-setting_item switch" }, "element"]]).nodes, { storage } = instance;
+		["span", data.title, { class: "bs-setting-item-title" }],
+		["input", null, { class: "bs-setting-switch", type: "checkbox" }, "switch"]
+	], { class: "bs-setting-item switch" }, "element"]]).nodes, { storage } = instance;
 	input.checked = await storage.get(data.path);
 	input.addEventListener("change", function () { storage.set(data.path, input.checked) });
 	return element;
 }
 function buildInfo(data, root) {
-	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting_item_title" }]], { class: "bs-setting_item next" }, "element"]]).nodes.element;
+	const element = parseAndGetNodes([["button", [["span", data.title, { class: "bs-setting-item-title" }]], { class: "bs-setting-item next" }, "element"]]).nodes.element;
 	element.addEventListener("click", function () { createSub(data.title, buildLoad(data.source), root) });
 	return element;
 }
-function buildLoad(address) { return ["iframe", null, { src: address, class: "bs-setting_page" }, "element"] }
+function buildLoad(address) { return ["iframe", null, { src: address, class: "bs-setting-page" }, "element"] }
 function createSub(title, content, root) {
 	const { frame, back } = parseAndGetNodes([
 		["div", [
 			["div", [
-				["button", "< 返回", { class: "bs-setting_frame_back" }, "back"],
-				["span", title, { class: "bs-setting_title" }]
-			], { class: "bs-setting_frame_title" }],
+				["button", "< 返回", { class: "bs-setting-frame-back" }, "back"],
+				["span", title, { class: "bs-setting-title" }]
+			], { class: "bs-setting-frame-title" }],
 			content
-		], { class: "bs-setting_frame_sub out" }, "frame"]
+		], { class: "bs-setting-frame-sub out" }, "frame"]
 	]).nodes;
 	back.addEventListener("click", function () {
 		frame.addEventListener("transitionend", function () {
@@ -109,10 +109,10 @@ class Setting {
 		Setting.#checkInstance(this);
 		const { documentFragment, nodes: { root } } = parseAndGetNodes([
 			style,
-			["div", null, { class: "bs-setting_frame" }, "root"]
+			["div", null, { class: "bs-setting-frame" }, "root"]
 		]);
 		root.appendChild(parse([
-			["div", [["span", "主菜单", { class: "bs-setting_title" }]], { class: "bs-setting_frame_title" }],
+			["div", [["span", "主菜单", { class: "bs-setting-title" }]], { class: "bs-setting-frame-title" }],
 			await buildList(this, this.#tree, root)
 		]));
 		return documentFragment;
@@ -135,7 +135,7 @@ class Setting {
 		}
 		const { documentFragment, nodes: { root } } = parseAndGetNodes([
 			style,
-			["div", null, { class: "bs-setting_frame" }, "root"]
+			["div", null, { class: "bs-setting-frame" }, "root"]
 		]);
 		var page;
 		switch (target.type) {
@@ -149,7 +149,7 @@ class Setting {
 				throw new Error("Failed to execute 'direct' on 'Setting': Invalid path");
 		}
 		root.appendChild(parse([
-			["div", [["span", target.title, { class: "bs-setting_title" }]], { class: "bs-setting_frame_title" }],
+			["div", [["span", target.title, { class: "bs-setting-title" }]], { class: "bs-setting-frame-title" }],
 			page
 		]));
 		return documentFragment;

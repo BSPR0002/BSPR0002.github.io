@@ -77,7 +77,7 @@ function parseNode(data, outer, collector) {
 			}
 			parseContent(node, content, collector);
 			break;
-		default:
+		default: {
 			outer.appendChild(node = document.createElement(data[0]));
 			const attributes = data[2]
 			if (attributes instanceof Object) {
@@ -85,6 +85,7 @@ function parseNode(data, outer, collector) {
 				if (EVENT_LISTENERS in attributes) for (const item of attributes[EVENT_LISTENERS]) node.addEventListener(...item);
 			}
 			parseContent(node, content, collector);
+		}
 	}
 	if (collector && (3 in data)) collector[data[3]] = node;
 }
@@ -93,9 +94,14 @@ function parse(ArrayHTML) {
 	parseCollection(ArrayHTML, documentFragment);
 	return documentFragment;
 }
-function parseAndGetNodes(ArrayHTML) {
+function parseAndGetNodes(ArrayHTML, appendTo) {
+	if (arguments.length > 1 && !(appendTo instanceof Node)) throw new TypeError("Failed to execute 'parseAndGetNodes': Argument 'appendTo' is not type of Node.");
 	const nodes = {}, documentFragment = document.createDocumentFragment();
 	parseCollection(ArrayHTML, documentFragment, nodes);
+	if (appendTo) {
+		appendTo.appendChild(documentFragment);
+		return nodes;
+	}
 	return { documentFragment, nodes };
 }
 function serializeIterator(node, outer) {
@@ -115,7 +121,7 @@ function serializeNode(node, outer) {
 			serializeIterator(node, outer);
 		case "html":
 			break;
-		default:
+		default: {
 			let child = [node.localName];
 			try {
 				if (node.hasAttributes()) {
@@ -125,9 +131,10 @@ function serializeNode(node, outer) {
 			} catch (error) { console.warn("Serialize exception: Failed to get attributes of node", node) }
 			if (node.hasChildNodes()) serializeIterator(node, child[1] = []);
 			outer.push(child);
+		}
 	}
 }
-function serialize(node, onlyChildren = true) {
+function serialize(node, onlyChildren = false) {
 	if (!(node instanceof Node)) throw new TypeError("Serialize failed: Argument 'node' is not type of Node");
 	const ArrayHtml = [];
 	if (onlyChildren) { serializeIterator(node, ArrayHtml) } else { serializeNode(node, ArrayHtml) }

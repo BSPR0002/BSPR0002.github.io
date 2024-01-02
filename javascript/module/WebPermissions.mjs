@@ -1,7 +1,7 @@
 import MiniWindow from "./MiniWindow.mjs";
-import { parse as parseAH, parseAndGetNodes as parseAHNode } from "./ArrayHTML.mjs";
+import { parse as parseAH, parseAndGetNodes } from "./ArrayHTML.mjs";
 import { LocalStorageObject } from "./LocalStorageObject.mjs";
-const style = parseAHNode([["style", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]], true).nodes.style;
+const style = parseAndGetNodes([["style", "#bs-requestPermission_title{font-size:1.2rem}#bs-requestPermission_frame{display:grid;gap:0.5rem}#bs-requestPermission_hint{font-weight:bold}", null, "style"]]).nodes.style;
 const permissions = {
 	notification: {
 		localName: "通知",

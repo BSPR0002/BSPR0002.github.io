@@ -1,80 +1,89 @@
-import { parseAndGetNodes as ArrayHTML } from "./ArrayHTML.mjs";
-const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent, contentFrame, confirmStyle, subLayer, subTitle, subFrame, subBody } = ArrayHTML([
+import { parse, parseAndGetNodes, EVENT_LISTENERS } from "./ArrayHTML.mjs";
+const { layer, windowBody, windowTitle, windowQueue, windowClose, windowContent, contentFrame, confirmStyle, subLayer, subTitle, subFrame, subBody } = parseAndGetNodes([
 	["div", [
 		["style", [
-			"#MiniWindowLayer,#MiniWindowSubLayer{top:0;bottom:0;left:0;right:0;z-index:1073741823;display:none}",
-			"#MiniWindowLayer{position:fixed;background-color:rgba(0,0,0,0.7)}",
-			"#MiniWindowSubLayer{position:absolute}",
-			"#MiniWindow,#MiniWindowSub{box-sizing:border-box;place-self:center;min-width:16rem;min-height:8rem;max-width:80%;max-height:80%;overflow:hidden;border-radius:0.75rem;padding:0.75rem;display:grid;grid-template-rows:1.25rem auto 1fr;background-color:var(--MiniWindow_backgroundColor);color:var(--MiniWindow_textColor);font-size:0.9375rem;user-select:text}",
-			"#MiniWindowLayer,#MiniWindow,#MiniWindowSub{animation-duration:0.5s;animation-fill-mode:forwards}",
-			"#MiniWindow{--MiniWindow_backgroundColor:#FFFFFF;--MiniWindow_textColor:#404040;--MiniWindow_buttonBackgroundColor:#CCCCCC;--MiniWindow_buttonHoverBackgroundColor:#7FBFFF;--MiniWindow_buttonActiveBackgroundColor:#0080FF;--MiniWindow_buttonTextColor:#000000;--MiniWindow_buttonHoverTextColor:#000000;--MiniWindow_buttonActiveTextColor:#FFFFFF}",
-			"@keyframes MiniWindowFadeIn{from{opacity:0}}",
-			"@keyframes MiniWindowFadeOut{to{opacity:0}}",
-			"#MiniWindowLayer.in,#MiniWindow.in{animation-name:MiniWindowFadeIn}",
-			"#MiniWindowLayer.out,#MiniWindow.out{animation-name:MiniWindowFadeOut}",
-			"@keyframes MiniWindowSubWindowIn{from{opacity:0;transform:translateY(-1rem)}}",
-			"@keyframes MiniWindowSubWindowOut{to{opacity:0}}",
-			"#MiniWindowSub{box-shadow:#000000 0 0 0.5rem}",
-			"#MiniWindowSub.in{animation:MiniWindowSubWindowIn 0.2s forwards}",
-			"#MiniWindowSub.out{animation:MiniWindowSubWindowOut 0.2s forwards}",
-			"#MiniWindow button{border:none;border-radius:0.25rem;padding:0.5em}",
-			"#MiniWindow button,#MiniWindowQueue{background-color:var(--MiniWindow_buttonBackgroundColor);color:var(--MiniWindow_buttonTextColor);user-select:none}",
-			"#MiniWindow button:hover{background-color:var(--MiniWindow_buttonHoverBackgroundColor);color:var(--MiniWindow_buttonHoverTextColor)}",
-			"#MiniWindow button:active:focus{background-color:var(--MiniWindow_buttonActiveBackgroundColor);color:var(--MiniWindow_buttonActiveTextColor)}",
-			"#MiniWindowTop{overflow:hidden;display:grid;grid-template-columns:1fr 2em 1.25rem;gap:0.25rem}",
-			"#MiniWindowTop>*{height:100%;width:100%}",
-			"#MiniWindowTitle,#MiniWindowSubTitle{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}",
-			"#MiniWindowQueue{box-sizing:border-box;border:solid 0.125rem var(--MiniWindow_buttonTextColor);border-radius:0.25rem;overflow:hidden;display:grid;place-content:center;font-size:0.75rem}",
-			"#MiniWindowClose{position:relative;border-radius:0.25rem}",
-			"#MiniWindowClose::before,#MiniWindowClose::after{content:\"\";position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;border-radius:0.0625rem;width:0.125rem;height:1rem;background-color:var(--MiniWindow_buttonTextColor);transform:rotate(45deg)}",
-			"#MiniWindowClose::before{transform:rotate(-45deg)}",
-			"#MiniWindowClose:hover::before,#MiniWindowClose:hover::after{background-color:var(--MiniWindow_buttonHoverTextColor)}",
-			"#MiniWindowClose:active::before,#MiniWindowClose:active::after{background-color:var(--MiniWindow_buttonActiveTextColor)}",
-			"#MiniWindowHR,#MiniWindowSubHR{box-sizing:border-box;width:100%;border:solid 0.0625rem var(--MiniWindow_textColor);border-radius:0.0625rem;background-color:var(--MiniWindow_textColor)}",
-			"#MiniWindowContentFrame{position:relative;width:100%;height:100%;overflow:hidden}",
-			"#MiniWindowLayer.in>#MiniWindow::after,#MiniWindowLayer.out>#MiniWindow::after,#MiniWindow.in::after,#MiniWindow.out::after,#MiniWindowSub.in::after,#MiniWindowSub.out::after,#MiniWindowContentFrame.blocked::after{content:\"\";position:absolute;z-index:2147483647;left:0;right:0;top:0;bottom:0;display:block;opacity:0}",
-			"#MiniWindowContent{position:relative;max-width:100%;max-height:100%;width:100%;height:100%;overflow:auto;word-wrap:break-word;word-break:normal;color:var(--MiniWindow_textColor);user-select:text}",
-			"#MiniWindowContent img{max-width:100%;height:auto}",
-			"#MiniWindowSubContentFrame{display:grid;gap:0.5rem}",
-			"#MiniWindowSubContentFrame.confirm,#MiniWindowSubContentFrame.alert{grid-template-rows:1fr auto}",
-			"#MiniWindowSubMessage{overflow:hidden auto}",
-			"#MiniWindowSubButtons{display:grid;grid-auto-columns:minmax(auto,6rem);grid-auto-flow:column;gap:0.5rem;justify-self:end}",
-			"#MiniWindowSubButtons>button{font-weight:bold}",
-			"#MiniWindowSubContentFrame.wait{grid-template-columns:2rem 1fr;place-items:center start}",
-			"#MiniWindowSubCycle,#MiniWindowSubCycle::before{width:2rem;height:2rem}",
-			"@keyframes MiniWindowSubCycle{from{transform:rotate(0)}to{transform:rotate(1turn)}}",
-			"#MiniWindowSubCycle::before{display:block;content:\"\";box-sizing:border-box;background-color:transparent;border:solid 0.125rem;border-color:#0080FF #0080FF transparent transparent;border-radius:50%;transform-origin:center;animation:MiniWindowSubCycle 1s linear infinite forwards running}"
+			"#mini-window-layer,#mini-window-sub-layer{top:0;bottom:0;left:0;right:0;z-index:1073741823;display:none}",
+			"#mini-window-layer{position:fixed;background-color:rgba(0,0,0,0.7)}",
+			"#mini-window-sub-layer{position:absolute}",
+			"#mini-window,#mini-window-sub{box-sizing:border-box;place-self:center;min-width:16rem;min-height:8rem;max-width:80%;max-height:80%;overflow:hidden;border-radius:0.75rem;padding:0.75rem;display:grid;grid-template-rows:1.25rem auto 1fr;background-color:var(--mini-window-background-color);color:var(--mini-window-text-color);font-size:0.9375rem;user-select:text}",
+			"#mini-window-layer,#mini-window,#mini-window-sub{animation-duration:0.5s;animation-fill-mode:forwards}",
+			"#mini-window{--mini-window-background-color:#FFFFFF;--mini-window-text-color:#404040;--mini-window-button-background-color:#CCCCCC;--mini-window-button-hover-background-color:#7FBFFF;--mini-window-button-active-background-color:#0080FF;--mini-window-button-text-color:#000000;--mini-window-button-hover-text-color:#000000;--mini-window-button-active-text-color:#FFFFFF}",
+			"@keyframes mini-window-fade-in{from{opacity:0}}",
+			"@keyframes mini-window-fade-out{to{opacity:0}}",
+			"#mini-window-layer.in,#mini-window.in{animation-name:mini-window-fade-in}",
+			"#mini-window-layer.out,#mini-window.out{animation-name:mini-window-fade-out}",
+			"@keyframes mini-window-sub-window-in{from{opacity:0;transform:translateY(-1rem)}}",
+			"@keyframes mini-window-sub-window-out{to{opacity:0}}",
+			"#mini-window-sub{box-shadow:#000000 0 0 0.5rem}",
+			"#mini-window-sub.in{animation:mini-window-sub-window-in 0.2s forwards}",
+			"#mini-window-sub.out{animation:mini-window-sub-window-out 0.2s forwards}",
+			"#mini-window .mini-window-button{border:none;border-radius:0.25rem;padding:0.5em}",
+			"#mini-window .mini-window-button,#mini-window-queue{background-color:var(--mini-window-button-background-color);color:var(--mini-window-button-text-color);user-select:none}",
+			"#mini-window .mini-window-button:hover{background-color:var(--mini-window-button-hover-background-color);color:var(--mini-window-button-hover-text-color)}",
+			"#mini-window .mini-window-button:active:focus{background-color:var(--mini-window-button-active-background-color);color:var(--mini-window-button-active-text-color)}",
+			"#mini-window-top{overflow:hidden;display:grid;grid-template-columns:1fr 2em 1.25rem;gap:0.25rem}",
+			"#mini-window-top>*{height:100%;width:100%}",
+			"#mini-window-title,#mini-window-sub-title{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}",
+			"#mini-window-queue{box-sizing:border-box;border:solid 0.125rem var(--mini-window-button-text-color);border-radius:0.25rem;overflow:hidden;display:grid;place-content:center;font-size:0.75rem}",
+			"#mini-window-close{position:relative;border-radius:0.25rem}",
+			"#mini-window-close::before,#mini-window-close::after{content:\"\";position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;border-radius:0.0625rem;width:0.125rem;height:1rem;background-color:var(--mini-window-button-text-color);transform:rotate(45deg)}",
+			"#mini-window-close::before{transform:rotate(-45deg)}",
+			"#mini-window-close:hover::before,#mini-window-close:hover::after{background-color:var(--mini-window-button-hover-text-color)}",
+			"#mini-window-close:active::before,#mini-window-close:active::after{background-color:var(--mini-window-button-active-text-color)}",
+			"#mini-window-hr,#mini-window-sub-hr{box-sizing:border-box;width:100%;border:solid 0.0625rem var(--mini-window-text-color);border-radius:0.0625rem;background-color:var(--mini-window-text-color)}",
+			"#mini-window-content-frame{position:relative;width:100%;height:100%;overflow:hidden}",
+			"#mini-window-layer.in>#mini-window::after,#mini-window-layer.out>#mini-window::after,#mini-window.in::after,#mini-window.out::after,#mini-window-sub.in::after,#mini-window-sub.out::after,#mini-window-content-frame.blocked::after{content:\"\";position:absolute;z-index:2147483647;left:0;right:0;top:0;bottom:0;display:block;opacity:0}",
+			"#mini-window-content{position:relative;max-width:100%;max-height:100%;width:100%;height:100%;overflow:auto;word-wrap:break-word;word-break:normal;color:var(--mini-window-text-color);user-select:text}",
+			"#mini-window-content img{max-width:100%;height:auto}",
+			"#mini-window-sub-content-frame{display:grid;gap:0.5rem}",
+			"#mini-window-sub-content-frame.confirm,#mini-window-sub-content-frame.alert{grid-template-rows:1fr auto}",
+			"#mini-window-sub-message{overflow:hidden auto}",
+			"#mini-window-sub-buttons{display:grid;grid-auto-columns:minmax(auto,6rem);grid-auto-flow:column;gap:0.5rem;justify-self:end}",
+			"#mini-window-sub-buttons>.mini-window-button{font-weight:bold}",
+			"#mini-window-sub-content-frame.wait{grid-template-columns:2rem 1fr;place-items:center start}",
+			"#mini-window-sub-cycle,#mini-window-sub-cycle::before{width:2rem;height:2rem}",
+			"@keyframes mini-window-sub-cycle{from{transform:rotate(0)}to{transform:rotate(1turn)}}",
+			"#mini-window-sub-cycle::before{display:block;content:\"\";box-sizing:border-box;background-color:transparent;border:solid 0.125rem;border-color:#0080FF #0080FF transparent transparent;border-radius:50%;transform-origin:center;animation:mini-window-sub-cycle 1s linear infinite forwards running}"
 		]],
 		["div", [
 			["div", [
-				["span", null, { id: "MiniWindowTitle" }, "windowTitle"],
-				["span", "0", { id: "MiniWindowQueue", title: "正在排队的弹窗数量" }, "windowQueue"],
-				["button", null, { id: "MiniWindowClose", title: "关闭" }, "windowClose"]
-			], { id: "MiniWindowTop" }],
-			["HR", null, { id: "MiniWindowHR" }],
+				["span", null, { id: "mini-window-title" }, "windowTitle"],
+				["span", "0", { id: "mini-window-queue", title: "正在排队的弹窗数量" }, "windowQueue"],
+				["button", null, { id: "mini-window-close", class: "mini-window-button", title: "关闭" }, "windowClose"]
+			], { id: "mini-window-top" }],
+			["hr", null, { id: "mini-window-hr" }],
 			["div", [
-				["div", null, { id: "MiniWindowContent" }, "windowContent"]
-			], { id: "MiniWindowContentFrame" }, "contentFrame"],
+				["div", null, { id: "mini-window-content" }, "windowContent"]
+			], { id: "mini-window-content-frame" }, "contentFrame"],
 			["div", [
 				["div", [
-					["span", null, { id: "MiniWindowSubTitle" }, "subTitle"],
-					["HR", null, { id: "MiniWindowSubHR" }],
-					["div", null, { id: "MiniWindowSubContentFrame" }, "subFrame"]
-				], { id: "MiniWindowSub" }, "subBody"]
-			], { id: "MiniWindowSubLayer" }, "subLayer"]
-		], { id: "MiniWindow" }, "windowBody"]
-	], { id: "MiniWindowLayer" }, "layer"],
+					["span", null, { id: "mini-window-sub-title" }, "subTitle"],
+					["hr", null, { id: "mini-window-sub-hr" }],
+					["div", null, { id: "mini-window-sub-content-frame" }, "subFrame"]
+				], { id: "mini-window-sub" }, "subBody"]
+			], { id: "mini-window-sub-layer" }, "subLayer"]
+		], { id: "mini-window" }, "windowBody"]
+	], { id: "mini-window-layer" }, "layer"],
 	["style", [
-		"#MiniWindowContent{display:grid;grid-template-rows:1fr auto;gap:0.5rem}",
-		"#MiniWindow_confirm_descriptions{overflow:hidden auto}",
-		"#MiniWindow_confirm_buttons{display:grid;grid-template-columns:repeat(2,minmax(auto,6rem));gap:0.5rem;justify-self:end}",
-		"#MiniWindow_confirm_buttons>button{font-weight:bold}"
+		"#mini-window-content{display:grid;grid-template-rows:1fr auto;gap:0.5rem}",
+		"#mini-window-confirm-descriptions{overflow:hidden auto}",
+		"#mini-window-confirm-buttons{display:grid;grid-template-columns:repeat(2,minmax(auto,6rem));gap:0.5rem;justify-self:end}",
+		"#mini-window-confirm-buttons>.mini-window-button{font-weight:bold}"
 	], null, "confirmStyle"]
 ]).nodes;
 const queue = [], windowStyle = windowBody.style;
 var pending = false, closeCurrent = null, unshiftMode = false;
 function preventBubble(event) { event.stopPropagation() }
-const STYLE_NAMES = ["backgroundColor", "textColor", "buttonBackgroundColor", "buttonHoverBackgroundColor", "buttonActiveBackgroundColor", "buttonTextColor", "buttonHoverTextColor", "buttonActiveTextColor"];
+const STYLE_NAMES = {
+	backgroundColor: "background-color",
+	textColor: "text-color",
+	buttonBackgroundColor: "button-background-color",
+	buttonHoverBackgroundColor: "button-hover-background-color",
+	buttonActiveBackgroundColor: "button-active-background-color",
+	buttonTextColor: "button-text-color",
+	buttonHoverTextColor: "button-hover-text-color",
+	buttonActiveTextColor: "button-active-text-color"
+};
 class QueueItem {
 	controller = new MiniWindowController(this);
 	instance;
@@ -223,39 +232,36 @@ class MiniWindow extends EventTarget {
 		MiniWindow.#checkInstance(this);
 		if (typeof message != "string") throw new TypeError("Failed to execute 'alert' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck();
-		const AH = ArrayHTML([
-			["div", message, { id: "MiniWindowSubMessage" }],
-			["div", [["button", "确认", null, "ok"]], { id: "MiniWindowSubButtons" }]
-		]), ok = AH.nodes.ok, controller = new SubWindowController, { promise1, resolve1 } = controller;
-		ok.addEventListener("click", function () { resolve1() }, { once: true, passive: true });
-		this.#createSub(controller, "alert", "提示", AH.documentFragment);
+		const controller = new SubWindowController, { promise1, resolve1 } = controller;
+		this.#createSub(controller, "alert", "提示", parse([
+			["div", message, { id: "mini-window-sub-message" }],
+			["div", [["button", "确认", { class: "mini-window-button", [EVENT_LISTENERS]: [["click", () => { resolve1() }, { once: true, passive: true }]] }]], { id: "mini-window-sub-buttons" }]
+		]));
 		return promise1;
 	}
 	confirm(message) {
 		MiniWindow.#checkInstance(this);
 		if (typeof message != "string") throw new TypeError("Failed to execute 'confirm' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck();
-		const AH = ArrayHTML([
-			["div", message, { id: "MiniWindowSubMessage" }],
+		const controller = new SubWindowController, { promise1, resolve1 } = controller;
+		this.#createSub(controller, "confirm", "确认", parse([
+			["div", message, { id: "mini-window-sub-message" }],
 			["div", [
-				["button", "是", null, "yes"],
-				["button", "否", null, "no"]
-			], { id: "MiniWindowSubButtons" }]
-		]), { yes, no } = AH.nodes, controller = new SubWindowController, { promise1, resolve1 } = controller;
-		yes.addEventListener("click", function () { resolve1(true) }, { once: true, passive: true });
-		no.addEventListener("click", function () { resolve1(false) }, { once: true, passive: true });
-		this.#createSub(controller, "confirm", "确认", AH.documentFragment);
+				["button", "是", { class: "mini-window-button", [EVENT_LISTENERS]: [["click", () => { resolve1(true) }, { once: true, passive: true }]] }],
+				["button", "否", { class: "mini-window-button", [EVENT_LISTENERS]: [["click", () => { resolve1(false) }, { once: true, passive: true }]] }]
+			], { id: "mini-window-sub-buttons" }]
+		]));
 		return promise1;
 	}
 	wait(message) {
 		if (typeof message != "string") throw new TypeError("Failed to execute 'wait' on 'MiniWindow': Argument 'message' is not a string.");
 		this.#subWindowCheck("wait");
-		const AH = ArrayHTML([
-			["div", null, { id: "MiniWindowSubCycle" }],
-			["div", message, { id: "MiniWindowSubMessage" }]
-		]), controller = new SubWindowController, { resolve1 } = controller;
-		this.#createSub(controller, "wait", "请等待", AH.documentFragment);
-		return resolve1;
+		const controller = new SubWindowController;
+		this.#createSub(controller, "wait", "请等待", parse([
+			["div", null, { id: "mini-window-sub-cycle" }],
+			["div", message, { id: "mini-window-sub-message" }]
+		]));
+		return controller.resolve1;
 	}
 	static {
 		Object.defineProperty(this.prototype, Symbol.toStringTag, {
@@ -267,24 +273,25 @@ class MiniWindow extends EventTarget {
 		if (arguments.length < 1) throw new TypeError("Failed to execute 'confirm': 1 argument required, but only 0 present.");
 		if (typeof content != "string" && !(content instanceof Node)) throw new TypeError("Failed to execute 'confirm': Argument 'content' is not a string or HTML node.");
 		if (typeof title != "string") title = "确认";
-		const AH = ArrayHTML([
-			confirmStyle,
-			["div", content, { id: "MiniWindow_confirm_descriptions" }],
-			["div", [
-				["button", "是", null, "yes"],
-				["button", "否", null, "no"]
-			], { id: "MiniWindow_confirm_buttons" }]
-		], true), { yes, no } = AH.nodes;
 		var fulfill;
-		const promise = new Promise(function (resolve) { fulfill = resolve }), miniWindow = new this(AH.documentFragment, title, { noManualClose: true, size: { width: "384px" } });
-		yes.addEventListener("click", function () {
-			fulfill(true);
-			miniWindow.close();
-		}, { once: true, passive: true });
-		no.addEventListener("click", function () {
-			fulfill(false);
-			miniWindow.close();
-		}, { once: true, passive: true });
+		const promise = new Promise(function (resolve) { fulfill = resolve }), miniWindow = new this(parse([
+			confirmStyle,
+			["div", content, { id: "mini-window-confirm-descriptions" }],
+			["div", [
+				["button", "是", {
+					class: "mini-window-button", [EVENT_LISTENERS]: [["click", () => {
+						fulfill(true);
+						miniWindow.close();
+					}, { once: true, passive: true }]]
+				}],
+				["button", "否", {
+					class: "mini-window-button", [EVENT_LISTENERS]: [["click", () => {
+						fulfill(false);
+						miniWindow.close();
+					}, { once: true, passive: true }]]
+				}]
+			], { id: "mini-window-confirm-buttons" }]
+		], true), title, { noManualClose: true, size: { width: "384px" } });
 		return promise;
 	}
 }
@@ -293,12 +300,12 @@ function clearContent() {
 	windowClose.style = "";
 	windowContent.innerHTML = "";
 	windowContent.style = "";
-	for (let i of STYLE_NAMES) windowStyle.setProperty(`--MiniWindow_${i}`, null);
+	for (let i in STYLE_NAMES) windowStyle.setProperty(`--mini-window-${STYLE_NAMES[i]}`, null);
 	contentFrame.className = "";
 }
 function setStyle(data) {
 	if (!(data instanceof Object)) return;
-	for (let i of STYLE_NAMES) if (i in data) windowStyle.setProperty(`--MiniWindow_${i}`, data[i]);
+	for (let i in STYLE_NAMES) if (i in data) windowStyle.setProperty(`--mini-window-${STYLE_NAMES[i]}`, data[i]);
 }
 const sizeFormat = /^\d+%$/;
 function setSize(data) {
