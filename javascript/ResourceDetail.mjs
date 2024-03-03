@@ -2,7 +2,7 @@ import { getJSON } from "/javascript/module/AJAX.mjs";
 import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
-const detailStyle = document.createElement("STYLE");
+const detailStyle = document.createElement("style");
 detailStyle.textContent = [
 	"#resource_detail{display:grid;grid-template-rows:auto 1fr;gap:0.5rem}",
 	"#resource_detail_information{display:grid;gap:0.25rem 1rem;color:#000000}",
@@ -17,7 +17,7 @@ detailStyle.textContent = [
 	"#resource_detail_information_icon{grid-area:icon}",
 	".resource_detail_information_item{grid-template-columns:auto 1fr;gap:0.5rem}",
 	"}",
-	"@media all and (max-width:47.999rem){",
+	"@media all and not (min-width:48rem){",
 	"#resource_detail_information{grid-template-rows:8rem repeat(5,1fr);place-items:center}",
 	".resource_detail_information_item{align-self:start;width:100%;place-items:center}",
 	".resource_detail_tag{margin-inline:0.125rem}",
@@ -36,19 +36,19 @@ detailStyle.textContent = [
 ].join("");
 function buildResourceBaiduNetDisk(data, container) {
 	const link = "https://pan.baidu.com/s/" + data.code, temp = [
-		["H3", [["DIV", null, { class: "resource_detail_content_release_icon bdnd" }], "百度网盘"], { class: "resource_detail_content_release_type" }], ["HR"],
-		"链接：", ["A", link, { href: link + "?pwd=" + data.password, target: "_blank" }]
+		["h3", [["div", null, { class: "resource_detail_content_release_icon bdnd" }], "百度网盘"], { class: "resource_detail_content_release_type" }], ["HR"],
+		"链接：", ["a", link, { href: link + "?pwd=" + data.password, target: "_blank" }]
 	];
-	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
-	container.push(["DIV", temp]);
+	if ("note" in data) temp.push(["br"], "说明：", ["br"], ...data.note);
+	container.push(["div", temp]);
 }
 function buildResourceMagnet(data, container) {
 	const link = "magnet:?xt=urn:btih:" + data.hash, temp = [
-		["H3", [["DIV", null, { class: "resource_detail_content_release_icon magnet" }], "磁力链接"], { class: "resource_detail_content_release_type" }], ["HR"],
-		"链接：", ["A", link, { href: link }]
+		["h3", [["div", null, { class: "resource_detail_content_release_icon magnet" }], "磁力链接"], { class: "resource_detail_content_release_type" }], ["HR"],
+		"链接：", ["a", link, { href: link }]
 	];
-	if ("note" in data) temp.push(["BR"], "说明：", ["BR"], ...data.note);
-	container.push(["DIV", temp]);
+	if ("note" in data) temp.push(["br"], "说明：", ["br"], ...data.note);
+	container.push(["div", temp]);
 }
 function buildRelease(data) {
 	const temp = [];
@@ -57,8 +57,8 @@ function buildRelease(data) {
 	return buildDetailsPart("资源", temp, true, "resource_detail_content_release");
 }
 function buildDetailsPart(title, data, opened = false, className = null) {
-	data.unshift(["SUMMARY", [["H2", title]]]);
-	const arrayHTML = ["DETAILS", data, { class: "bs-content" }], attributes = arrayHTML[2];
+	data.unshift(["summary", [["h2", title]]]);
+	const arrayHTML = ["details", data, { class: "bs-content" }], attributes = arrayHTML[2];
 	if (className) attributes.class += " " + className;
 	if (opened) attributes.open = "";
 	return arrayHTML;
@@ -73,28 +73,28 @@ function displayDetails(data, showArea) {
 function showDetail(data) {
 	const { documentFragment, nodes } = parseAndGetNodes([
 		detailStyle.cloneNode(true),
-		["DIV", [
-			["DIV", [
-				["IMG", null, { id: "resource_detail_information_icon", src: data.icon, alt: "资源印象图" }],
-				["H1", data.display, { id: "resource_detail_information_name" }],
-				["DIV", [
-					["SPAN", "媒体类型", { class: "resource_detail_information_item_name" }],
-					"media" in data ? ["DIV", buildMediaTags(data.media, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
+		["div", [
+			["div", [
+				["img", null, { id: "resource_detail_information_icon", src: data.icon, alt: "资源印象图" }],
+				["h1", data.display, { id: "resource_detail_information_name" }],
+				["div", [
+					["span", "媒体类型", { class: "resource_detail_information_item_name" }],
+					"media" in data ? ["div", buildMediaTags(data.media, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
 				], { class: "resource_detail_information_item" }],
-				["DIV", [
-					["SPAN", "内容类型", { class: "resource_detail_information_item_name" }],
-					"content" in data ? ["DIV", buildContentTags(data.content, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
+				["div", [
+					["span", "内容类型", { class: "resource_detail_information_item_name" }],
+					"content" in data ? ["div", buildContentTags(data.content, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
 				], { class: "resource_detail_information_item" }],
-				["DIV", [
-					["SPAN", "主创作者", { class: "resource_detail_information_item_name" }],
-					"artists" in data ? ["DIV", buildNameList(data.artists, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
+				["div", [
+					["span", "主创作者", { class: "resource_detail_information_item_name" }],
+					"artists" in data ? ["div", buildNameList(data.artists, "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
 				], { class: "resource_detail_information_item" }],
-				["DIV", [
-					["SPAN", "制作公司", { class: "resource_detail_information_item_name" }],
-					"producer" in data ? ["DIV", buildNameList([data.producer], "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
+				["div", [
+					["span", "制作公司", { class: "resource_detail_information_item_name" }],
+					"producer" in data ? ["div", buildNameList([data.producer], "resource_detail_tag"), { class: "resource_detail_information_tag_list" }] : "未知"
 				], { class: "resource_detail_information_item" }]
 			], { id: "resource_detail_information" }],
-			["DIV", [], { id: "resource_detail_content", class: "bs-loading" }, "showArea"]
+			["div", [], { id: "resource_detail_content", class: "bs-loading" }, "showArea"]
 		], { id: "resource_detail" }]
 	]), miniWindow = new MiniWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
 	const xhr = getJSON(

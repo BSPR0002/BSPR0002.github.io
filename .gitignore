@@ -1,7 +1,7 @@
 *.bak
 同步文件.bat
 backup
-unuse
+others
 .vs
 .vscode
 *.code-workspace

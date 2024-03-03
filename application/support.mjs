@@ -28,7 +28,7 @@ class CacheController {
 		if (request.mode == "navigate") return url != scope && url != scope + "index.html" ?
 			new Response(null, { status: 301, headers: { Location: scope } }) :
 			await (await caches.open(this.ownCacheName)).match(scope + "index.html");
-		for (let { scope, cacheName } of this.cacheScopes) {
+		for (const { scope, cacheName } of this.cacheScopes) {
 			if (!url.startsWith(scope)) continue;
 			const response = await (await caches.open(cacheName)).match(url);
 			if (response) return response;
@@ -36,6 +36,7 @@ class CacheController {
 		}
 		return fetch(request);
 	}
-	async clean() { for (let cacheName of await caches.keys()) if (cacheName.startsWith(ownCachePrefix) && cacheName != this.ownCacheName) await caches.delete(cacheName) }
+	async clean() { for (const cacheName of await caches.keys()) if (cacheName.startsWith(ownCachePrefix) && cacheName != this.ownCacheName) await caches.delete(cacheName) }
+	async uninstall(){for (const cacheName of await caches.keys()) if (cacheName.startsWith(ownCachePrefix)) await caches.delete(cacheName)}
 }
 export default CacheController;

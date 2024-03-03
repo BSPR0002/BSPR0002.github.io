@@ -30,14 +30,14 @@ const moduleConfig = {
 		path: "/javascript/module/Base64.mjs"
 	},
 	trackList: {
-		path: "/unuse/tracklist.mjs",
+		path: "/others/script/tracklist.mjs",
 		default: "default"
 	},
 	torrent: {
-		path: "/unuse/torrent.mjs"
+		path: "/others/script/torrent.mjs"
 	},
 	flac2wav: {
-		path: "/unuse/flac2wav.mjs",
+		path: "/others/script/flac2wav.mjs",
 		default: "default"
 	},
 	BufferContext: {
@@ -60,7 +60,7 @@ const moduleConfig = {
 		default: "default"
 	},
 	detune: {
-		path: "/unuse/detune.mjs",
+		path: "/others/script/detune.mjs",
 		default: "use"
 	},
 	JSZip: {

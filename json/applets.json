@@ -6,7 +6,7 @@
 	},
 	{
 		"id": "org.BSIF.JSONIndexedEditor",
-		"directory": "/application/json_indexed_editor/",
+		"directory": "/application/json-indexed-editor/",
 		"name": "JSON 索引化编辑工具",
 		"iconName": "icon.svg"
 	}
