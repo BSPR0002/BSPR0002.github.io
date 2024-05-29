@@ -1,4 +1,4 @@
-import { getJSON } from "/javascript/module/AJAX.mjs";
+import { get } from "/javascript/module/AJAX.mjs";
 import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
@@ -97,9 +97,10 @@ function showDetail(data) {
 			["div", [], { id: "resource_detail_content", class: "bs-loading" }, "showArea"]
 		], { id: "resource_detail" }]
 	]), miniWindow = new MiniWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
-	const xhr = getJSON(
+	const xhr = get(
 		`/json/resource/${data.id}.json`,
 		function (response) { displayDetails(response, nodes.showArea) },
+		"json",
 		false
 	);
 	miniWindow.onclosed = xhr.abort.bind(xhr);
