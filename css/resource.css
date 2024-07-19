@@ -132,7 +132,7 @@
 	grid-template-columns: repeat(auto-fit, minmax(17em, 1fr));
 	gap: 0.25em;
 }
-@media all and (min-width:768px) {
+@media all and (min-width:48rem) {
 	#resource_show_area {grid-template-columns: repeat(2, 1fr)}
 }
 #resource_show_area::before {
