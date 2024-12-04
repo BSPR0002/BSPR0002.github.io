@@ -13,13 +13,13 @@ CONTENT_TAGS={
 };
 Object.freeze(MEDIA_TAGS);
 Object.freeze(CONTENT_TAGS);
-function buildNameList(names,elementClass){return names.map(name=>["SPAN",name,{class:elementClass}])}
+function buildNameList(names,elementClass){return names.map(name=>["span",name,{class:elementClass}])}
 function buildMediaTags(tags,elementClass) {
 	const result=[];
 	for (let tag of tags) {
 		let temp=MEDIA_TAGS[tag];
 		if (!temp) continue;
-		result.push(["SPAN",temp,{class:elementClass}]);
+		result.push(["span",temp,{class:elementClass}]);
 	}
 	return result
 }
@@ -28,7 +28,7 @@ function buildContentTags(tags,elementClass) {
 	for (let tag of tags) {
 		let temp=CONTENT_TAGS[tag];
 		if (!temp) continue;
-		result.push(["SPAN",temp,{class:`${elementClass} ${tag}`}]);
+		result.push(["span",temp,{class:`${elementClass} ${tag}`}]);
 	}
 	return result
 }
