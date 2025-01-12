@@ -120,6 +120,7 @@ class RandomStatistician {
 		var result = [["total", total.toString()]];
 		while (i < 10) {
 			let starting = i / 10, subscript = i++, quantity = this.#data[subscript];
+			// @ts-ignore
 			result.push(["[" + starting + "," + i / 10 + ")", quantity.toString(), (total == 0 ? "0" : Number(quantity) * 100 / +Number(total)) + "%"]);
 		}
 		return result
