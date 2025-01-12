@@ -1,12 +1,12 @@
 [
 	{
 		"id": "org.BSIF.Tetris",
-		"directory": "/application/Tetris/",
+		"directory": "/application/tetris/",
 		"name": "Tetris"
 	},
 	{
 		"id": "org.BSIF.JSONIndexedEditor",
-		"directory": "/application/json-indexed-editor/",
+		"directory": "/application/json_indexed_editor/",
 		"name": "JSON 索引化编辑工具",
 		"iconName": "icon.svg"
 	}
