@@ -8,7 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="/css/BSIF_style.css">
 		<link rel="stylesheet" type="text/css" href="/css/test_page.css">
 		<style>
-			#tools_plate {
+			#tools-plate {
 				width:1024px;
 				box-sizing:border-box;
 				margin:0 auto;
@@ -26,9 +26,9 @@
 				grid-template-rows:repeat(auto-fill,minmax(0,64px));
 				transition:transform 0.5s ease-in-out;
 			}
-			#tools_plate.off {transform:translateY(-100%)}
-			.test_tools {color:#FFFFFF}
-			#tools_plate_switch {
+			#tools-plate.off {transform:translateY(-100%)}
+			.test-tools {color:#FFFFFF}
+			#tools-plate-switch {
 				position:absolute;
 				top:100%;
 				left:0;
@@ -41,15 +41,15 @@
 				border-radius:inherit;
 				padding:0;
 			}
-			#tools_plate_switch_icon {
+			#tools-plate-switch-icon {
 				width:30px;
 				height:15px;
 				margin:10px auto;
 				position:relative;
 				transition:transform 0.5s ease-in-out;
 			}
-			#tools_plate.on #tools_plate_switch_icon {transform:rotateX(180deg)}
-			#tools_plate_switch_icon:before,#tools_plate_switch_icon:after {
+			#tools-plate.on #tools-plate-switch-icon {transform:rotateX(180deg)}
+			#tools-plate-switch-icon:before,#tools-plate-switch-icon:after {
 				content:"";
 				display:block;
 				box-sizing:border-box;
@@ -63,8 +63,8 @@
 				transform-origin:2.5px center;
 				transform:rotate(-40deg);
 			}
-			#tools_plate_switch_icon:after {transform:rotate(-140deg)}
-			#test_page_show_area {
+			#tools-plate-switch-icon:after {transform:rotate(-140deg)}
+			#test-page-show-area {
 				box-sizing:border-box;
 				min-width:1024px;
 				width:min-content;
@@ -82,10 +82,10 @@
 		<script src="/javascript/TestAudioPlayer.mjs" type="module"></script>
 	</head>
 	<body>
-		<div id="tools_plate" class="off">
-			<button id="tools_plate_switch">
+		<div id="tools-plate" class="off">
+			<button id="tools-plate-switch">
 				<script>
-					document.getElementById("tools_plate_switch").addEventListener("click",(function(){
+					document.getElementById("tools-plate-switch").addEventListener("click",(function(){
 						var state=false;
 						return function(){
 							state=!state;
@@ -93,15 +93,15 @@
 						}
 					})())
 				</script>
-				<div id="tools_plate_switch_icon"></div>
+				<div id="tools-plate-switch-icon"></div>
 			</button>
 			<hr style="margin:0 auto;grid-row-start:1;grid-column-start:2;grid-column-end:2;grid-row-end:span 5">
-			<div id="tool_select_files" class="test_tools"><style>#tool_select_files{overflow:hidden;display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-gap:5px;grid-template-areas:"name select" "mode select";place-items:center}#tool_select_files_select{grid-area:select;width:100%}#tool_select_files_mode{display:grid;grid-area:mode;grid-template-columns:1fr 1fr;grid-gap:20px;place-items:center}</style>选择文件<form name="tool_select_files_mode" id="tool_select_files_mode"><label><input type="radio" name="multiple" value="0" checked>单选</label><label><input type="radio" name="multiple" value="1">多选</label></form><input type="file" id="tool_select_files_select"><script>{let input=document.getElementById("tool_select_files_select");document.forms.tool_select_files_mode.addEventListener("change",function(){input.multiple=Boolean(parseInt(this.elements.multiple.value))});Object.defineProperty(testTools,"selectedFiles",{"get":function(){return input.files},"configrable":false,"enumerable":true});Object.defineProperty(testTools,"selectedFile",{"get":function(){return input.files[0]},"configrable":false,"enumerable":true})}</script></div>
+			<div id="tool-select-files" class="test-tools"><style>#tool-select-files{overflow:hidden;display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr;grid-gap:5px;grid-template-areas:"name select" "mode select";place-items:center}#tool-select-files-select{grid-area:select;width:100%}#tool-select-files-mode{display:grid;grid-area:mode;grid-template-columns:1fr 1fr;grid-gap:20px;place-items:center}</style>选择文件<form name="tool-select-files-mode" id="tool-select-files-mode"><label><input type="radio" name="multiple" value="0" checked>单选</label><label><input type="radio" name="multiple" value="1">多选</label></form><input type="file" id="tool-select-files-select"><script>{let input=document.getElementById("tool-select-files-select");document.forms["tool-select-files-mode"].addEventListener("change",function(){input.multiple=Boolean(parseInt(this.elements.multiple.value))});Object.defineProperty(testTools,"selectedFiles",{"get":function(){return input.files},"configrable":false,"enumerable":true});Object.defineProperty(testTools,"selectedFile",{"get":function(){return input.files[0]},"configrable":false,"enumerable":true})}</script></div>
 		</div>
-		<div id="test_page_show_area">
-			<canvas id="test_canvas" width="1024" height="256" style="box-sizing:border-box;border:solid 1px #000000">
+		<div id="test-page-show-area">
+			<canvas id="test-canvas" width="1024" height="256" style="box-sizing:border-box;border:solid 1px #000000">
 				您的浏览器不支持 canvas ！
-				<script>{let canvas=document.getElementById("test_canvas");var testCanvas={node:canvas,context:canvas.getContext("2d")}}</script>
+				<script>{let canvas=document.getElementById("test-canvas");var testCanvas={node:canvas,context:canvas.getContext("2d")}}</script>
 			</canvas>
 		</div>
 	</body>

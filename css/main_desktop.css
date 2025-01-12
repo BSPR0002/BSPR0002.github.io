@@ -20,7 +20,7 @@
 	font-weight: bold;
 	font-size: 1.5rem;
 }
-#mobile_top {display: none}
+#mobile-top {display: none}
 #navigation {grid-template-columns: repeat(3, 10em)}
 .navigation {
 	display: block;
@@ -69,8 +69,8 @@
 	background-color: var(--focusColor);
 }
 .navigation.failed::after {background-color: #FF0000}
-.navigation.loading::after {animation: navigation_loading 1s linear 0s infinite forwards}
-@keyframes navigation_loading {
+.navigation.loading::after {animation: navigation-loading 1s linear 0s infinite forwards}
+@keyframes navigation-loading {
 	0%{width:0}
 	50%{opacity:1}
 	100%{

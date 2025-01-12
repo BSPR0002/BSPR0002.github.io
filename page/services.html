@@ -11,7 +11,7 @@
 				["applets","Applets"],
 				["settings","Setting"]
 			]) {
-				let element=document.getElementById("services_"+item[0]);
+				let element=document.getElementById("services-"+item[0]);
 				import(`/javascript/${item[1]}.mjs`).then(function(module){
 					element.addEventListener("click",module.showBoard);
 					element.className="services";
@@ -20,21 +20,21 @@
 		</script>
 	</head>
 	<body>
-		<div id="page_box_services">
-			<button class="services bs-loading" id="services_notification">
-				<div class="services_icon"></div>
+		<div id="page-box-services">
+			<button class="services bs-loading" id="services-notification">
+				<div class="services-icon"></div>
 				<span>推送通知</span>
 			</button>
-			<button class="services bs-loading" id="services_projects">
-				<div class="services_icon"></div>
+			<button class="services bs-loading" id="services-projects">
+				<div class="services-icon"></div>
 				<span>工程项目</span>
 			</button>
-			<button class="services bs-loading" id="services_applets">
-				<div class="services_icon"></div>
+			<button class="services bs-loading" id="services-applets">
+				<div class="services-icon"></div>
 				<span>在线应用</span>
 			</button>
-			<button class="services bs-loading" id="services_settings">
-				<div class="services_icon"></div>
+			<button class="services bs-loading" id="services-settings">
+				<div class="services-icon"></div>
 				<span>网站设置</span>
 			</button>
 		</div>
