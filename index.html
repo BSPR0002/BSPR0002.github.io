@@ -10,7 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="/css/BSIF_style.css">
 		<link rel="stylesheet" type="text/css" href="/css/main.css">
 		<link rel="stylesheet" type="text/css" media="all and (min-width:48rem)" href="/css/main_desktop.css">
-		<link rel="stylesheet" type="text/css" media="all and (max-width:47.999rem)" href="/css/main_mobile.css">
+		<link rel="stylesheet" type="text/css" media="all and not (min-width:48rem)" href="/css/main_mobile.css">
 		<script>try{eval("class test{async #private(){}static{indexedDB}}")}catch(e){location.pathname="/page/browser_not_support.html"}</script>
 		<script src="/javascript/TestFunction.js"></script>
 		<script src="/javascript/MainController.mjs" type="module"></script>
@@ -22,9 +22,9 @@
 				<img id="logo" alt="logo" src="images/logo.svg">
 				<span id="site">BSIF</span>
 			</div>
-			<div id="mobile_top">
-				<button id="navigation_switch" title="展开导航"><div></div><div></div><div></div></button>
-				<span id="tab_title"></span>
+			<div id="mobile-top">
+				<button id="navigation-switch" title="展开导航"><div></div><div></div><div></div></button>
+				<span id="tab-title"></span>
 			</div>
 			<nav id="navigation">
 				<button class="navigation"><span>主页</span></button>
@@ -32,6 +32,6 @@
 				<button class="navigation"><span>资源库</span></button>
 			</nav>
 		</header>
-		<div id="page_box"></div>
+		<div id="page-box"></div>
 	</body>
 </html>

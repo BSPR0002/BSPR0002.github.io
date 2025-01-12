@@ -22,6 +22,6 @@
 
 .function>p{font-size: 0.9375rem}
 
-#function_program>div{background-position: 0 0}
-#function_resource>div{background-position: 4em 0}
-#function_share>div{background-position: 0 4em}
+#function-program>div{background-position: 0 0}
+#function-resource>div{background-position: 4em 0}
+#function-share>div{background-position: 0 4em}

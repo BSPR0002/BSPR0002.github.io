@@ -3,16 +3,16 @@ import { search, abortMission as abortEngine } from "/javascript/ResourceEngine.
 import { buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
 import { showDetail } from "/javascript/ResourceDetail.mjs";
 class Field {
-	boxFrame = document.getElementById("page_box_resource");
-	showBox = document.getElementById("resource_show_box");
-	showArea = document.getElementById("resource_show_area");
-	searchInput = document.getElementById("resource_search_input");
-	searchButton = document.getElementById("resource_search_button");
-	searchState = document.getElementById("resource_search_state");
-	totalPage = document.getElementById("resource_pagination_total");
-	selectPage = document.getElementById("resource_pagination_select");
-	previousPage = document.getElementById("resource_pagination_previous");
-	nextPage = document.getElementById("resource_pagination_next");
+	boxFrame = document.getElementById("page-box-resource");
+	showBox = document.getElementById("resource-show-box");
+	showArea = document.getElementById("resource-show-area");
+	searchInput = document.getElementById("resource-search-input");
+	searchButton = document.getElementById("resource-search-button");
+	searchState = document.getElementById("resource-search-state");
+	totalPage = document.getElementById("resource-pagination-total");
+	selectPage = document.getElementById("resource-pagination-select");
+	previousPage = document.getElementById("resource-pagination-previous");
+	nextPage = document.getElementById("resource-pagination-next");
 	showData = [];
 	currentPage = 0;
 	searchSuspended = false;
@@ -21,13 +21,13 @@ class Field {
 	show(data) {
 		const container = document.createDocumentFragment();
 		for (let item of data) {
-			let card = ArrayHTML([["DIV", [
-				["DIV", null, item.icon ? { class: "resource_card_icon", style: `background-image:url("${item.icon}")` } : { class: "resource_card_icon none" }],
-				["SPAN", item.display, { class: "resource_card_name" }],
-				["DIV", buildMediaTags(item.media, "resource_card_tag"), { class: "resource_card_media" }],
-				["DIV", buildContentTags(item.content, "resource_card_tag"), { class: "resource_card_content" }],
-				["BUTTON", "详细信息", { class: "resource_card_detail" }, "cardDetail"]
-			], { class: "resource_card" }]]);
+			let card = ArrayHTML([["div", [
+				["div", null, item.icon ? { class: "resource-card-icon", style: `background-image:url("${item.icon}")` } : { class: "resource-card-icon none" }],
+				["span", item.display, { class: "resource-card-name" }],
+				["div", buildMediaTags(item.media, "resource-card-tag"), { class: "resource-card-media" }],
+				["div", buildContentTags(item.content, "resource-card-tag"), { class: "resource-card-content" }],
+				["button", "详细信息", { class: "resource-card-detail" }, "cardDetail"]
+			], { class: "resource-card" }]]);
 			card.nodes.cardDetail.addEventListener("click", function () { showDetail(item) });
 			container.appendChild(card.documentFragment);
 		}

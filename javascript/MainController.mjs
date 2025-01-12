@@ -3,9 +3,9 @@ import { Enum } from "/javascript/module/Enum.mjs";
 const TAB_LIST = new Enum(["home", "services", "resource"]),
 	navigation = document.getElementById("navigation"),
 	NAVIGATIONS = navigation.getElementsByClassName("navigation"),
-	PAGE_BOX = document.getElementById("page_box"),
-	title = document.getElementById("tab_title"),
-	naviSwitch = document.getElementById("navigation_switch");
+	PAGE_BOX = document.getElementById("page-box"),
+	title = document.getElementById("tab-title"),
+	naviSwitch = document.getElementById("navigation-switch");
 var currentTab = NAVIGATIONS[0], naviState = false, lastLoad;
 function currentSuccess() {
 	currentTab.className = "navigation current";

@@ -1,4 +1,4 @@
-#page_box_services {
+#page-box-services {
 	margin:0 auto;
 	box-sizing:border-box;
 	max-width:64em;
@@ -23,16 +23,16 @@
 	font-size:1rem;
 }
 .services.bs-loading{background-color:transparent}
-.services_icon {
+.services-icon {
 	width:5em;
 	height:5em;
 	background-image:url(/images/system/services_icon.svg);
 	background-size:200%;
 }
-#services_notification>.services_icon{background-position:0 0}
-#services_projects>.services_icon{background-position:5em 0}
-#services_applets>.services_icon{background-position:0 5em}
-#services_settings>.services_icon{background-position:5em 5em}
+#services-notification>.services-icon{background-position:0 0}
+#services-projects>.services-icon{background-position:5em 0}
+#services-applets>.services-icon{background-position:0 5em}
+#services-settings>.services-icon{background-position:5em 5em}
 .services:hover{background-color:#00FFC0}
 .services:active {
 	transition-duration:0s;
