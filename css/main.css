@@ -4,7 +4,7 @@ body {
 	height: 100%;
 	grid-template-rows: auto 1fr;
 	gap: 0.25em;
-	background-color:var(--backgroundColor);
+	background-color:var(--background-color);
 }
 #top {
 	position: relative;
@@ -20,7 +20,7 @@ body {
 	height: 100%;
 }
 #navigation {display: grid}
-#page_box {
+#page-box {
 	position: relative;
 	overflow: auto;
 	z-index: 1;

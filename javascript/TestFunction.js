@@ -29,17 +29,6 @@ const moduleConfig = {
 	Base64: {
 		path: "/javascript/module/Base64.mjs"
 	},
-	trackList: {
-		path: "/unuse/tracklist.mjs",
-		default: "default"
-	},
-	torrent: {
-		path: "/unuse/torrent.mjs"
-	},
-	flac2wav: {
-		path: "/unuse/flac2wav.mjs",
-		default: "default"
-	},
 	BufferContext: {
 		path: "/javascript/module/BufferContext.mjs",
 		default: "default"
@@ -60,7 +49,7 @@ const moduleConfig = {
 		default: "default"
 	},
 	detune: {
-		path: "/unuse/detune.mjs",
+		path: "/others/script/detune.mjs",
 		default: "use"
 	},
 	JSZip: {
@@ -75,12 +64,35 @@ const moduleConfig = {
 		path: "/javascript/module/privatifyConstructor.mjs",
 		default: "default"
 	},
-	PromiseAdapter: {
-		path: "/javascript/module/PromiseAdapter.mjs",
+	promiseWithResolvers: {
+		path: "/javascript/module/PromiseWithResolvers.mjs",
 		default: "default"
 	},
 	StringEnhancement: {
 		path: "/javascript/module/StringEnhancement.mjs"
+	},
+	ContextMenu: {
+		path: "/javascript/module/ContextMenu.mjs",
+		default: "showMenu"
+	},
+	trackList: {
+		path: "/others/script/tracklist.mjs",
+		default: "default"
+	},
+	torrent: {
+		path: "/others/script/torrent.mjs"
+	},
+	flac2wav: {
+		path: "/others/script/flac2wav.mjs",
+		default: "default"
+	},
+	listFiles: {
+		path: "/others/script/listFiles.mjs",
+		default: "default"
+	},
+	crlf: {
+		path: "/others/script/crlf.mjs",
+		default: "convert"
 	}
 };
 for (let i in moduleConfig) moduleConfig[i].name = i;
@@ -108,6 +120,7 @@ class RandomStatistician {
 		var result = [["total", total.toString()]];
 		while (i < 10) {
 			let starting = i / 10, subscript = i++, quantity = this.#data[subscript];
+			// @ts-ignore
 			result.push(["[" + starting + "," + i / 10 + ")", quantity.toString(), (total == 0 ? "0" : Number(quantity) * 100 / +Number(total)) + "%"]);
 		}
 		return result

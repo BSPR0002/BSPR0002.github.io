@@ -11,7 +11,7 @@
 				["resource","MainController",function(){this.changeTab(2)}],
 				["share","Setting",function(){this.direct(["about"])}]
 			]) {
-				let element=document.getElementById("function_"+item[0]);
+				let element=document.getElementById("function-"+item[0]);
 				import(`/javascript/${item[1]}.mjs`).then(function(module){
 					element.addEventListener("click",item[2].bind(module),{passive:true});
 					element.className="function";
@@ -20,11 +20,11 @@
 		</script>
 	</head>
 	<body>
-		<div id="page_box_home">
+		<div id="page-box-home">
 			<p id="welcome">欢迎来访</p>
 			<p id="lead">在这里你可以——</p>
 			<div id="guide">
-				<button id="function_program" class="function bs-loading">
+				<button id="function-program" class="function bs-loading">
 					<div></div>
 					<h1>使用本网站开发的小工具</h1>
 					<p>
@@ -32,7 +32,7 @@
 						<span class="strong">点击查看程序列表。</span>
 					</p>
 				</button>
-				<button id="function_resource" class="function bs-loading">
+				<button id="function-resource" class="function bs-loading">
 					<div></div>
 					<h1>获取本网站上记录的资源</h1>
 					<p>
@@ -40,7 +40,7 @@
 						<span class="strong">点击转到资源库。</span>
 					</p>
 				</button>
-				<button id="function_share" class="function bs-loading">
+				<button id="function-share" class="function bs-loading">
 					<div></div>
 					<h1>将您的资源登记到本网站</h1>
 					<p>

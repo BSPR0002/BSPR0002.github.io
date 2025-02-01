@@ -5,13 +5,13 @@ const json = new CacheJSON("/json/projects.json", true);
 async function showBoard() {
 	const { nodes: { frame }, documentFragment } = parseAndGetNodes([
 		["style", [
-			"#projects_frame{height:100%;display:grid;gap:0.5rem}",
-			"#projects_frame.empty::after{place-self:center;content:\"目前没有项目\"}",
-			".projects_item{padding:0.5rem;border-radius:0.5rem;box-sizing:border-box;border:var(--softEdge) 0.0625rem solid}",
-			".projects_item>*{border-radius:0.25rem}",
-			".projects_item summary{border:none;background-color:var(--interfaceColor);color:var(--interfaceContentColor)"
+			"#projects-frame{height:100%;display:grid;gap:0.5rem}",
+			"#projects-frame.empty::after{place-self:center;content:\"目前没有项目\"}",
+			".projects-item{padding:0.5rem;border-radius:0.5rem;box-sizing:border-box;border:var(--soft-edge) 0.0625rem solid}",
+			".projects-item>*{border-radius:0.25rem}",
+			".projects-item summary{border:none;background-color:var(--interface-color);color:var(--interface-content-color)"
 		]],
-		["div", null, { id: "projects_frame", class: "bs-loading" }, "frame"]
+		["div", null, { id: "projects-frame", class: "bs-loading" }, "frame"]
 	]);
 	new MiniWindow(documentFragment, "工程项目", { size: { width: "20rem" } });
 	if (!json.loaded) await json.fetch();
@@ -26,7 +26,7 @@ async function showBoard() {
 					["summary", item.title],
 					item.content
 				], { class: "bs-content" }]
-			], { class: "projects_item" }])
+			], { class: "projects-item" }])
 		}
 		frame.appendChild(parse(temp));
 	} else frame.className = "empty";

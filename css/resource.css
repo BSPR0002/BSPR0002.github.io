@@ -1,4 +1,4 @@
-#page_box_resource {
+#page-box-resource {
 	margin: 0 auto;
 	display: grid;
 	max-width: 64em;
@@ -8,7 +8,7 @@
 	gap: 0.25em;
 	overflow: hidden;
 }
-#resource_search {
+#resource-search {
 	box-sizing: border-box;
 	width: 100%;
 	border-radius: 0.5em;
@@ -20,8 +20,8 @@
 	grid-template-columns: auto 1fr;
 	gap: 0.25em;
 }
-#resource_search>* {height: 100%}
-#resource_search_button {
+#resource-search>* {height: 100%}
+#resource-search-button {
 	position: relative;
 	border: none;
 	border-radius: 0.3125rem;
@@ -30,20 +30,20 @@
 	background-color: #92C1DC;
 	transition: background-color 0.2s ease-in-out;
 }
-#resource_search_button:hover {background-color: #87CEFA}
-#resource_search_button:active {
+#resource-search-button:hover {background-color: #87CEFA}
+#resource-search-button:active {
 	transition: all 0s;
 	background-color: #80C4ED
 }
-#resource_search_button>* {vertical-align: middle}
-#resource_search_state {
+#resource-search-button>* {vertical-align: middle}
+#resource-search-state {
 	display: inline-block;
 	width: 1.25rem;
 	height: 1.25rem;
 	position: relative;
 	margin-right: 0.125rem;
 }
-#resource_search_state:before {
+#resource-search-state:before {
 	content: "";
 	display: block;
 	background-color: #000000;
@@ -56,7 +56,7 @@
 	bottom: 0;
 	transform-origin: right center;
 }
-#resource_search_state:after {
+#resource-search-state:after {
 	content: "";
 	display: block;
 	width: 1rem;
@@ -67,23 +67,23 @@
 	border: solid 0.125rem #000000;
 	border-radius: 50%;
 }
-#resource_search_state.waiting:after {background-color: #FFFF00}
-#resource_search_state.searching:after {background-color: #00FF00}
-#resource_search_input {
+#resource-search-state.waiting:after {background-color: #FFFF00}
+#resource-search-state.searching:after {background-color: #00FF00}
+#resource-search-input {
 	border: solid 0.0625rem;
 	border-radius: 0.25rem;
 	padding: 0.25rem;
 }
-#resource_show_box {
+#resource-show-box {
 	width: 100%;
 	display: grid;
 	grid-template-rows: 1fr;
 	gap: 0.25em;
 	overflow: hidden;
 }
-#resource_show_box.multiPage {grid-template-rows: 2.25em 1fr}
-#resource_show_box.multiPage>#resource_show_pagination {display: grid}
-#resource_show_pagination {
+#resource-show-box.multiPage {grid-template-rows: 2.25em 1fr}
+#resource-show-box.multiPage>#resource-show-pagination {display: grid}
+#resource-show-pagination {
 	box-sizing: border-box;
 	width: 100%;
 	border-radius: 0.5em;
@@ -96,8 +96,8 @@
 	grid-template-columns: repeat(3, auto);
 	gap: 0.25em;
 }
-#resource_show_pagination>* {height: 100%}
-#resource_show_pagination>button {
+#resource-show-pagination>* {height: 100%}
+#resource-show-pagination>button {
 	position: relative;
 	box-sizing: border-box;
 	border-radius: 0.25em;
@@ -106,50 +106,50 @@
 	background-color: #92C1DC;
 	transition: background-color 0.2s ease-in-out;
 }
-#resource_show_pagination>button:hover {background-color: #87CEFA}
-#resource_show_pagination>button:active {
+#resource-show-pagination>button:hover {background-color: #87CEFA}
+#resource-show-pagination>button:active {
 	transition: all 0s;
 	background-color: #80C4ED
 }
-#resource_pagination_display {
+#resource-pagination-display {
 	display: grid;
 	grid-template-columns: repeat(5, auto);
 	place-content: center;
 	place-items: center;
 	font-size: 0.9375rem
 }
-#resource_pagination_select {
+#resource-pagination-select {
 	width: 3em;
-	border: solid 0.0625rem var(--softEdge);
+	border: solid 0.0625rem var(--soft-edge);
 	border-radius: 0.25rem;
 	text-align: center;
 }
-#resource_pagination_select::-webkit-inner-spin-button {-webkit-appearance: none}
-#resource_show_area_frame {overflow: hidden auto}
-#resource_show_area {
+#resource-pagination-select::-webkit-inner-spin-button {-webkit-appearance: none}
+#resource-show-area-frame {overflow: hidden auto}
+#resource-show-area {
 	display: grid;
 	grid-auto-rows: 8.25em;
 	grid-template-columns: repeat(auto-fit, minmax(17em, 1fr));
 	gap: 0.25em;
 }
-@media all and (min-width:768px) {
-	#resource_show_area {grid-template-columns: repeat(2, 1fr)}
+@media all and (min-width:48rem) {
+	#resource-show-area {grid-template-columns: repeat(2, 1fr)}
 }
-#resource_show_area::before {
+#resource-show-area::before {
 	font-size: 0.875rem;
 	place-self: start center;
 	margin-top: 2rem;
 	background-color: rgba(255, 255, 255, 0.5);
-	color: var(--contentColor);
+	color: var(--content-color);
 	border-radius: 0.125rem;
 	padding: 0.125rem 0.5rem;
 }
-#resource_show_area.loading>*,
-#resource_show_area.empty {grid-template-columns: 1fr}
-#resource_show_area.empty>* {display: none}
-#resource_show_area.loading::before {content: "正在加载……"}
-#resource_show_area.empty::before {content: "没有找到资源……"}
-.resource_card {
+#resource-show-area.loading>*,
+#resource-show-area.empty {grid-template-columns: 1fr}
+#resource-show-area.empty>* {display: none}
+#resource-show-area.loading::before {content: "正在加载……"}
+#resource-show-area.empty::before {content: "没有找到资源……"}
+.resource-card {
 	box-sizing: border-box;
 	border-radius: 0.5em;
 	padding: 1em;
@@ -163,15 +163,15 @@
 	background-color: #FFFFFF;
 	user-select: text;
 }
-.resource_card_icon {
+.resource-card-icon {
 	grid-area: icon;
-	background-color: var(--backgroundColor);
+	background-color: var(--background-color);
 	background-size: 100%;
 	background-repeat: no-repeat;
 	border-radius: 0.25em;
 	overflow: hidden;
 }
-.resource_card_icon.none:before {
+.resource-card-icon.none:before {
 	content: "No Image";
 	display: flex;
 	width: 100%;
@@ -182,33 +182,33 @@
 	font-size: 1.25em;
 	font-weight: bold;
 }
-.resource_card_name {
+.resource-card-name {
 	font-size: 1em;
 	font-weight: bold;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.resource_card_media,
-.resource_card_content {
+.resource-card-media,
+.resource-card-content {
 	width: 100%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-size: 0.75rem;
 }
-.resource_card_tag {
+.resource-card-tag {
 	box-sizing: border-box;
 	display: inline-block;
 	height: 100%;
 	margin-inline-end: 0.25rem;
 	border-radius: 0.125rem;
 	padding: 0.125rem;
-	color: var(--contentColor);
+	color: var(--content-color);
 	background-color: #C0E0F0;
 	overflow: hidden;
 }
-.resource_card_detail {
+.resource-card-detail {
 	place-self: start;
 	position: relative;
 	background-color: #4080FF;
@@ -221,10 +221,10 @@
 	white-space: nowrap;
 	transition: background-color 0.2s ease-in-out;
 }
-.resource_card_detail:hover {
+.resource-card-detail:hover {
 	background-color: #60A0FF;
 }
-.resource_card_detail:active {
+.resource-card-detail:active {
 	transition-duration: 0s;
 	background-color: #3F7FEF;
 }
