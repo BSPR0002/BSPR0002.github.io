@@ -18,7 +18,7 @@
 	place-items:center;
 	border-radius:0.5em;
 	transition:background-color 0.2s ease-in-out;
-	background-color:var(--interfaceColor);
+	background-color:var(--interface-color);
 	border:none;
 	font-size:1rem;
 }
@@ -36,5 +36,5 @@
 .services:hover{background-color:#00FFC0}
 .services:active {
 	transition-duration:0s;
-	background-color:var(--activeColor)
+	background-color:var(--active-color)
 }

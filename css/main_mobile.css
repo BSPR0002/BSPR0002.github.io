@@ -29,8 +29,8 @@
 	border-radius: 0.25em;
 	overflow: hidden;
 }
-#navigation-switch:hover {background-color: var(--hoverColor)}
-#navigation-switch:active {background-color: var(--activeColor)}
+#navigation-switch:hover {background-color: var(--hover-color)}
+#navigation-switch:active {background-color: var(--active-color)}
 #navigation-switch>div {
 	position: absolute;
 	left: 0.25rem;
@@ -81,12 +81,12 @@
 	height: 2.5rem;
 	border-radius: 0;
 	border: none;
-	border-color: var(--softEdge);
+	border-color: var(--soft-edge);
 	background-color: rgba(0,0,0,0.5);
 	color: white;
 }
 .navigation:hover {background-color: rgba(0,0,0,0.625)}
 .navigation.current {
-	color: var(--hoverColor);
+	color: var(--hover-color);
 	background-color: rgba(0,0,0,0.75);
 }

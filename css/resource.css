@@ -120,7 +120,7 @@
 }
 #resource-pagination-select {
 	width: 3em;
-	border: solid 0.0625rem var(--softEdge);
+	border: solid 0.0625rem var(--soft-edge);
 	border-radius: 0.25rem;
 	text-align: center;
 }
@@ -140,7 +140,7 @@
 	place-self: start center;
 	margin-top: 2rem;
 	background-color: rgba(255, 255, 255, 0.5);
-	color: var(--contentColor);
+	color: var(--content-color);
 	border-radius: 0.125rem;
 	padding: 0.125rem 0.5rem;
 }
@@ -165,7 +165,7 @@
 }
 .resource-card-icon {
 	grid-area: icon;
-	background-color: var(--backgroundColor);
+	background-color: var(--background-color);
 	background-size: 100%;
 	background-repeat: no-repeat;
 	border-radius: 0.25em;
@@ -204,7 +204,7 @@
 	margin-inline-end: 0.25rem;
 	border-radius: 0.125rem;
 	padding: 0.125rem;
-	color: var(--contentColor);
+	color: var(--content-color);
 	background-color: #C0E0F0;
 	overflow: hidden;
 }

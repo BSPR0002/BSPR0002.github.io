@@ -58,7 +58,7 @@ async function operator(list) {
 }
 const boardStyle=parseAndGetNodes([["style",[
 	"#bs-News{display:grid;height:100%;grid-template-rows:auto 1fr}",
-	"#bs-News-setting{display:grid;height:2rem;grid-template-columns:1fr 3rem;gap:1em;place-items:center start;border-bottom:dashed 1px var(--strongEdge)}",
+	"#bs-News-setting{display:grid;height:2rem;grid-template-columns:1fr 3rem;gap:1em;place-items:center start;border-bottom:dashed 1px var(--strong-edge)}",
 	"#bs-News-setting>span{font-weight:bold;white-space:nowrap;overflow:hidden}",
 	"#bs-News-setting-switch{appearance:none;display:block;box-sizing:border-box;margin:0;place-self:center;width:100%;height:24px;border-radius:12px;border:solid 2px #808080;position:relative;overflow:hidden;outline:none;cursor:pointer}",
 	"#bs-News-setting-switch::before{content:\"\";display:block;background-color:#808080;width:16px;height:16px;border-radius:50%;position:absolute;margin:2px;left:0;transition:all 0.5s}",
@@ -69,12 +69,12 @@ const boardStyle=parseAndGetNodes([["style",[
 	"#bs-News-container.none{display:grid}",
 	"#bs-News-container.none::before{content:\"💦\";font-size:32px;place-self:end center}",
 	"#bs-News-container.none::after{content:\"目前没有通知\";place-self:start center}",
-	".bs-News-item{box-sizing:border-box;margin-top:0.25rem;border:var(--strongEdge) 1px solid;border-radius:0.25rem;padding:0.5rem;display:grid;grid-auto-rows:auto;gap:0.25rem;overflow:hidden;background-color:#EEEEEE;transition:background-color 0.2s ease-in-out;cursor:pointer}",
+	".bs-News-item{box-sizing:border-box;margin-top:0.25rem;border:var(--strong-edge) 1px solid;border-radius:0.25rem;padding:0.5rem;display:grid;grid-auto-rows:auto;gap:0.25rem;overflow:hidden;background-color:#EEEEEE;transition:background-color 0.2s ease-in-out;cursor:pointer}",
 	".bs-News-item:hover{background-color:#FFFFFF}",
 	".bs-News-item:active{transition-duration:0s;background-color:#BFEFFF}",
 	".bs-News-item-title{font-weight:bold;color:var(--defaultColor)}",
-	".bs-News-item-message{color:var(--contentColor)}",
-	".bs-News-item-image{width:100%;height:auto;border-radius:0.25rem;box-sizing:border-box;border:var(--softEdge) 1px solid}"
+	".bs-News-item-message{color:var(--content-color)}",
+	".bs-News-item-image{width:100%;height:auto;border-radius:0.25rem;box-sizing:border-box;border:var(--soft-edge) 1px solid}"
 ],null,"style"]]).nodes.style;
 function createWindow(content){return new MiniWindow(content,"推送通知",{size:{width:"25rem",height:"100%"}})}
 async function showBoard() {

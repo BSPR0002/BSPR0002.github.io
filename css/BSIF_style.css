@@ -1,17 +1,17 @@
 :root {
 	user-select: none;
 	/*预设颜色*/
-	--backgroundColor:#92C1DC;
-	--contentBackgroundColor:#FFFFFB;
-	--strongEdge:#000000;
-	--softEdge:#808080;
-	--strongColor:#000000;
-	--contentColor:#404040;
-	--interfaceColor:#00C0FF;
-	--interfaceContentColor: #FFFFFF;
-	--hoverColor:#FFD000;
-	--activeColor:#FFC0C0;
-	--focusColor:#0080FF;
+	--background-color:#92C1DC;
+	--content-background-color:#FFFFFB;
+	--strong-edge:#000000;
+	--soft-edge:#808080;
+	--strong-color:#000000;
+	--content-color:#404040;
+	--interface-color:#00C0FF;
+	--interface-content-color: #FFFFFF;
+	--hover-color:#FFD000;
+	--active-color:#FFC0C0;
+	--focus-color:#0080FF;
 }
 body {
 	font-family:Arial,"Microsoft YaHei UI",SimHei,sans-serif,serif,"Segoe UI Emoji";
@@ -19,14 +19,14 @@ body {
 }
 p,h1,h2,h3,h4,h5,h6 {margin:0}
 hr {
-	border:solid 0.0625rem var(--strongEdge);
+	border:solid 0.0625rem var(--strong-edge);
 	border-radius:0.0625rem;
-	background-color:var(--strongEdge);
+	background-color:var(--strong-edge);
 }
 button {
 	color:inherit;
 	font-family:inherit;
-	border:solid 0.125rem var(--strongEdge);
+	border:solid 0.125rem var(--strong-edge);
 	outline:none;
 	border-radius:0.25rem;
 	user-select: none;
@@ -38,17 +38,17 @@ button:disabled{
 	cursor: not-allowed;
 }
 .bs-content {
-	background-color:var(--contentBackgroundColor);
+	background-color:var(--content-background-color);
 	cursor: initial;
 	user-select: text;
 }
-.bs-content button{background-color:var(--contentBackgroundColor)}
+.bs-content button{background-color:var(--content-background-color)}
 .bs-content button:hover{background-color:hsl(0 0% 90%)}
 .bs-content button:active{background-color:hsl(0 0% 80%)}
-.bs-content button:disabled{background-color:var(--contentBackgroundColor)}
+.bs-content button:disabled{background-color:var(--content-background-color)}
 .strong{
 	font-weight: bold;
-	color: var(--strongColor);
+	color: var(--strong-color);
 }
 .bs-loading{
 	position:relative;
@@ -80,7 +80,7 @@ button:disabled{
 	animation:bs-loading 1s linear infinite forwards running;
 }
 details {
-	border: 0.0625rem solid var(--strongEdge);
+	border: 0.0625rem solid var(--strong-edge);
 	padding: 0.5rem;
 	border-radius: 0.5rem;
 	overflow: hidden;
@@ -91,7 +91,7 @@ details>summary {
 	user-select: none;
 }
 details[open]>summary {
-	border-bottom: 0.0625rem solid var(--strongEdge);
+	border-bottom: 0.0625rem solid var(--strong-edge);
 	margin-bottom: 0.5rem;
 }
 a {word-break: break-all}
