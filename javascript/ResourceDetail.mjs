@@ -68,6 +68,7 @@ function displayDetails(data, showArea) {
 	if ("introduction" in data) arrayHTML.push(buildDetailsPart("简介", data.introduction));
 	if ("release" in data) arrayHTML.push(buildRelease(data.release));
 	showArea.className = "";
+	// @ts-ignore
 	showArea.appendChild(parse(arrayHTML));
 }
 function showDetail(data) {
