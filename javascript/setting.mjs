@@ -1,6 +1,6 @@
 import MiniWindow from "./module/MiniWindow.mjs";
 import Setting from "./module/setting/Setting.mjs";
-import initialStore from "./SiteDatabase.mjs";
+import initialStore from "./site_database.mjs";
 import { upgrade, storeName } from "./module/setting/SettingStorage.mjs";
 const tree = [
 	{

@@ -1,7 +1,7 @@
-import { get } from "/javascript/module/AJAX.mjs";
-import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { get } from "/javascript/module/ajax.mjs";
+import { parse, parseAndGetNodes } from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
-import { buildNameList, buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
+import { buildNameList, buildMediaTags, buildContentTags } from "./resource_information.mjs";
 const detailStyle = document.createElement("style");
 detailStyle.textContent = [
 	"#resource-detail{display:grid;grid-template-rows:auto 1fr;gap:0.5rem}",

@@ -1,13 +1,13 @@
 const moduleConfig = {
 	AJAX: {
-		path: "/javascript/module/AJAX.mjs"
+		path: "/javascript/module/ajax.mjs"
 	},
 	AudioPlayer: {
 		path: "/javascript/module/AudioPlayer.mjs",
 		default: "AudioPlayer"
 	},
 	ArrayHTML: {
-		path: "/javascript/module/ArrayHTML.mjs"
+		path: "/javascript/module/array_HTML.mjs"
 	},
 	MiniWindow: {
 		path: "/javascript/module/MiniWindow.mjs",
@@ -18,23 +18,23 @@ const moduleConfig = {
 		default: "default"
 	},
 	UTF8: {
-		path: "/javascript/module/UTF-8.mjs"
+		path: "/javascript/module/utf-8.mjs"
 	},
 	FileIO: {
-		path: "/javascript/module/FileIO.mjs"
+		path: "/javascript/module/file_io.mjs"
 	},
 	FLAC: {
 		path: "/javascript/module/FLAC/FLAC.mjs"
 	},
 	Base64: {
-		path: "/javascript/module/Base64.mjs"
+		path: "/javascript/module/base64.mjs"
 	},
 	BufferContext: {
 		path: "/javascript/module/BufferContext.mjs",
 		default: "default"
 	},
 	BinaryOperate: {
-		path: "/javascript/module/BinaryOperate.mjs"
+		path: "/javascript/module/binary_operate.mjs"
 	},
 	LocalStorageObject: {
 		path: "/javascript/module/LocalStorageObject.mjs",
@@ -60,19 +60,15 @@ const moduleConfig = {
 		path: "/javascript/module/Rational.mjs",
 		default: "default"
 	},
-	privatifyConstructor: {
-		path: "/javascript/module/privatifyConstructor.mjs",
+	PromiseWithResolvers: {
+		path: "/others/polyfill/Promise.withResolvers.mjs",
 		default: "default"
 	},
-	promiseWithResolvers: {
-		path: "/javascript/module/PromiseWithResolvers.mjs",
-		default: "default"
-	},
-	StringEnhancement: {
-		path: "/javascript/module/StringEnhancement.mjs"
+	StringExtension: {
+		path: "/javascript/module/string_extension.mjs"
 	},
 	ContextMenu: {
-		path: "/javascript/module/ContextMenu.mjs",
+		path: "/javascript/module/context_menu.mjs",
 		default: "showMenu"
 	},
 	trackList: {

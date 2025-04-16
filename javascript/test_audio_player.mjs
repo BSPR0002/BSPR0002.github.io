@@ -1,5 +1,5 @@
 import {AudioAnalyser, AudioPlayer} from "/javascript/module/AudioPlayer.mjs";
-import {parseAndGetNodes as ArrayHTML} from "/javascript/module/ArrayHTML.mjs";
+import {parseAndGetNodes as ArrayHTML} from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 //交互托盘
 const toolInterface=ArrayHTML([

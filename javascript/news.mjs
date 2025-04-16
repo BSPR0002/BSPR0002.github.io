@@ -1,7 +1,7 @@
-import { parse, parseAndGetNodes } from "/javascript/module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import {storage} from "/javascript/Setting.mjs";
-import {requestPermission} from "/javascript/module/WebPermissions.mjs";
+import {requestPermission} from "./module/web_permissions.mjs";
 import {CacheJSON} from "/javascript/module/CacheJSON.mjs";
 import {LocalStorageObject} from "/javascript/module/LocalStorageObject.mjs";
 const log=new LocalStorageObject("BSIF.WS.News").object,

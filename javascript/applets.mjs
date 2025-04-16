@@ -1,8 +1,8 @@
 import { CacheJSON } from "/javascript/module/CacheJSON.mjs";
-import { parse, parseAndGetNodes, EVENT_LISTENERS } from "/javascript/module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes, EVENT_LISTENERS } from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
-import initialStore from "/javascript/SiteDatabase.mjs";
-import { promiseGet } from "/javascript/module/AJAX.mjs";
+import initialStore from "/javascript/site_database.mjs";
+import { promiseGet } from "/javascript/module/ajax.mjs";
 const favStore = await initialStore("FavoriteApplets", function (upgrader) { upgrader.createObjectStore("FavoriteApplets") }), json = new CacheJSON("/json/applets.json", true);
 const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop, list, partFav, listFav, listAll, detailStyle } = parseAndGetNodes([
 	["div", [

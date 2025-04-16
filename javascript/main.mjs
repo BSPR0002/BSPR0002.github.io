@@ -1,4 +1,4 @@
-import { load } from "/javascript/module/AJAX.mjs";
+import { load } from "/javascript/module/ajax.mjs";
 import { Enum } from "/javascript/module/Enum.mjs";
 const TAB_LIST = new Enum(["home", "services", "resource"]),
 	navigation = document.getElementById("navigation"),
@@ -48,4 +48,4 @@ naviSwitch.addEventListener("click", switchNavigation, { passive: true });
 window.addEventListener("hashchange", respondHash, { passive: true });
 export { TAB_LIST as tabList, changeTab };
 //加载后任务
-window.addEventListener("load", async function () { (await import("/javascript/News.mjs")).notice() }, { once: true, passive: true });
+window.addEventListener("load", async function () { (await import("./news.mjs")).notice() }, { once: true, passive: true });

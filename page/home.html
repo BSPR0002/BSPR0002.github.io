@@ -7,9 +7,9 @@
 		<link rel="stylesheet" type="text/css" media="all and (max-width:47.999rem)" href="/css/home_mobile.css">
 		<script>
 			for (let item of [
-				["program","Applets",function(){this.showBoard()}],
-				["resource","MainController",function(){this.changeTab(2)}],
-				["share","Setting",function(){this.direct(["about"])}]
+				["program","applets",function(){this.showBoard()}],
+				["resource","main",function(){this.changeTab(2)}],
+				["share","setting",function(){this.direct(["about"])}]
 			]) {
 				let element=document.getElementById("function-"+item[0]);
 				import(`/javascript/${item[1]}.mjs`).then(function(module){

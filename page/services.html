@@ -6,10 +6,10 @@
 		<link rel="stylesheet" type="text/css" href="/css/services.css">
 		<script>
 			for (let item of [
-				["notification","News"],
-				["projects","Projects"],
-				["applets","Applets"],
-				["settings","Setting"]
+				["notification","news"],
+				["projects","projects"],
+				["applets","applets"],
+				["settings","setting"]
 			]) {
 				let element=document.getElementById("services-"+item[0]);
 				import(`/javascript/${item[1]}.mjs`).then(function(module){

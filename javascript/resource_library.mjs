@@ -1,7 +1,7 @@
-import { parseAndGetNodes as ArrayHTML } from "/javascript/module/ArrayHTML.mjs";
-import { search, abortMission as abortEngine } from "/javascript/ResourceEngine.mjs";
-import { buildMediaTags, buildContentTags } from "/javascript/ResourceInformation.mjs";
-import { showDetail } from "/javascript/ResourceDetail.mjs";
+import { parseAndGetNodes as ArrayHTML } from "/javascript/module/array_HTML.mjs";
+import { search, abortMission as abortEngine } from "./resource_engine.mjs";
+import { buildMediaTags, buildContentTags } from "./resource_information.mjs";
+import { showDetail } from "./resource_detail.mjs";
 class Field {
 	boxFrame = document.getElementById("page-box-resource");
 	showBox = document.getElementById("resource-show-box");

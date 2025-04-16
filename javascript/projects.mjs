@@ -1,4 +1,4 @@
-import { parse, parseAndGetNodes } from "./module/ArrayHTML.mjs";
+import { parse, parseAndGetNodes } from "./module/array_HTML.mjs";
 import { CacheJSON } from "./module/CacheJSON.mjs";
 import MiniWindow from "./module/MiniWindow.mjs"
 const json = new CacheJSON("/json/projects.json", true);
