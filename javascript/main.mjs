@@ -1,6 +1,6 @@
 import { load } from "/javascript/module/ajax.mjs";
 import { Enum } from "/javascript/module/Enum.mjs";
-const TAB_LIST = new Enum(["home", "services", "resource"]),
+const TAB_LIST = Enum.fromKeys(["home", "services", "resource"]),
 	navigation = document.getElementById("navigation"),
 	NAVIGATIONS = navigation.getElementsByClassName("navigation"),
 	PAGE_BOX = document.getElementById("page-box"),
