@@ -11,7 +11,7 @@
 		},
 		{
 			"message":"ネコぱら Vol.4 已发售！",
-			"image":"/images/informations/nekopara_vol4.jpg",
+			"image":"/image/informations/nekopara_vol4.jpg",
 			"link":[
 				"address",
 				"https://store.steampowered.com/app/1406990/NEKOPARA_Vol_4/"
@@ -19,7 +19,7 @@
 		},
 		{
 			"message":"测试……😳",
-			"image":"/images/brand.png",
+			"image":"/image/brand.png",
 			"link":"none"
 		}
 	],

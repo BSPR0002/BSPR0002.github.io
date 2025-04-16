@@ -31,8 +31,8 @@ detailStyle.textContent = [
 	".resource-detail-content-release>div:last-of-type{margin-bottom:0}",
 	".resource-detail-content-release-type{font-size:inherit}",
 	".resource-detail-content-release-icon{display:inline-block;margin-inline-end:0.25rem;width:1.125rem;height:1.125rem;background-size:100%;vertical-align:sub}",
-	".resource-detail-content-release-icon.bdnd{background-image:url(/images/third_party/icon/baidu_netdisk.png)}",
-	".resource-detail-content-release-icon.magnet{background-image:url(/images/third_party/icon/magnet.svg)}"
+	".resource-detail-content-release-icon.bdnd{background-image:url(/image/third_party/icon/baidu_netdisk.png)}",
+	".resource-detail-content-release-icon.magnet{background-image:url(/image/third_party/icon/magnet.svg)}"
 ].join("");
 function buildResourceBaiduNetDisk(data, container) {
 	const link = "https://pan.baidu.com/s/" + data.code, temp = [

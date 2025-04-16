@@ -34,7 +34,7 @@
 .function:active{background-color: #80B0FF}
 .function>div {
 	grid-area: icon;
-	background-image: url(/images/system/home_function_icon.svg);
+	background-image: url(/image/system/home_function_icon.svg);
 }
 .function>h1 {
 	grid-area: title;
