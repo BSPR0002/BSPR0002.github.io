@@ -2,6 +2,10 @@ const moduleConfig = {
 	AJAX: {
 		path: "/javascript/module/ajax.mjs"
 	},
+	fetch: {
+		path: "/javascript/module/fetch.mjs",
+		name: "iFetch"
+	},
 	AudioPlayer: {
 		path: "/javascript/module/AudioPlayer.mjs",
 		default: "AudioPlayer"
@@ -91,7 +95,10 @@ const moduleConfig = {
 		default: "convert"
 	}
 };
-for (let i in moduleConfig) moduleConfig[i].name = i;
+for (const key in moduleConfig) {
+	const item = moduleConfig[key];
+	if (!Object.hasOwn(item, "name")) item.name = key;
+};
 Object.freeze(moduleConfig);
 async function importModule(config, useDefault = true) {
 	const name = config.name, module = await import(config.path);
