@@ -9,4 +9,7 @@
 	url = https://github.com/Blue-Sky-Infomation-Factory/BSIF-web-JavaScript-modules
 [submodule "application/tetris"]
 	path = application/tetris
-	url = https://github.com/BSPR0002/Tetris.git
+	url = https://github.com/BSPR0002/Tetris
+[submodule "component"]
+	path = component
+	url = https://github.com/Blue-Sky-Infomation-Factory/Web-component
