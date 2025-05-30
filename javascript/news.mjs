@@ -1,6 +1,6 @@
 import { parse, parseAndGetNodes } from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
-import {storage} from "/javascript/Setting.mjs";
+import {storage} from "/javascript/setting.mjs";
 import {requestPermission} from "./module/web_permissions.mjs";
 import {CacheJSON} from "/javascript/module/CacheJSON.mjs";
 import {LocalStorageObject} from "/javascript/module/LocalStorageObject.mjs";

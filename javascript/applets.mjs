@@ -2,7 +2,7 @@ import { CacheJSON } from "/javascript/module/CacheJSON.mjs";
 import { parse, parseAndGetNodes, EVENT_LISTENERS } from "/javascript/module/array_HTML.mjs";
 import MiniWindow from "/javascript/module/MiniWindow.mjs";
 import initialStore from "/javascript/site_database.mjs";
-import { promiseGet } from "/javascript/module/ajax.mjs";
+import { get, ParseType } from "./module/fetch.mjs";
 const favStore = await initialStore("FavoriteApplets", function (upgrader) { upgrader.createObjectStore("FavoriteApplets") }), json = new CacheJSON("/json/applets.json", true);
 const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop, list, partFav, listFav, listAll, detailStyle } = parseAndGetNodes([
 	["div", [
@@ -226,7 +226,7 @@ async function showDetail(directory, iconName, name, id) {
 	miniWindow.after(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
 	miniWindow.close();
 	try {
-		const data = await promiseGet(directory + "info.json", "json", true);
+		const data = await get(directory + "info.json", null, ParseType.JSON).result;
 		info.appendChild(parse([
 			["span", ["版本：", data.version ?? "不明"]],
 			["span", ["开发：", data.developer ?? "不明"]],
