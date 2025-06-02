@@ -1,6 +1,6 @@
 import {AudioAnalyser, AudioPlayer} from "/javascript/module/AudioPlayer.mjs";
 import {parseAndGetNodes as ArrayHTML} from "/javascript/module/array_HTML.mjs";
-import MiniWindow from "/javascript/module/MiniWindow.mjs";
+import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
 //交互托盘
 const toolInterface=ArrayHTML([
 	["div",[
@@ -37,7 +37,7 @@ const audioPlayer=new AudioPlayer,analyser=new AudioAnalyser(audioPlayer.context
 analyser.insertToChain(audioPlayer);
 var audioController=null,busy=false;
 async function play() {
-	if (busy) return new MiniWindow("尚在加载其他音频，请稍后！");
+	if (busy) return new OverlayWindow("尚在加载其他音频，请稍后！");
 	stop();
 	changeFileName(1);
 	busy=true;
@@ -47,7 +47,7 @@ async function play() {
 		changeFileName([file.name]);
 		nodes.playbackRate.innerText=1;
 	} catch(error) {
-		new MiniWindow("发生了错误，您可能没有选择正确的音频文件。\n"+error.message);
+		new OverlayWindow("发生了错误，您可能没有选择正确的音频文件。\n"+error.message);
 		changeFileName(0);
 	}
 	busy=false
