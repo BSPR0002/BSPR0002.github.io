@@ -1,6 +1,6 @@
 import { parse, parseAndGetNodes } from "./module/array_HTML.mjs";
 import { CacheJSON } from "./module/CacheJSON.mjs";
-import MiniWindow from "./module/MiniWindow.mjs"
+import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
 const json = new CacheJSON("/json/projects.json", true);
 async function showBoard() {
 	const { nodes: { frame }, documentFragment } = parseAndGetNodes([
@@ -13,7 +13,7 @@ async function showBoard() {
 		]],
 		["div", null, { id: "projects-frame", class: "bs-loading" }, "frame"]
 	]);
-	new MiniWindow(documentFragment, "工程项目", { size: { width: "20rem" } });
+	new OverlayWindow(documentFragment, "工程项目", { size: { width: "20rem" } });
 	if (!json.loaded) await json.fetch();
 	const data = json.data;
 	if (data.length) {

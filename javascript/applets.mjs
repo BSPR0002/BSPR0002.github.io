@@ -1,6 +1,6 @@
 import { CacheJSON } from "/javascript/module/CacheJSON.mjs";
 import { parse, parseAndGetNodes, EVENT_LISTENERS } from "/javascript/module/array_HTML.mjs";
-import MiniWindow from "/javascript/module/MiniWindow.mjs";
+import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
 import initialStore from "/javascript/site_database.mjs";
 import { get, ParseType } from "./module/fetch.mjs";
 const favStore = await initialStore("FavoriteApplets", function (upgrader) { upgrader.createObjectStore("FavoriteApplets") }), json = new CacheJSON("/json/applets.json", true);
@@ -13,11 +13,11 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 			"#applets-search-button{position:relative;overflow:hidden;font-size:0.875rem;padding:0 0.25rem!important;border:0}",
 			"#applets-search-button>*{vertical-align:middle}",
 			"#applets-search-state{display:inline-block;width:1.25rem;height:1.25rem;position:relative}",
-			"#applets-search-state:before{content:\"\";display:block;background-color:var(--mini-window-interactive-text-color);width:0.5625rem;height:0.125rem;border-radius:0 0.0625rem 0.0625rem 0;transform:rotateZ(45deg);position:absolute;right:0.0625rem;bottom:0;transform-origin:right center}",
-			"#applets-search-state:after{content:\"\";display:block;width:1rem;height:1rem;position:absolute;background-color:transparent;box-sizing:border-box;border:solid 0.125rem var(--mini-window-interactive-text-color);border-radius:50%}",
+			"#applets-search-state:before{content:\"\";display:block;background-color:var(--overlay-window-interactive-text-color);width:0.5625rem;height:0.125rem;border-radius:0 0.0625rem 0.0625rem 0;transform:rotateZ(45deg);position:absolute;right:0.0625rem;bottom:0;transform-origin:right center}",
+			"#applets-search-state:after{content:\"\";display:block;width:1rem;height:1rem;position:absolute;background-color:transparent;box-sizing:border-box;border:solid 0.125rem var(--overlay-window-interactive-text-color);border-radius:50%}",
 			"#applets-search-text{margin-left:0.125rem}",
-			"#applets-search-button:active>#applets-search-state:before{background-color:var(--mini-window-interactive-active-text-color)}",
-			"#applets-search-button:active>#applets-search-state:after,#applets-top:active>div{border-color:var(--mini-window-interactive-active-text-color)}",
+			"#applets-search-button:active>#applets-search-state:before{background-color:var(--overlay-window-interactive-active-text-color)}",
+			"#applets-search-button:active>#applets-search-state:after,#applets-top:active>div{border-color:var(--overlay-window-interactive-active-text-color)}",
 			"#applets-search-state.waiting:after{background-color:#FF0}",
 			"#applets-search-state.searching:after{background-color:#0F0}",
 			"#applets-search-input{border:solid 0.0625rem;border-radius:0.25rem;padding:0.25rem}",
@@ -36,7 +36,7 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 			".applets-item-start:hover{background-color:#0F0!important}",
 			".applets-item-start:active{background-color:var(--active-color)!important}",
 			".applets-item-start::before{content:\"\";display:inline-block;height:1em;width:0.85em;background-color:#000;vertical-align:middle;clip-path:polygon(0 0, 100% 50%, 0 100%)}",
-			".applets-item-start:active::after{color:var(--mini-window-interactive-text-color)}",
+			".applets-item-start:active::after{color:var(--overlay-window-interactive-text-color)}",
 			".applets-item-icon{border-radius:0.25rem;width:100%;height:100%;background-position:center;background-repeat:no-repeat;background-size:contain;background-color:#FFFFFF}",
 			".applets-item-icon.none{display:grid;place-content:center}",
 			".applets-item-icon.none::before{content:\"?\";font-weight:bold;color:#000;font-size:4rem}",
@@ -62,14 +62,14 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 			["button", [
 				["div", null, { id: "applets-search-state" }, "searchButtonState"],
 				["span", "搜索", { id: "applets-search-text" }]
-			], { id: "applets-search-button", class: "mini-window-button", title: "搜索" }, "searchButton"],
+			], { id: "applets-search-button", class: "overlay-window-button", title: "搜索" }, "searchButton"],
 			["input", null, { id: "applets-search-input", type: "search", placeholder: "请输入搜索关键字" }, "searchInput"],
 			["button", [
 				["div", null, { style: { width: "0.75rem", top: "0.25rem", left: "0.4375rem" } }],
 				["div", null, { style: { height: "1rem" } }],
 				["div", null, { style: { width: "0.5rem", transform: "rotateZ(45deg)", transformOrigin: "0.0625rem" } }],
 				["div", null, { style: { width: "0.5rem", transform: "rotateZ(135deg)", transformOrigin: "0.0625rem" } }]
-			], { id: "applets-top", class: "mini-window-button", title: "返回顶部", disabled: "" }, "backTop"]
+			], { id: "applets-top", class: "overlay-window-button", title: "返回顶部", disabled: "" }, "backTop"]
 		], { id: "applets-search" }],
 		["div", [
 			["div", [
@@ -101,7 +101,7 @@ const { frame, listFrame, searchButtonState, searchButton, searchInput, backTop,
 		"#applets-detail-start:active{background-color:var(--active-color)!important}",
 		"#applets-detail-start::before{content:\"\";display:inline-block;height:1em;width:0.85em;background-color:#000;vertical-align:middle;clip-path:polygon(0 0, 100% 50%, 0 100%)}",
 		"#applets-detail-start::after{content:\"启动\";margin-left:0.125rem;vertical-align:middle}",
-		"#applets-detail-start:active::after{color:var(--mini-window-interactive-text-color)}",
+		"#applets-detail-start:active::after{color:var(--overlay-window-interactive-text-color)}",
 		"#applets-detail-info{display:grid;gap:0.25rem;min-height:3rem}",
 		"#applets-detail-info.error::before{content:\"无法获取应用信息\";place-self:center}",
 		"#applets-detail-info.load{background-color:var(--background-color);box-sizing:border-box;padding:0.5rem;border-radius:0.5rem;}",
@@ -144,7 +144,7 @@ function buildItem(data) {
 	return ["button", [
 		["div", null, iconName ? { style: `background-image:url("${directory + iconName}")`, class: "applets-item-icon" } : { class: "applets-item-icon none" }],
 		["span", name, { class: "applets-item-name" }]
-	], { class: "applets-item mini-window-button", title: name, [EVENT_LISTENERS]: [["click", () => { showDetail(directory, iconName, name, id) }]] }]
+	], { class: "applets-item overlay-window-button", title: name, [EVENT_LISTENERS]: [["click", () => { showDetail(directory, iconName, name, id) }]] }]
 }
 function buildFavItem(data) {
 	const temp = buildItem(data);
@@ -223,8 +223,8 @@ async function showDetail(directory, iconName, name, id) {
 		["div", null, { id: "applets-detail-info", class: "bs-loading" }, "info"]
 	], { id: "applets-detail-frame" }, "frame"]]).nodes;
 	fav.checked = (await favorite).includes(id);
-	miniWindow.after(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
-	miniWindow.close();
+	overlayWindow.after(frame, "应用信息", { size: { width: "20rem" } }).onclose = showBoard;
+	overlayWindow.close();
 	try {
 		const data = await get(directory + "info.json", null, ParseType.JSON).result;
 		info.appendChild(parse([
@@ -241,9 +241,9 @@ searchInput.addEventListener("input", searchAuto);
 searchInput.addEventListener("keypress", function (event) { if (event.key == "Enter") searchManual() });
 searchButton.addEventListener("click", searchManual);
 buildInterface(true);
-var miniWindow = null;
-function showBoard() { (miniWindow = new MiniWindow(frame, "应用列表", { size: { height: "100%", width: "100%" } })).onclosed = clearWindow }
-function clearWindow() { miniWindow = null }
+var overlayWindow = null;
+function showBoard() { (overlayWindow = new OverlayWindow(frame, "应用列表", { size: { height: "100%", width: "100%" } })).onclosed = clearWindow }
+function clearWindow() { overlayWindow = null }
 queueMicrotask(async function () {
 	if (!json.loaded) await json.fetch();
 	const temp = json.data.map(item => item.id);

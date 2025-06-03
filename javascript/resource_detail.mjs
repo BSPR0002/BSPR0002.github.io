@@ -1,6 +1,6 @@
 import { get } from "/javascript/module/ajax.mjs";
 import { parse, parseAndGetNodes } from "/javascript/module/array_HTML.mjs";
-import MiniWindow from "/javascript/module/MiniWindow.mjs";
+import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "./resource_information.mjs";
 const detailStyle = document.createElement("style");
 detailStyle.textContent = [
@@ -97,13 +97,13 @@ function showDetail(data) {
 			], { id: "resource-detail-information" }],
 			["div", [], { id: "resource-detail-content", class: "bs-loading" }, "showArea"]
 		], { id: "resource-detail" }]
-	]), miniWindow = new MiniWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
+	]), overlayWindow = new OverlayWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
 	const xhr = get(
 		`/json/resource/${data.id}.json`,
 		function (response) { displayDetails(response, nodes.showArea) },
 		"json",
 		false
 	);
-	miniWindow.onclosed = xhr.abort.bind(xhr);
+	overlayWindow.onclosed = xhr.abort.bind(xhr);
 }
 export { showDetail }

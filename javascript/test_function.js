@@ -13,9 +13,9 @@ const moduleConfig = {
 	ArrayHTML: {
 		path: "/javascript/module/array_HTML.mjs"
 	},
-	MiniWindow: {
-		path: "/javascript/module/MiniWindow.mjs",
-		default: "MiniWindow"
+	OverlayWindow: {
+		path: "/component/overlay_window/OverlayWindow.mjs",
+		default: "OverlayWindow"
 	},
 	Enum: {
 		path: "/javascript/module/Enum.mjs",
@@ -72,7 +72,7 @@ const moduleConfig = {
 		path: "/javascript/module/string_extension.mjs"
 	},
 	ContextMenu: {
-		path: "/javascript/module/context_menu.mjs",
+		path: "/component/context_menu/context_menu.mjs",
 		default: "showMenu"
 	},
 	trackList: {

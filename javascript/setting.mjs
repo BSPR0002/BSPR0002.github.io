@@ -1,7 +1,7 @@
-import MiniWindow from "./module/MiniWindow.mjs";
-import Setting from "./module/setting/Setting.mjs";
+import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
+import Setting from "/component/setting/Setting.mjs";
 import initialStore from "./site_database.mjs";
-import { upgrade, storeName } from "./module/setting/SettingStorage.mjs";
+import { upgrade, storeName } from "/component/setting/SettingStorage.mjs";
 const tree = [
 	{
 		type: "collection",
@@ -13,10 +13,10 @@ const tree = [
 				type: "action",
 				title: "重置推送记录",
 				async action() {
-					if (!miniWindow) return;
-					if (!await miniWindow.confirm("你确定要重置推送记录？\n重置推送记录会重新推送所有信息。")) return;
+					if (!overlayWindow) return;
+					if (!await overlayWindow.confirm("你确定要重置推送记录？\n重置推送记录会重新推送所有信息。")) return;
 					localStorage.removeItem("BSIF.WS.News");
-					miniWindow.alert("已重置推送记录！");
+					overlayWindow.alert("已重置推送记录！");
 				}
 			}
 		]
@@ -30,11 +30,11 @@ const tree = [
 ], storageConfig = {
 	"pushNews": { type: "boolean", default: true }
 }, instance = await Setting.open(await initialStore(storeName, upgrade), { tree, storage: storageConfig }), storage = instance.storage;
-var miniWindow = null;
-function clearWindow() { miniWindow = null }
+var overlayWindow = null;
+function clearWindow() { overlayWindow = null }
 function createWindow(content) {
-	if (miniWindow) throw new Error("Setting UI is now shown.");
-	(miniWindow = new MiniWindow(content, "网站设置", { size: { width: "25rem", height: "100%" } })).addEventListener("close", clearWindow);
+	if (overlayWindow) throw new Error("Setting UI is now shown.");
+	(overlayWindow = new OverlayWindow(content, "网站设置", { size: { width: "25rem", height: "100%" } })).addEventListener("close", clearWindow);
 }
 async function showBoard() { createWindow(await instance.home()) }
 async function direct(path) { createWindow(await instance.direct(path)) }
