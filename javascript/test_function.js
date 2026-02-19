@@ -93,6 +93,9 @@ const moduleConfig = {
 	crlf: {
 		path: "/others/script/crlf.mjs",
 		default: "convert"
+	},
+	pdf: {
+		path: "/others/script/pdf.mjs"
 	}
 };
 for (const key in moduleConfig) {
