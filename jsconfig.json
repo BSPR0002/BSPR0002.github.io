@@ -3,9 +3,11 @@
 		"target": "ESNext",
 		"checkJs": true,
 		"module": "ESNext",
-		"baseUrl": "./",
 		"paths": {
 			"/*":["./*"]
-		}
+		},
+		"strictNullChecks": false,
+		"noImplicitAny": false,
+		"useUnknownInCatchVariables": false
 	}
 }
