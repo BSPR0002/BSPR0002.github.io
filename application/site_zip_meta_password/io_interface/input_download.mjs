@@ -1,5 +1,3 @@
-// @ts-ignore
-import { TypedArray } from "/javascript/module/binary_operate.mjs";
 import IOInterface from "./interface.mjs";
 import { downloadSave, inputGet } from "/javascript/module/file_io.mjs";
 
@@ -54,22 +52,24 @@ class FileIO extends IOInterface {
 	}
 
 	/**
-	 * @param {string|Blob|ArrayBuffer|TypedArray} content
+	 * @param {string|Blob|ArrayBuffer|DataView|import("/javascript/module/binary_operate.mjs").TypedArray} content
 	 * @param {number} [offset]
 	 */
 	write(content, offset) {
 		// @ts-ignore
-		if (!(typeof content == "string" || content instanceof Blob || content instanceof ArrayBuffer || content instanceof TypedArray))
+		if (!(typeof content == "string" || content instanceof Blob || content instanceof ArrayBuffer || ArrayBuffer.isView(content)))
 			throw new TypeError("参数 'content' 类型无效");
 		if (!isValidNumberType(offset) || Number.isNaN(offset))
 			throw new TypeError("参数 'offset' 类型无效");
 		const transfer = [];
-		if (content instanceof ArrayBuffer) {
-			transfer.push(content);
-			// @ts-ignore
-		} else if (content instanceof TypedArray) {
-			// @ts-ignore
-			transfer.push(content.buffer);
+		if (ArrayBuffer.isView(content)) {
+			const { buffer, byteOffset, byteLength } = content;
+			if (byteOffset || byteLength != buffer.byteLength) {
+				// @ts-ignore
+				transfer.push(content = buffer.slice(byteOffset, byteLength + byteOffset));
+			} else
+				// @ts-ignore
+				content = buffer;
 		}
 		return send(this.#worker, ["write", content, offset], transfer);
 	}
@@ -93,7 +93,7 @@ class FileIO extends IOInterface {
 	}
 
 	static async getInstance() {
-		const instance = new this(await inputGet(false, "application/7z")),
+		const instance = new this(await inputGet(false, ".7z")),
 			{ promise, resolve } = Promise.withResolvers();
 		instance.#worker.addEventListener("message", resolve, { once: true });
 		await promise;

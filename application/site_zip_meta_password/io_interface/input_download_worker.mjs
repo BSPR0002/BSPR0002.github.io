@@ -1,8 +1,6 @@
-// @ts-ignore 抽象类
-import { TypedArray } from "/javascript/module/binary_operate.mjs";
 import { encodeString } from "/javascript/module/utf-8.mjs";
 
-/** @type {(Blob|ArrayBuffer|Uint8Array)[]} */
+/** @type {(Blob|ArrayBuffer)[]} */
 const stream = [];
 var size = 0;
 
@@ -18,12 +16,12 @@ self.addEventListener("message", function (event) {
 }, { once: true });
 
 /**
- * @param {ArrayBuffer | Blob | TypedArray} object
+ * @param {ArrayBuffer | Blob} object
  */
 function getSize(object) {
 	if (object instanceof Blob) return object.size;
 	// @ts-ignore
-	if (object instanceof ArrayBuffer || object instanceof TypedArray) return object.byteLength;
+	if (object instanceof ArrayBuffer) return object.byteLength;
 	throw new Error("内部错误：未知的分片对象");
 }
 
@@ -44,7 +42,7 @@ function dispatcher(event) {
 				result = read(data[1], data[2], transfer);
 				break;
 			case "write":
-				write(data[1], data[2], transfer);
+				write(data[1], data[2]);
 				break;
 			case "truncate":
 				truncate(data[1]);
@@ -68,7 +66,7 @@ function dispatcher(event) {
 }
 
 /**
- * @param {ArrayBuffer | Blob | Uint8Array} object
+ * @param {ArrayBuffer | Blob} object
  * @param {number} start
  * @param {number} maxLength
  */
@@ -80,10 +78,6 @@ function chunk(object, start, maxLength) {
 	if (object instanceof ArrayBuffer) {
 		const length = object.byteLength - start;
 		return new Uint8Array(object, start, length > maxLength ? maxLength : length);
-	}
-	if (object instanceof Uint8Array) {
-		const end = start + maxLength, { byteLength } = object;
-		return object.subarray(start, byteLength > end ? end : byteLength);
 	}
 	throw new Error("内部错误：未知的分片对象");
 }
@@ -130,29 +124,19 @@ function read(start, length, transfer) {
 
 /**
  * 将内容与 stream 组合，模拟随机区段覆盖写入
- * @param {string | ArrayBuffer | Blob | TypedArray} content 内容
+ * @param {string | ArrayBuffer | Blob} content 内容
  * @param {number} offset 偏移位置
- * @param {Transferable[]} transfer
  */
-function write(content, offset, transfer) {
+function write(content, offset) {
 	offset = offset ?? size;
 	if (offset > size) {
-		stream.push(new Uint8Array(offset - size));
+		stream.push(new ArrayBuffer(offset - size));
 		size = offset;
 	}
-	if (typeof content == "string") {
-		content = encodeString(content);
-	} else if (content instanceof Blob) {
-		content = content.slice()
-	} else if (content instanceof ArrayBuffer) {
-		transfer.push(content);
-		content = content.slice();
-	} else {
-		const { buffer, byteOffset } = content;
-		transfer.push(buffer);
+	if (typeof content == "string")
 		// @ts-ignore
-		content = new Uint8Array(buffer.slice(byteOffset, byteOffset + content.byteLength));
-	}
+		content = encodeString(content).buffer;
+	// @ts-ignore
 	const contentSize = getSize(content);
 	if (contentSize == 0) return;
 	if (offset >= size) {
@@ -218,7 +202,7 @@ function truncate(newSize) {
 		return;
 	}
 	if (newSize > oldSize) {
-		stream.push(new Uint8Array(newSize - oldSize));
+		stream.push(new ArrayBuffer(newSize - oldSize));
 		return;
 	}
 	const items = stream.length;

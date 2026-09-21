@@ -5,10 +5,10 @@
 class IOInterface {
 	/**
 	 * @param {number} start
-	 * @param {number} [end]
+	 * @param {number} [length]
 	 * @return {Promise<Uint8Array>}
 	 */
-	read(start, end) { throw new TypeError("Non-implemented.") }
+	read(start, length) { throw new TypeError("Non-implemented.") }
 	/**
 	 * @param {string|Blob|ArrayBuffer|TypedArray} content
 	 * @param {number} [offset]
