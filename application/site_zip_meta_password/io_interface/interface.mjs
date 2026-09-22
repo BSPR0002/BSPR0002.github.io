@@ -21,10 +21,9 @@ class IOInterface {
 	 */
 	truncate(size) { throw new TypeError("Non-implemented.") }
 	/**
-	 * @param {string} [saveName]
 	 * @return {Promise<void>}
 	 */
-	save(saveName) { throw new TypeError("Non-implemented.") }
+	save() { throw new TypeError("Non-implemented.") }
 	close() { throw new TypeError("Non-implemented.") }
 	/**
 	 * @return {Promise<IOInterface>}

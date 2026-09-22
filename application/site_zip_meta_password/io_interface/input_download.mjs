@@ -1,40 +1,16 @@
 import IOInterface from "./interface.mjs";
+import { isValidNumberType, send } from "./utils.mjs";
 import { downloadSave, inputGet } from "/javascript/module/file_io.mjs";
-
-function isValidNumberType(value) {
-	const type = typeof value;
-	if (type == "number")
-		return Number.isNaN(value) || (Number.isInteger(value) && value >= 0);
-	if (type == "undefined" || value === null)
-		return true;
-	return false
-}
-
-/**
- * @param {Worker} worker
- * @param {any[]} data
- * @param {Transferable[]} [transfer]
- */
-async function send(worker, data, transfer = []) {
-	const { port1, port2 } = new MessageChannel();
-	port1.start();
-	const { promise, resolve } = Promise.withResolvers();
-	port1.addEventListener("message", resolve, { once: true });
-	transfer.push(port2);
-	worker.postMessage(data, transfer);
-	const { data: response } = await promise;
-	port1.close();
-	if (!response[0]) throw response[1];
-	return response[1];
-}
 
 class FileIO extends IOInterface {
 	#worker;
+	#fileName;
 	/**
-	 * @param {Blob} file 
+	 * @param {File} file 
 	 */
 	constructor(file) {
 		super();
+		this.#fileName = file.name;
 		const worker = this.#worker = new Worker(import.meta.resolve("./input_download_worker.mjs"), { type: "module" });
 		worker.postMessage(file);
 	}
@@ -59,7 +35,7 @@ class FileIO extends IOInterface {
 		// @ts-ignore
 		if (!(typeof content == "string" || content instanceof Blob || content instanceof ArrayBuffer || ArrayBuffer.isView(content)))
 			throw new TypeError("参数 'content' 类型无效");
-		if (!isValidNumberType(offset) || Number.isNaN(offset))
+		if (!isValidNumberType(offset, false))
 			throw new TypeError("参数 'offset' 类型无效");
 		const transfer = [];
 		if (ArrayBuffer.isView(content)) {
@@ -75,16 +51,13 @@ class FileIO extends IOInterface {
 	}
 
 	truncate(size) {
-		if (typeof size != "number" || !Number.isInteger(size) || size < 0)
+		if (!isValidNumberType(size, false))
 			throw new TypeError("参数 'size' 无效");
 		return send(this.#worker, ["truncate", size]);
 	}
 
-	/**
-	 * @param {string} [saveName]
-	 */
-	async save(saveName) {
-		downloadSave(await send(this.#worker, ["blob"]), saveName);
+	async save() {
+		downloadSave(await send(this.#worker, ["blob"]), this.#fileName);
 	}
 
 	close() {

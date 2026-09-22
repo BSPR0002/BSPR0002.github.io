@@ -129,16 +129,16 @@ function read(start, length, transfer) {
  */
 function write(content, offset) {
 	offset = offset ?? size;
-	if (offset > size) {
-		stream.push(new ArrayBuffer(offset - size));
-		size = offset;
-	}
 	if (typeof content == "string")
 		// @ts-ignore
 		content = encodeString(content).buffer;
 	// @ts-ignore
 	const contentSize = getSize(content);
 	if (contentSize == 0) return;
+	if (offset > size) {
+		stream.push(new ArrayBuffer(offset - size));
+		size = offset;
+	}
 	if (offset >= size) {
 		// @ts-ignore
 		stream.push(content);
