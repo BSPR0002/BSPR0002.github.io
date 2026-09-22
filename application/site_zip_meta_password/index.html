@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="zh-cmn-Hans">
+
+<head>
+	<meta charset=UTF-8>
+	<title>本站压缩文件密码查看工具</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<link rel="icon" type="image/png" href="icon.svg">
+	<link rel="stylesheet" type="text/css" href="/css/BSIF_style.css">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	<script src="main.mjs" type="module"></script>
+	<script src="/javascript/test_function.js"></script>
+	<link rel="stylesheet" type="text/css" href="page/common_style.css">
+	<link rel="stylesheet" type="text/css" href="page/read_data/style.css">
+	<link rel="stylesheet" type="text/css" href="page/append_data/style.css">
+</head>
+
+<body>
+	<div id="main">
+		<div id="tab-list">
+			<button class="tab current">查看密码</button>
+			<button class="tab">附加数据</button>
+		</div>
+		<div id="page-box">
+			<div class="page current" id="page-read">
+				<div class="file-component">
+					<button class="select-file">选择文件</button>
+					<div class="none-file">未选择文件</div>
+					<div class="file-info">
+						<h2 class="file-info-title">文件信息</h2>
+						<div class="file-info-content">
+							<div class="file-info-sub-title">文件名</div>
+							<div class="file-name"></div>
+							<div class="file-info-sub-title">文件大小</div>
+							<div class="file-size"></div>
+							<button class="file-clear">清除</button>
+						</div>
+					</div>
+				</div>
+				<div class="line-v"></div>
+				<div id="data-box">
+					<div id="data-none-file">选择文件以读取信息</div>
+					<div id="data-error">test</div>
+					<div id="data-view">
+						<h2 id="data-title">信息</h2>
+						<div id="data-content"></div>
+					</div>
+				</div>
+			</div>
+			<div class="page" id="page-append">
+				<div class="file-component">
+					<button class="select-file">选择文件</button>
+					<div class="none-file">未选择文件</div>
+					<div class="file-info">
+						<h2 class="file-info-title">文件信息</h2>
+						<div class="file-info-content">
+							<div class="file-info-sub-title">文件名</div>
+							<div class="file-name"></div>
+							<div class="file-info-sub-title">文件大小</div>
+							<div class="file-size"></div>
+							<button class="file-clear">清除</button>
+						</div>
+					</div>
+				</div>
+				<div class="line-v"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

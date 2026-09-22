@@ -1,0 +1,49 @@
+:root, body {
+	height: 100%
+}
+
+body {
+	background-color: #2D9;
+	display: grid;
+	place-items: center;
+}
+
+#main {
+	background-color: #FFF;
+	width: 800px;
+	height: 600px;
+	border-radius: 16px;
+	box-shadow: #000A 0 0 8px 0;
+	display: grid;
+	grid-template-rows: 40px 1fr;
+	overflow: hidden;
+}
+
+#tab-list {
+	background-color: #d3e3fd;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	padding: 6px 32px 0 32px;
+	gap: 6px;
+}
+
+.tab {
+	border: none;
+	background-color: transparent;
+	padding: 0 12px 0 12px;
+	border-radius: 12px 12px 0 0;
+}
+
+.tab:hover {
+	background-color: var(--interface-color);
+}
+
+.tab.current {
+	pointer-events: none;
+	background-color: #FFF;
+}
+
+#page-box {
+	padding: 6px;
+	overflow: hidden;
+}
