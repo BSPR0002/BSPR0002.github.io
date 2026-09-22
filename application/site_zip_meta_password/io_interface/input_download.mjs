@@ -5,12 +5,16 @@ import { downloadSave, inputGet } from "/javascript/module/file_io.mjs";
 class FileIO extends IOInterface {
 	#worker;
 	#fileName;
+	get fileName() { return this.#fileName }
+	#originalSize;
+	get originalSize() { return this.#originalSize }
 	/**
 	 * @param {File} file 
 	 */
 	constructor(file) {
 		super();
 		this.#fileName = file.name;
+		this.#originalSize = file.size;
 		const worker = this.#worker = new Worker(import.meta.resolve("./input_download_worker.mjs"), { type: "module" });
 		worker.postMessage(file);
 	}

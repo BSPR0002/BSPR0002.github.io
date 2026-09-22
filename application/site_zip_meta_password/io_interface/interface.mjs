@@ -25,10 +25,15 @@ class IOInterface {
 	 */
 	save() { throw new TypeError("Non-implemented.") }
 	close() { throw new TypeError("Non-implemented.") }
+	/** @return {number} */
+	get originalSize() { throw new TypeError("Non-implemented.") }
+	/** @return {string} */
+	get fileName() { throw new TypeError("Non-implemented.") }
 	/**
+	 * @param {boolean} [writable]
 	 * @return {Promise<IOInterface>}
 	 */
-	static getInstance() { throw new TypeError("Non-implemented.") }
+	static getInstance(writable) { throw new TypeError("Non-implemented.") }
 }
 
 export default IOInterface;

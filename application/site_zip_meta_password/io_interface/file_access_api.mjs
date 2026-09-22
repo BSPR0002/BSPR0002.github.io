@@ -6,8 +6,11 @@ const WRITER_CONFIG = { keepExistingData: true };
 
 class FileIO extends IOInterface {
 	#handle;
+	get fileName() { return this.#handle.name }
 	#writer;
 	#file;
+	#originalSize;
+	get originalSize() { return this.#originalSize }
 
 	/**
 	 * @param {FileSystemFileHandle} handle
@@ -18,6 +21,7 @@ class FileIO extends IOInterface {
 		super();
 		this.#handle = handle;
 		this.#file = file;
+		this.#originalSize = file.size;
 		this.#writer = writer;
 	}
 
