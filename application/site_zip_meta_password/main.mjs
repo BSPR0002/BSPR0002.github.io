@@ -18,3 +18,5 @@ function changeTab(i) {
 
 for (let i = 0, l = tabs.length; i < l; ++i)
 	tabs[i].addEventListener("click", function () { changeTab(i) });
+
+document.getElementById("main").className = "";
