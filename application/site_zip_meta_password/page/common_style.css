@@ -6,16 +6,17 @@
 	border: 1px solid #DDD;
 	border-radius: 8px;
 	padding: 6px;
-	grid-template-columns: 300px 1fr;
+	gap: 6px;
+	grid-template-columns: 300px 1px 1fr;
+	overflow: hidden;
 }
 
 .page.current {
 	display: grid;
 }
 
-.file-component {
-	border-right: 1px solid #DDD;
-	padding-inline-end: 6px;
+.line-v {
+	background-color: #DDD;
 }
 
 .select-file {
@@ -50,7 +51,7 @@
 
 .file-name, .file-size {
 	user-select: text;
-	background-color: #CCC;
+	background-color: #DDD;
 	padding: 6px;
 	border-radius: 6px;
 }

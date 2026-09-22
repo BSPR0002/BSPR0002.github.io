@@ -7,22 +7,24 @@ const WRITER_CONFIG = { keepExistingData: true };
 class FileIO extends IOInterface {
 	#handle;
 	get fileName() { return this.#handle.name }
+	/** @type {FileSystemWritableFileStream} */
 	#writer;
 	#file;
 	#originalSize;
 	get originalSize() { return this.#originalSize }
+	#writable;
 
 	/**
 	 * @param {FileSystemFileHandle} handle
 	 * @param {File} file
-	 * @param {FileSystemWritableFileStream | void} writer
+	 * @param {boolean} writable
 	 */
-	constructor(handle, file, writer) {
+	constructor(handle, file, writable) {
 		super();
 		this.#handle = handle;
 		this.#file = file;
 		this.#originalSize = file.size;
-		this.#writer = writer;
+		this.#writable = writable;
 	}
 
 	/**
@@ -44,6 +46,19 @@ class FileIO extends IOInterface {
 		));
 	}
 
+	#writerPromise = null;
+	/** @return {Promise<FileSystemWritableFileStream>} */
+	async #getWriter() {
+		if (!this.#writable) throw new Error("该实例无法写入");
+		const promise = this.#writerPromise;
+		if (promise) return promise;
+		try {
+			return this.#writer = await (this.#writerPromise = this.#handle.createWritable(WRITER_CONFIG));
+		} finally {
+			this.#writerPromise = null;
+		}
+	}
+
 	/**
 	 * @param {string|Blob|ArrayBuffer|DataView|import("/javascript/module/binary_operate.mjs").TypedArray} content
 	 * @param {number} [offset]
@@ -53,8 +68,7 @@ class FileIO extends IOInterface {
 			throw new TypeError("参数 'content' 类型无效");
 		if (!isValidNumberType(offset, false))
 			throw new TypeError("参数 'offset' 类型无效");
-		const writer = this.#writer;
-		if (!writer) throw new Error("该实例无法写入");
+		const writer = this.#writer ?? await this.#getWriter();
 		// @ts-ignore
 		await writer.write({
 			type: "write",
@@ -67,18 +81,17 @@ class FileIO extends IOInterface {
 	async truncate(size, flush = true) {
 		if (!isValidNumberType(size, false))
 			throw new TypeError("参数 'size' 无效");
-		const writer = this.#writer;
-		if (!writer) throw new Error("该实例无法写入");
+		const writer = this.#writer ?? await this.#getWriter();
 		await writer.truncate(size);
 		if (flush) await this.save();
 	}
 
 	async save() {
 		const writer = this.#writer;
-		if (!writer) throw new Error("该实例无法写入");
+		if (!writer) return;
 		await writer.close();
+		this.#writer = null;
 		this.#file = await this.#handle.getFile();
-		this.#writer = await this.#handle.createWritable(WRITER_CONFIG);
 	}
 
 	close() {
@@ -98,7 +111,7 @@ class FileIO extends IOInterface {
 				description: "7z 压缩文件"
 			}]
 		});
-		return new this(handle, await handle.getFile(), writable ? await handle.createWritable(WRITER_CONFIG) : null);
+		return new this(handle, await handle.getFile(), writable);
 	}
 }
 

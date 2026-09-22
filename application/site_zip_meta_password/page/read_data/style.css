@@ -1,0 +1,43 @@
+#data-box {
+	display: grid;
+	overflow: hidden;
+}
+
+#data-view {
+	display: none;
+	grid-template-rows: auto 1fr;
+	overflow: hidden;
+	gap: 6px;
+}
+
+#data-title {
+	font-size: 24px;
+	font-weight: normal;
+	justify-self: center;
+}
+
+#data-content {
+	padding: 6px;
+	background-color: #BFF;
+	border-radius: 6px;
+	user-select: text;
+	white-space: pre-wrap;
+	box-sizing: border-box;
+	overflow-y: auto;
+	align-self: start;
+	max-height: 100%;
+	color: var(--content-color);
+}
+
+#data-none-file {
+	color: #666;
+}
+
+#data-none-file, #data-error {
+	place-self: center;
+}
+
+#data-error {
+	color: red;
+	display: none;
+}
