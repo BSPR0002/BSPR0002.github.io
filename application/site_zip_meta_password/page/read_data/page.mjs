@@ -5,29 +5,33 @@ import { restoreKey, transform } from "../../crypto.mjs";
 import { decodeString } from "/javascript/module/utf-8.mjs";
 
 const box = document.getElementById("data-box"),
-	noneFileText = document.getElementById("data-none-file"),
+	noneFileText = document.getElementById("data-none-file").style,
 	errorText = document.getElementById("data-error"),
-	contentView = document.getElementById("data-view"),
+	errorTextStyle = errorText.style,
+	contentView = document.getElementById("data-view").style,
 	contentText = document.getElementById("data-content");
+
+var data = null;
 
 new FileComponent(document.querySelector("#page-read .file-component"), false).fileChangeNotifier.addHandler(async function (io) {
 	if (io) {
 		box.className = "bs-loading";
 		try {
-			contentText.innerText = await parse(io);
+			contentText.innerText = data = await parse(io);
 		} catch (error) {
+			contentText.innerHTML = "";
 			errorText.innerText = error.message;
-			noneFileText.style.display = "none";
-			errorText.style.display = "block";
-			contentView.style.display = null;
+			noneFileText.display = "none";
+			errorTextStyle.display = "block";
+			contentView.display = null;
 			return;
 		} finally {
 			box.className = "";
 		}
-		noneFileText.style.display = errorText.style.display = "none";
-		contentView.style.display = "block";
+		noneFileText.display = errorTextStyle.display = "none";
+		contentView.display = "block";
 	} else {
-		noneFileText.style.display = errorText.style.display = contentView.style.display = null;
+		noneFileText.display = errorTextStyle.display = contentView.display = data = null;
 		errorText.innerHTML = contentText.innerHTML = "";
 	}
 });
@@ -54,3 +58,7 @@ async function parse(file) {
 		throw new Error("无法识别附加数据");
 	return decodeString(transform(restoreKey(data.subarray(8, 40)), data.subarray(40)));
 }
+
+document.getElementById("data-copy").addEventListener("click", function () {
+	navigator.clipboard.writeText(data);
+});

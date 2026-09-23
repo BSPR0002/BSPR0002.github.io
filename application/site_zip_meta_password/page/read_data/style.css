@@ -21,6 +21,7 @@
 	align-self: start;
 	max-height: 100%;
 	color: var(--content-color);
+	margin-block-end: 8px;
 }
 
 #data-none-file {

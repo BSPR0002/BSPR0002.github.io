@@ -1,4 +1,5 @@
 import "/javascript/module/user_select_none_fix.mjs";
+import "/javascript/module/verbatim_user_copy.mjs";
 import "./page/read_data/page.mjs";
 import "./page/append_data/page.mjs";
 
