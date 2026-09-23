@@ -10,12 +10,6 @@
 	gap: 6px;
 }
 
-#data-title {
-	font-size: 24px;
-	font-weight: normal;
-	justify-self: center;
-}
-
 #data-content {
 	padding: 6px;
 	background-color: #BFF;
