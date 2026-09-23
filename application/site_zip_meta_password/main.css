@@ -2,14 +2,21 @@
 	height: 100%
 }
 
+:root {
+	--interface-color: hsl(206, 100%, 60%);
+	--active-color: hsl(206, 100%, 77%);
+	--background-color: #2D9;
+	--soft-edge: #DDD;
+}
+
 body {
-	background-color: #2D9;
+	background-color: var(--background-color);
 	display: grid;
 	place-items: center;
 }
 
 #main {
-	background-color: #FFF;
+	background-color: var(--content-background-color);
 	width: 800px;
 	height: 600px;
 	border-radius: 16px;
@@ -40,7 +47,7 @@ body {
 
 .tab.current {
 	pointer-events: none;
-	background-color: #FFF;
+	background-color: var(--content-background-color);
 }
 
 #page-box {

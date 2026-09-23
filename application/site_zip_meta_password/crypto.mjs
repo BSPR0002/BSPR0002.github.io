@@ -24,7 +24,6 @@ function generateKey() {
 }
 
 /**
- * 
  * @param {number} a 
  * @param {Uint8Array} b 
  */
@@ -36,7 +35,6 @@ function getDataBit(a, b) {
 }
 
 /**
- * 
  * @param {Uint8Array} keyData 
  */
 function restoreKey(keyData) {
@@ -61,7 +59,6 @@ function restoreKey(keyData) {
 }
 
 /**
- * 
  * @param {Uint8Array} key 
  * @param {Uint8Array} data 
  */

@@ -5,9 +5,9 @@ const $7Z_HEAD = Uint8Array.from([0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C]),
 
 /** @typedef {import("./io_interface/interface.mjs").default} IOInterface */
 // @ts-ignore
-const fileSystemAccessApiAvailable = typeof window.showOpenFilePicker == "function",
+const usingFileSystemAccessApi = typeof window.showOpenFilePicker == "function",
 	/** @type {typeof import("./io_interface/interface.mjs").default} */
-	FileIO = (await import(import.meta.resolve(`./io_interface/${fileSystemAccessApiAvailable ? "file_access_api" : "input_download"}.mjs`))).default;
+	FileIO = (await import(import.meta.resolve(`./io_interface/${usingFileSystemAccessApi ? "file_access_api" : "input_download"}.mjs`))).default;
 
 class FileComponent {
 	#writable;
@@ -81,4 +81,4 @@ function sizeText(size) {
 	return `${Number.isInteger(number) && !Number.isInteger(value) ? number.toFixed(1) : number} ${sizeUnits[i]}`;
 }
 
-export { $7Z_HEAD, META_TAG, FileComponent, fileSystemAccessApiAvailable };
+export { $7Z_HEAD, META_TAG, FileComponent, usingFileSystemAccessApi };
