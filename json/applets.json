@@ -9,5 +9,11 @@
 		"directory": "/application/json_indexed_editor/",
 		"name": "JSON 索引化编辑工具",
 		"iconName": "icon.svg"
+	},
+	{
+		"id": "org.BSIF.SiteZipPassword",
+		"directory": "/application/site_zip_meta_password/",
+		"name": "本站压缩文件密码查看器",
+		"iconName": "icon.svg"
 	}
 ]

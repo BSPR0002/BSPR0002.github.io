@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="256" height="256">
+	<path d="M32 192l64 32h128v-32l-64 -32h-128Z" fill="#2C0" />
+	<path d="M32 160l64 32h128v-32l-64 -32h-128Z" fill="#F90" />
+	<path d="M32 128l64 32h128v-32l-64 -32h-128Z" fill="#06F" />
+	<path d="M96 96l64 32v96h-6l8 4h32v-102l-68 -34h-32v4Z" fill="#520" />
+	<!-- <path d="M80 96l64 32v96h32v-96l-64 -32Z" fill="red" /> -->
+	<circle cx="112" cy="80" r="32" fill="none" stroke="#F50" stroke-width="24" />
+	<circle cx="112" cy="80" r="44" fill="none" stroke="#FFF" stroke-width="8" />
+	<circle cx="112" cy="80" r="20" fill="none" stroke="#FFF" stroke-width="8" />
+	<path d="M104 120v80a8 8 0 0 0 16 0v-8h16v-16h-16v-16h16v-16h-16v-24" fill="none" stroke="#FFF" stroke-width="16" />
+	<path d="M104 112v88a8 8 0 0 0 16 0v-8h16v-16h-16v-16h16v-16h-16v-32z" fill="#F50" />
+</svg>
