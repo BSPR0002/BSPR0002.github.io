@@ -1,0 +1,41 @@
+#append-input {
+	box-sizing: border-box;
+	width: 100%;
+	height: 200px;
+	resize: none;
+	border-color: var(--interface-color);
+	border-radius: 4px;
+	padding: 4px;
+	outline-color: var(--focus-color);
+	display: block;
+}
+
+#append-view {
+	display: grid;
+	grid-template-rows: auto 1fr 1fr;
+	gap: 6px;
+}
+
+#append-warn {
+	display: none;
+	place-self: center;
+	font-size: 12px;
+	text-align: center;
+	color: #888;
+}
+
+#append-write-view {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	justify-items: center;
+	gap: 6px;
+}
+
+#append-none-file {
+	color: var(--content-color);
+}
+
+#append-write-not-allow {
+	display: none;
+	color: red;
+}
