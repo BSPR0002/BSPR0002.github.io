@@ -1,7 +1,7 @@
-import { get } from "/javascript/module/ajax.mjs";
 import { parse, parseAndGetNodes } from "/javascript/module/array_HTML.mjs";
 import OverlayWindow from "/component/overlay_window/OverlayWindow.mjs";
 import { buildNameList, buildMediaTags, buildContentTags } from "./resource_information.mjs";
+import { get, ParseType } from "./module/fetch.mjs";
 const detailStyle = document.createElement("style");
 detailStyle.textContent = [
 	"#resource-detail{display:grid;grid-template-rows:auto 1fr;gap:0.5rem}",
@@ -63,8 +63,8 @@ function buildDetailsPart(title, data, opened = false, className = null) {
 	if (opened) attributes.open = "";
 	return arrayHTML;
 }
-function displayDetails(data, showArea) {
-	const arrayHTML = [];
+async function displayDetails(promise, showArea) {
+	const data = await promise, arrayHTML = [];
 	if ("introduction" in data) arrayHTML.push(buildDetailsPart("简介", data.introduction));
 	if ("release" in data) arrayHTML.push(buildRelease(data.release));
 	showArea.className = "";
@@ -98,12 +98,8 @@ function showDetail(data) {
 			["div", [], { id: "resource-detail-content", class: "bs-loading" }, "showArea"]
 		], { id: "resource-detail" }]
 	]), overlayWindow = new OverlayWindow(documentFragment, data.display, { size: { width: "62rem", height: "100%" } });
-	const xhr = get(
-		`/json/resource/${data.id}.json`,
-		function (response) { displayDetails(response, nodes.showArea) },
-		"json",
-		false
-	);
-	overlayWindow.onclosed = xhr.abort.bind(xhr);
+	const request = get(`/json/resource/${data.id}.json`, null, ParseType.JSON, null, false);
+	displayDetails(request.result, nodes.showArea);
+	overlayWindow.onclosed = request.abort.bind(request);
 }
 export { showDetail }

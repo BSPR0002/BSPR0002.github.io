@@ -1,4 +1,4 @@
-import { load } from "/javascript/module/ajax.mjs";
+import { AbortError, ContextType, loadDocument } from "./module/fetch.mjs";
 import { Enum } from "/javascript/module/Enum.mjs";
 const TAB_LIST = Enum.fromKeys(["home", "services", "resource"]),
 	navigation = document.getElementById("navigation"),
@@ -7,14 +7,21 @@ const TAB_LIST = Enum.fromKeys(["home", "services", "resource"]),
 	title = document.getElementById("tab-title"),
 	naviSwitch = document.getElementById("navigation-switch");
 var currentTab = NAVIGATIONS[0], naviState = false, lastLoad;
-function currentSuccess() {
+async function loadPage(controller) {
+	var content;
+	try {
+		content = await controller.result;
+	} catch (error) {
+		if (error instanceof AbortError) return;
+		currentTab.className = "navigation current failed";
+		naviSwitch.classList.replace("loading", "failed");
+		lastLoad = undefined;
+		return;
+	}
+	PAGE_BOX.innerHTML = "";
+	PAGE_BOX.appendChild(content);
 	currentTab.className = "navigation current";
 	naviSwitch.classList.remove("loading");
-}
-function currentFail() {
-	currentTab.className = "navigation current failed";
-	naviSwitch.classList.replace("loading", "failed");
-	lastLoad = undefined;
 }
 function changeTab(tab) {
 	if (!Enum.isValueOf(TAB_LIST, tab)) throw new Error("指定的页面不在页面列表中！");
@@ -28,14 +35,14 @@ function changeTab(tab) {
 	newTab.className = "navigation current loading";
 	naviSwitch.classList.remove("failed");
 	naviSwitch.classList.add("loading");
-	lastLoad = load(`/page/${Enum.keyOf(TAB_LIST, tab)}.html`, PAGE_BOX, true, true, currentSuccess, currentFail);
+	loadPage(lastLoad = loadDocument(`/page/${Enum.keyOf(TAB_LIST, tab)}.html`, true, true, ContextType.FRAGMENT));
 	title.innerText = newTab.innerText;
 	currentTab = newTab;
 }
 for (let i = 0, l = NAVIGATIONS.length; i < l; ++i) NAVIGATIONS[i].addEventListener("click", function () { changeTab(i); switchNavigation(false) }, { passive: true });
 function respondHash() {
 	const index = TAB_LIST[location.hash.substring(1)];
-	changeTab(index?? 0);
+	changeTab(index ?? 0);
 }
 respondHash();
 function switchNavigation(state = undefined) {
